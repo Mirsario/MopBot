@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MopBotTwo": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Username": "Default"
+      }
+    }
+  }
+}

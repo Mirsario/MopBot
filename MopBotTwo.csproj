@@ -19,38 +19,15 @@
   <PropertyGroup>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
-
+  
   <ItemGroup>
-    <Reference Include="Discord.Net.Analyzers">
-      <HintPath>..\Dependencies\Discord.Net.Analyzers.dll</HintPath>
-    </Reference>
-    <Reference Include="Discord.Net.Commands">
-      <HintPath>..\Dependencies\Discord.Net.Commands.dll</HintPath>
-    </Reference>
-    <Reference Include="Discord.Net.Core">
-      <HintPath>Dependencies\Discord.Net.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Discord.Net.Rest">
-      <HintPath>Dependencies\Discord.Net.Rest.dll</HintPath>
-    </Reference>
-    <Reference Include="Discord.Net.Webhook">
-      <HintPath>Dependencies\Discord.Net.Webhook.dll</HintPath>
-    </Reference>
-    <Reference Include="Discord.Net.WebSocket">
-      <HintPath>Dependencies\Discord.Net.WebSocket.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection">
-      <HintPath>src\Dependencies\Microsoft.Extensions.DependencyInjection.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
-      <HintPath>src\Dependencies\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>src\Dependencies\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Interactive.Async">
-      <HintPath>src\Dependencies\System.Interactive.Async.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Discord.Net" Version="2.0.1" />
+    <PackageReference Include="Discord.Net.Analyzers" Version="2.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
+  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if &quot;$(Username)&quot; == &quot;Mirsario&quot;&#xD;&#xA;    chdir D:/Workspace/0-CSharp/Repositories/UpdateServer/ &amp;&amp; dotnet bin/netcoreapp3.0/UpdateServer.dll connect -config publishmopbot.json" />
+  </Target>
 
 </Project>
