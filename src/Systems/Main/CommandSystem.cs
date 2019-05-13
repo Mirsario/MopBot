@@ -118,7 +118,7 @@ namespace MopBotTwo.Systems
 				Console.WriteLine($"Executing command '{commandText}'.");
 
 				//TODO: Find another solution to pass context to CommandServiceLogging(LogMessage)
-				recentContexts[$@"""{commandMatch.Command.Name}"" for {context.user.Username}#{context.user.Discriminator} in {context.server.Name}/{context.Channel.Name}"] = context;
+				recentContexts[$@"""{commandMatch.Command.Name}"" for {context.user.Id} in {context.server.Id}/{context.Channel.Id}"] = context;
 				currentThreadContext = context;
 
 				var preconditionResult = await commandMatch.CheckPreconditionsAsync(context,MopBot.serviceProvaider);
@@ -203,12 +203,23 @@ namespace MopBotTwo.Systems
 				}
 			}
 		}
-		private static async Task OnCommandExecuted(CommandInfo commandInfo,ICommandContext context,IResult result)
+		private static async Task OnCommandExecuted(Optional<CommandInfo> commandInfo,ICommandContext context,IResult result)
 		{
-			await context.Success();
+			var msg = context.Message;
+			if(msg!=null) {
+				var channel = context.Channel;
+				//Make sure the message didn't get deleted during command execution
+				if(channel!=null && await channel.GetMessageAsync(msg.Id)!=null) {
+					await context.Success();
+				}
+			}
+
+			if(!commandInfo.IsSpecified) {
+				return;
+			}
 			
 			var user = context.User;
-			recentContexts.Remove($@"""{commandInfo.Name}"" for {user.Username}#{user.Discriminator} in {context.Guild.Name}/{context.Channel.Name}");
+			recentContexts.Remove($@"""{commandInfo.Value.Name}"" for {user.Id} in {context.Guild.Id}/{context.Channel.Id}");
 		}
 
 		[Command("help")]
