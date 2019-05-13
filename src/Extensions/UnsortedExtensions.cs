@@ -400,22 +400,14 @@ namespace MopBotTwo.Extensions
 		}
 		#endregion
 
-		#region Linq
-		public static int FirstIndex<T>(this IEnumerable<T> source,Func<T,bool> predicate)
+		#region Reflection
+		public static bool IsDerivedFrom(this Type type,Type from)
 		{
-			int index = 0;
-			foreach(var item in source) {
-				if(predicate(item)) {
-					return index;
-				}
-				index++;
-			}
-			return -1;
+			return type!=from && from.IsAssignableFrom(type);
 		}
+		#endregion
 
-		public static bool TryGetFirst<T>(this IEnumerable<T> source,out T result) => (result = source.FirstOrDefault())!=default;
-		public static bool TryGetFirst<T>(this IEnumerable<T> source,Func<T,bool> predicate,out T result) => (result = source.FirstOrDefault(predicate))!=default;
-
+		#region StringExtensions
 		public static bool EndsWithAny(this string source,params string[] strings)
 		{
 			for(int i = 0;i<strings.Length;i++) {
@@ -426,35 +418,6 @@ namespace MopBotTwo.Extensions
 			return false;
 		}
 
-		public static IEnumerable<TResult> SelectIgnoreNull<TSource,TResult>(this IEnumerable<TSource> source,Func<TSource,TResult> selector)
-		{
-			if(source==null) {
-				throw new ArgumentNullException(nameof(source));
-			}
-			if(selector==null) {
-				throw new ArgumentNullException(nameof(selector));
-			}
-			return SelectIgnoreNullIterator(source,selector);
-		}
-		private static IEnumerable<TResult> SelectIgnoreNullIterator<TSource,TResult>(IEnumerable<TSource> source,Func<TSource,TResult> selector)
-		{
-			foreach(var element in source) {
-				var result = selector(element);
-				if(result!=null) {
-					yield return result;
-				}
-			}
-		}
-		#endregion
-
-		#region Reflection
-		public static bool IsDerivedFrom(this Type type,Type from)
-		{
-			return type!=from && from.IsAssignableFrom(type);
-		}
-		#endregion
-
-		#region StringExtensions
 		public static string TruncateWithDots(this string value,int maxLength)
 		{
 			if(string.IsNullOrEmpty(value) || value.Length<=maxLength) {
