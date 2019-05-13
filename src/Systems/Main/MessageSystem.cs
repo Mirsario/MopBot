@@ -11,11 +11,6 @@ namespace MopBotTwo.Systems
 	[SystemConfiguration(AlwaysEnabled = true)]
 	public class MessageSystem : BotSystem
 	{
-		public class MessageUserData : ServerUserData
-		{
-			public DateTime lastMsg;
-		}
-		
 		public static List<ulong> messagesToIgnore = new List<ulong>();
 
 		/*public static List<Message> newMessageBuffer;
@@ -25,10 +20,6 @@ namespace MopBotTwo.Systems
 
 		public bool notifiedAboutStart;
 
-		public override void RegisterDataTypes()
-		{
-			RegisterDataType<ServerUserMemory,MessageUserData>();
-		}
 		public override async Task Initialize()
 		{
 			/*newMessageBuffer = new List<Message>();
