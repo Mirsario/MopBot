@@ -40,8 +40,26 @@ namespace MopBotTwo.Extensions
 			return -1;
 		}
 
-		public static bool TryGetFirst<T>(this IEnumerable<T> source,out T result) => (result = source.FirstOrDefault())!=default;
-		public static bool TryGetFirst<T>(this IEnumerable<T> source,Func<T,bool> predicate,out T result) => (result = source.FirstOrDefault(predicate))!=default;
+		public static bool TryGetFirst<T>(this IEnumerable<T> source,out T result)
+		{
+			foreach(var value in source) {
+				result = value;
+				return true;
+			}
+			result = default;
+			return false;
+		}
+		public static bool TryGetFirst<T>(this IEnumerable<T> source,Func<T,bool> predicate,out T result)
+		{
+			foreach(var value in source) {
+				if(predicate(value)) {
+					result = value;
+					return true;
+				}
+			}
+			result = default;
+			return false;
+		}
 
 		public static IEnumerable<TResult> SelectIgnoreNull<TSource,TResult>(this IEnumerable<TSource> source,Func<TSource,TResult> selector)
 		{
