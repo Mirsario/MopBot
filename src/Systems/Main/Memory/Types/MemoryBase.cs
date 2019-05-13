@@ -173,7 +173,7 @@ namespace MopBotTwo
 			var subMemoriesDict = jObj.Value<JObject>("subMemory");
 			if(subMemoriesDict!=null) {
 				foreach(var pair in subMemoriesDict) {
-					if(!subMemory.TryGetFirst(p => p.Key.Name==pair.Key || p.Key.ToString()==pair.Key,out var existingDict)) {
+					if(!subMemory.TryGetFirst(p => p.Key!=null && (p.Key.Name==pair.Key || p.Key.ToString()==pair.Key),out var existingDict)) {
 						continue;
 					}
 					if(!(pair.Value is JObject subMemoryDict)) {
