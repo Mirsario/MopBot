@@ -64,7 +64,9 @@ namespace MopBotTwo.Systems
 
 			var item = new ShopItem(itemName,CurrencyAmount.ParseMultiple(itemPrice,serverMemory),new SudoCommand(itemCommand,Context.user.Id));
 			
-			shop.Items = shop.Items?.Append(item)?.ToArray() ?? new[] { item };
+			lock(shop) {
+				shop.Items = shop.Items?.Append(item)?.ToArray() ?? new[] { item };
+			}
 		}
 		[Command("removeitem")] [Alias("deleteitem","delitem","rmitem")]
 		[RequirePermission("commandshop.manage")]
@@ -80,11 +82,12 @@ namespace MopBotTwo.Systems
 
 			itemId--;
 
-			if(shop.Items==null || itemId<0 || itemId>=shop.Items.Length) {
-				throw new BotError($"Invalid item id.");
+			lock(shop) {
+				if(shop.Items==null || itemId<0 || itemId>=shop.Items.Length) {
+					throw new BotError($"Invalid item id.");
+				}
+				shop.Items = shop.Items.Length<=1 ? null : shop.Items.ExceptIndex(itemId).ToArray();
 			}
-
-			shop.Items = shop.Items.Length<=1 ? null : shop.Items.ExceptIndex(itemId).ToArray();
 		}
 		
 		[Command("buy")]
@@ -113,9 +116,10 @@ namespace MopBotTwo.Systems
 			//Any exceptions inside this delegate will remove the item from the shop. 
 			await shop.SafeItemAction(itemId,async item => {
 				//if(item.prices.TryGetFirst(p => currencyServerUserData[p.currency]<p.amount,out var price)) {
-				if(item.prices.TryGetFirst(p => currencies[p.currency].GetAmount(userId)<p.amount,out var price)) {
+				if(item.prices.TryGetFirst(p => currencies[p.currency].GetAmount(userId)<p.amount,out var p)) {
 					//error = $"Not enough {currencies[price.currency]}. You need **{price.amount}**, but you only have **{currencyServerUserData[price.currency]}**.";
-					error = $"Not enough {currencies[price.currency]}. You need **{price.amount}**, but you only have **{currencies[price.currency].GetAmount(userId)}**.";
+					var currency = currencies[p.currency];
+					error = $"Not enough {currency}. You need **{p.amount}**, but you only have **{currency.GetAmount(userId)}**.";
 					return;
 				}
 				
