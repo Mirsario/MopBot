@@ -130,13 +130,15 @@ namespace MopBotTwo
 				}
 				catch(FatalException e) {
 					await HandleException(e);
+					return;
 				}
 				catch(Exception e) {
-					await HandleException(e,"Run() - ");
+					await HandleException(e);
 				}
 			}
 		}
 
+		//TODO: It's much preferable to get rid of this
 		private static async void OnFirstChanceException(object sender,FirstChanceExceptionEventArgs args)
 		{
 			var e = args.Exception;
