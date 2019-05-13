@@ -18,8 +18,8 @@ namespace MopBotTwo.Systems
 
 			public ulong GetAmount(ulong userId) => UsersWealth.TryGetValue(userId,out ulong amount) ? amount : 0;
 
-			public string ToString(ulong amount) => $"{emote}**{amount} {StringUtils.ChangeForm(displayName,amount==1)}**";
-			public override string ToString() => $"{emote}**{displayName}**";
+			public string ToString(ulong amount) => $"{emote} **{amount} {StringUtils.ChangeForm(displayName,amount==1)}**";
+			public override string ToString() => $"{emote} **{displayName}**";
 		}
 	}
 }
