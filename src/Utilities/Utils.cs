@@ -17,6 +17,7 @@ namespace MopBotTwo
 			}
 			return value;
 		}
+		public static T Choose<T>(params T[] arr) => arr[MopBot.random.Next(arr.Length)];
 
 		public static ulong GetRandomULong()
 		{

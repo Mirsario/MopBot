@@ -41,7 +41,7 @@ namespace MopBotTwo.Systems
 			if(!notifiedAboutStart && MopBot.client.Guilds.Count>0) {
 				foreach(var server in MopBot.client.Guilds) {
 					if(MemorySystem.memory[server].GetData<ChannelSystem,ChannelServerData>().GetChannelByRole(ChannelRole.Logs) is ITextChannel logsChannel) {
-						await logsChannel.SendMessageAsync("MopBot started. Heya!");
+						await logsChannel.SendMessageAsync($"MopBot started. {Utils.Choose("Howdy, pardner!","Heya!","Heyooo!","hi.","o hey, didn't se ya ther.","Soo, how are things?","quack.")}");
 					}
 				}
 				notifiedAboutStart = true;
