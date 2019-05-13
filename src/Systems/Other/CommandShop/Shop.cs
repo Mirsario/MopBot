@@ -17,11 +17,10 @@ namespace MopBotTwo.Systems
 			public string description;
 			public string thumbnailUrl;
 			
-			[JsonProperty]
-			private ShopItem[] items;
-			public ShopItem[] Items {
+			[JsonProperty] private ShopItem[] items;
+			[JsonIgnore] public ShopItem[] Items {
 				get => items;
-				set => value.OrderByDescending(item => item.prices.Sum(p => (long)p.amount)).ToArray();
+				set => items = value.OrderByDescending(item => item.prices.Sum(p => (long)p.amount)).ToArray();
 			}
 
 			public async Task SafeItemAction(int index,Func<ShopItem,Task> action,bool throwError = true)
