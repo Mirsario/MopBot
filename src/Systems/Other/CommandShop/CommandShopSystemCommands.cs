@@ -63,13 +63,8 @@ namespace MopBotTwo.Systems
 			}
 
 			var item = new ShopItem(itemName,CurrencyAmount.ParseMultiple(itemPrice,serverMemory),new SudoCommand(itemCommand,Context.user.Id));
-			if(shop.items!=null) {
-				var tempList = shop.items.ToList();
-				tempList.Add(item);
-				shop.items = tempList.OrderByDescending(i => i.prices.Length).ToArray();
-			}else{
-				shop.items = new[] { item };
-			}
+			
+			shop.Items = shop.Items?.Append(item)?.ToArray() ?? new[] { item };
 		}
 		[Command("removeitem")] [Alias("deleteitem","delitem","rmitem")]
 		[RequirePermission("commandshop.manage")]
@@ -85,17 +80,11 @@ namespace MopBotTwo.Systems
 
 			itemId--;
 
-			if(shop.items==null || itemId<0 || itemId>=shop.items.Length) {
+			if(shop.Items==null || itemId<0 || itemId>=shop.Items.Length) {
 				throw new BotError($"Invalid item id.");
 			}
 
-			if(shop.items.Length==1) {
-				shop.items = null;
-			}else{
-				var list = shop.items.ToList();
-				list.RemoveAt(itemId);
-				shop.items = list.ToArray();
-			}
+			shop.Items = shop.Items.Length<=1 ? null : shop.Items.ExceptIndex(itemId).ToArray();
 		}
 		
 		[Command("buy")]
@@ -116,7 +105,7 @@ namespace MopBotTwo.Systems
 
 			itemId--;
 
-			if(shop.items==null || itemId<0 || itemId>=shop.items.Length) {
+			if(shop.Items==null || itemId<0 || itemId>=shop.Items.Length) {
 				throw new BotError($"Invalid item id.");
 			}
 
@@ -160,10 +149,11 @@ namespace MopBotTwo.Systems
 				.WithThumbnailUrl(shop.thumbnailUrl)
 				.WithFooter(@"Use ""!shop buy rewards <item number>"" to buy stuff!");
 			
-			var items = shop.items;
+			var items = shop.Items;
 			if(items!=null) {
 				for(int i = 0;i<items.Length;i++) {
-					await shop.SafeItemAction(i,throwError:false,action:async item => {
+					ShopItem item = items[i];
+					await shop.SafeItemAction(i,throwError:false,action: async item => {
 						embedBuilder.AddField($"#{i+1} - {item.name}",$"Costs {string.Join(", ",item.prices.Select(price => currencyServerData.Currencies[price.currency].ToString(price.amount)))}");
 					});
 				}

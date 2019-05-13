@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 #pragma warning disable CS1998
 
@@ -14,7 +17,12 @@ namespace MopBotTwo.Systems
 			public string description;
 			public string thumbnailUrl;
 			
-			public ShopItem[] items;
+			[JsonProperty]
+			private ShopItem[] items;
+			public ShopItem[] Items {
+				get => items;
+				set => value.OrderByDescending(item => item.prices.Sum(p => (long)p.amount)).ToArray();
+			}
 
 			public async Task SafeItemAction(int index,Func<ShopItem,Task> action,bool throwError = true)
 			{
@@ -23,6 +31,7 @@ namespace MopBotTwo.Systems
 				}
 				catch {
 					ArrayUtils.RemoveAt(ref items,index);
+
 					if(throwError) {
 						throw new BotError("There's been something wrong with that item, and so it has been removed.");
 					}
