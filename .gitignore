@@ -1,5 +1,5 @@
-*.user
-*/obj/*
-*/bin/*
-*.vs/
 packages/
+bin/
+obj/
+*.user
+*.vs/
