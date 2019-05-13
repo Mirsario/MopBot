@@ -1,0 +1,64 @@
+﻿using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Discord.Commands;
+using Discord.WebSocket;
+
+#pragma warning disable CS1998
+
+namespace MopBotTwo.Systems
+{
+	public class BotSystem : ModuleBase<MessageExt>, IDataTypeProvaider
+	{
+		public static List<BotSystem> systems = new List<BotSystem>();
+		public static Dictionary<Type,BotSystem> typeToSystem = new Dictionary<Type,BotSystem>();
+		public static Dictionary<string,BotSystem> nameToSystem = new Dictionary<string,BotSystem>(StringComparer.InvariantCultureIgnoreCase);
+
+		public SystemConfiguration configuration;
+
+		public virtual async Task PreInitialize() {}
+		public virtual async Task Initialize() {}
+		public virtual void RegisterDataTypes() {}
+		public virtual async Task<bool> Update() => true;
+		public virtual async Task ServerUpdate(SocketGuild server) {}
+
+		public virtual async Task OnUserJoined(SocketGuildUser user) {}
+		public virtual async Task OnMessageReceived(MessageExt message) {}
+		public virtual async Task OnMessageDeleted(MessageExt message) {}
+		public virtual async Task OnReactionAdded(MessageExt message,SocketReaction reaction) {}
+
+		public T GetMemory<T>(SocketGuild server) where T : ServerData => MemorySystem.memory[server].GetData<T>(GetType());
+
+		public void RegisterDataType<TMemoryType,TDataType>() where TMemoryType : MemoryBase where TDataType : MemoryDataBase
+		{
+			MemorySystem.dataProvaiderInfo[(typeof(TMemoryType),GetType().Name)] = (this,typeof(TDataType));
+		}
+		public bool IsEnabledForServer(SocketGuild server) => IsEnabledForServer(this,server);
+
+		public static SystemConfiguration GetConfiguration(Type type)
+		{
+			var attributes = type.GetCustomAttributes(typeof(SystemConfiguration),true);
+			if(attributes!=null && attributes.Length>0) {
+				return (SystemConfiguration)attributes[0];
+			}
+			return new SystemConfiguration();
+		}
+		
+		public static bool IsEnabled<T>() where T : BotSystem
+			=> typeToSystem.ContainsKey(typeof(T));
+		public static bool IsEnabledForServer<T>(SocketGuild server) where T : BotSystem
+			=> typeToSystem.TryGetValue(typeof(T),out var system) && IsEnabledForServer(system,server);
+		public static bool IsEnabledForServer(BotSystem system,SocketGuild server)
+			=> system.configuration.AlwaysEnabled || (system.GetMemory<ServerData>(server).isEnabled ?? system.configuration.EnabledByDefault);
+
+		public static async Task CallForEnabledSystems(SocketGuild server,Func<BotSystem,Task> func)
+		{
+			for(int i = 0;i<systems.Count;i++) {
+				var system = systems[i];
+				if(system.IsEnabledForServer(server)) {
+					await func(system);
+				}
+			}
+		}
+	}
+}

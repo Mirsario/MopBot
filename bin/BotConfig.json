@@ -1,0 +1,9 @@
+{
+  "token": null,
+  "masterUsers": null,
+  "usersToPingForExceptions": null,
+  "logChannel": null,
+  "enableBashCommand": false,
+  "systemToggles": null,
+  "maxMemoryBackups": 100
+}
