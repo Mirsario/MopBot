@@ -123,7 +123,7 @@ namespace MopBotTwo.Systems
 					return;
 				}
 				
-				await item.command.Execute(context);
+				await item.command.Execute(context,(sc,cmd) => cmd.Replace("{item}",item.name,sc);
 				
 				//Take the moneys
 				CurrencyAmount.TakeFromUser(item.prices,Context.socketServerUser);

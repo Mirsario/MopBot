@@ -16,7 +16,7 @@ namespace MopBotTwo
 			this.user = user;
 		}
 
-		public async Task Execute(MessageExt context)
+		public async Task Execute(MessageExt context,Func<StringComparison,string,string> commandFilter = null)
 		{
 			if(user==0 && !string.IsNullOrWhiteSpace(command)) {
 				return;
@@ -33,7 +33,10 @@ namespace MopBotTwo
 				.Replace("{userId}",context.user.Id.ToString(),sc)
 				.Replace("{userMention}",context.user.Mention,sc)
 				.Replace("{channel}",$"<#{context.Channel.Id}>",sc);
-				//.Replace("{item}",item.name,sc);
+
+			if(commandFilter!=null) {
+				filteredCommand = commandFilter(sc,filteredCommand);
+			}
 
 			//!shop additem trivia Hoodie 100 "msg #shop-orders \"User {userMention} ({user} / {userId}) has ordered item `{item}`.\""
 
