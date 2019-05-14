@@ -32,15 +32,18 @@ namespace MopBotTwo.Systems
 		[RequirePermission(SpecialPermission.Owner,"clear")]
 		public async Task ClearCommand(SocketTextChannel channel,uint amount)
 		{
-			Context.server.CurrentUser.RequirePermission(channel,DiscordPermission.ManageMessages);
+			var context = Context;
+			var server = context.server;
+			server.CurrentUser.RequirePermission(channel,DiscordPermission.ManageMessages);
 
-			int highestRole = Context.server.GetUser(MopBot.client.CurrentUser.Id).Roles.Max(r => r.Position);
+			int highestRole = server.GetUser(MopBot.client.CurrentUser.Id).Roles.Max(r => r.Position);
 			var utcNow = DateTime.UtcNow.AddMinutes(1); //+1 min
 			var messages = 
 				(await channel.GetMessagesAsync((int)amount+1).FlattenAsync())
 				.Where(m => m!=null && (utcNow-m.Timestamp.UtcDateTime).TotalDays<14 && (m.Author?.Id==MopBot.client.CurrentUser.Id || (m.Author as SocketGuildUser)?.Roles?.All(r => r.Position<highestRole)==true));
 
 			await channel.DeleteMessagesAsync(messages);
+			context.messageDeleted = true;
 		}
 	}
 }
