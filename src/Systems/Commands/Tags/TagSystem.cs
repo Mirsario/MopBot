@@ -268,10 +268,7 @@ namespace MopBotTwo.Systems
 
 			await context.Channel.SendMessageAsync(embed:embed);
 
-			if(server.CurrentUser.HasChannelPermission(context.socketTextChannel,DiscordPermission.ManageMessages)) {
-				await context.message.DeleteAsync();
-			}else{
-			}
+			await context.Delete();
 		}
 		#endregion
 

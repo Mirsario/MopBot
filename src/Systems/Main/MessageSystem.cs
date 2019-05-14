@@ -13,11 +13,6 @@ namespace MopBotTwo.Systems
 	{
 		public static List<ulong> messagesToIgnore = new List<ulong>();
 
-		/*public static List<Message> newMessageBuffer;
-		public static Dictionary<SocketGuild,List<Message>> newMessages;
-		public static List<(Message msg,SocketReaction reaction,SocketGuild server)> newReactionsBuffer;
-		public static Dictionary<SocketGuild,List<(Message msg,SocketReaction reaction,SocketGuild server)>> newReactions;*/
-
 		public bool notifiedAboutStart;
 
 		public override async Task Initialize()

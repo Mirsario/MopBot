@@ -19,7 +19,7 @@ namespace MopBotTwo.Systems
 			if(!wasMentionable) {
 				await role.ModifyAsync(rp => rp.Mentionable = false);
 			}
-			await Context.Message.DeleteAsync();
+			await Context.Delete();
 		}
 	}
 }

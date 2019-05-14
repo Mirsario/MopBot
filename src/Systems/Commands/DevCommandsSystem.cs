@@ -143,7 +143,7 @@ namespace MopBotTwo.Systems
 			};
 			process.Start();
 
-			string result = process.StandardOutput.ReadToEnd(); //Doesn't always work.. Should this be moved after WaitForExist
+			string result = process.StandardOutput.ReadToEnd(); //Doesn't always work.. Should this be moved after WaitForExist?
 
 			process.WaitForExit();
 

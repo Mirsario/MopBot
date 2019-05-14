@@ -205,13 +205,8 @@ namespace MopBotTwo.Systems
 		}
 		private static async Task OnCommandExecuted(Optional<CommandInfo> commandInfo,ICommandContext context,IResult result)
 		{
-			var msg = context.Message;
-			if(msg!=null) {
-				var channel = context.Channel;
-				//Make sure the message didn't get deleted during command execution
-				if(channel!=null && await channel.GetMessageAsync(msg.Id)!=null) {
-					await context.Success();
-				}
+			if(context is MessageExt c && !c.messageDeleted && c.message!=null && c.socketTextChannel!=null && await c.socketTextChannel.GetMessageAsync(c.message.Id)!=null) {
+				await context.Success();
 			}
 
 			if(!commandInfo.IsSpecified) {

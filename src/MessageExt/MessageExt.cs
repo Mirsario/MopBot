@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
@@ -29,6 +30,7 @@ namespace MopBotTwo
 		public SocketGuild server;
 		public string content;
 		public bool isCommand;
+		public bool messageDeleted;
 		
 		public IDiscordClient Client => MopBot.client;
 		public IGuild Guild => server;
@@ -107,6 +109,16 @@ namespace MopBotTwo
 		public void AddInfo(SocketGuild server)
 		{
 			this.server = server;
+		}
+
+		public async Task Delete()
+		{
+			if(!messageDeleted) {
+				if(socketTextChannel==null || server.CurrentUser.HasChannelPermission(socketTextChannel,DiscordPermission.ManageMessages)) {
+					await message.DeleteAsync();
+				}
+				messageDeleted = true;
+			}
 		}
 	}
 }
