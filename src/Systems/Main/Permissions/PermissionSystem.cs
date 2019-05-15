@@ -11,8 +11,7 @@ using MopBotTwo.Extensions;
 
 namespace MopBotTwo.Systems
 {
-	[Group("permission")]
-	[Alias("permissions","perms","perm")]
+	[Group("permission")] [Alias("permissions","perms","perm")]
 	[Summary("Group for configuring permissions.")]
 	[RequirePermission(SpecialPermission.Owner,"modifypermissions")]
 	[SystemConfiguration(AlwaysEnabled = true)]

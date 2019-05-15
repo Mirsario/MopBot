@@ -9,6 +9,7 @@ using MopBotTwo.Extensions;
 
 namespace MopBotTwo.Systems
 {
+	[SystemConfiguration(Description = "Unfinished. Detects when people flood the chat, but doesn't do anything about it yet, as there isn't a muting system.")]
 	public class SpamProtectionSystem : BotSystem
 	{
 		public class SpamProtectionServerData : ServerData

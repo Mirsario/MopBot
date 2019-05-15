@@ -10,7 +10,7 @@ namespace MopBotTwo.Systems
 {
 	[Group("post")]
 	[RequirePermission("postsystem")]
-	[SystemConfiguration(EnabledByDefault = true)]
+	[SystemConfiguration(EnabledByDefault = true,Description = "Commands to simplify large multi-message posts. [[Split]] in input marks a message split.")]
 	public class PostSystem : BotSystem
 	{
 		public enum SourceType

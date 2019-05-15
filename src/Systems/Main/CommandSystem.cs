@@ -13,7 +13,7 @@ using MopBotTwo.Extensions;
 
 namespace MopBotTwo.Systems
 {
-	[SystemConfiguration(AlwaysEnabled = true)]
+	[SystemConfiguration(AlwaysEnabled = true,Description = "Internal system that detects and executes commands.")]
 	public class CommandSystem : BotSystem
 	{
 		public class CommandServerData : ServerData

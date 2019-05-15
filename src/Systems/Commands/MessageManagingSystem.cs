@@ -12,7 +12,7 @@ using MopBotTwo.Extensions;
 namespace MopBotTwo.Systems
 {
 	[Group("msg")] [Alias("message")]
-	[SystemConfiguration(AlwaysEnabled = true)]
+	[SystemConfiguration(Description = "Contains commands for sending messages, as well as moving and copying existing messages. Useful!")]
 	public class MessageManagingSystem : BotSystem
 	{
 		public static async Task QuoteMessages(ITextChannel textChannel,IEnumerable<IMessage> messages)

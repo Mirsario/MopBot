@@ -21,7 +21,7 @@ namespace MopBotTwo.Systems
 	[Group("memory")]
 	[Summary("Group for controlling bot's memory and settings.")]
 	[RequirePermission] //Only bot's developers can access commands from this.
-	[SystemConfiguration(AlwaysEnabled = true)]
+	[SystemConfiguration(AlwaysEnabled = true,Description = "Internal system that handles bot's memory.")]
 	public class MemorySystem : BotSystem
 	{
 		public const string MemoryFile = "BotMemory.json";

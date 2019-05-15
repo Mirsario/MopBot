@@ -191,7 +191,7 @@ namespace MopBotTwo
 		}
 		public static async Task UserLeft(SocketGuildUser user)
 		{
-			var logsChannel = MemorySystem.memory[user.Guild].GetData<ChannelSystem,ChannelServerData>().GetChannelByRole(ChannelRole.Logs) as ITextChannel;
+			var logsChannel = MemorySystem.memory[user.Guild].GetData<ChannelSystem,ChannelSystem.ChannelServerData>().GetChannelByRole(ChannelRole.Logs) as ITextChannel;
 			logsChannel?.SendMessageAsync($"<@{user.Id}> ( `{user.Nickname}#{user.Discriminator}` / `{user.Name()}` ) has left the server.");
 		}
 		#endregion

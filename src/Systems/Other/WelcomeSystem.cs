@@ -19,6 +19,7 @@ namespace MopBotTwo.Systems
 		}
 	}
 
+	[SystemConfiguration(Description = "Welcomes users onto the server with customizable messages.")]
 	public class WelcomeSystem : BotSystem
 	{
 		public override void RegisterDataTypes()
@@ -30,7 +31,7 @@ namespace MopBotTwo.Systems
 		{
 			var memory = MemorySystem.memory[user.Guild];
 			var welcomeData = memory.GetData<WelcomeSystem,WelcomeServerData>();
-			var channelData = memory.GetData<ChannelSystem,ChannelServerData>();
+			var channelData = memory.GetData<ChannelSystem,ChannelSystem.ChannelServerData>();
 			var welcomeChannel = channelData.GetChannelByRole(ChannelRole.Welcome) as ITextChannel;
 			var logsChannel = channelData.GetChannelByRole(ChannelRole.Logs) as ITextChannel;
 			var rulesChannel = channelData.GetChannelByRole(ChannelRole.Rules) as ITextChannel;

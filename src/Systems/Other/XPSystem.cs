@@ -12,6 +12,7 @@ using MopBotTwo.Extensions;
 
 namespace MopBotTwo.Systems
 {
+	[SystemConfiguration(Description = "A small XP/leveling system.")]
 	public class XPSystem : BotSystem
 	{
 		public class XPServerUserData : ServerUserData

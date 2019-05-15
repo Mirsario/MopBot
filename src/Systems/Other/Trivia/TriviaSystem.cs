@@ -13,6 +13,7 @@ namespace MopBotTwo.Systems
 {
 	[Group("trivia")]
 	[Summary("Group for anything related to trivia questions.")]
+	[SystemConfiguration(Description = "Lets admins setup trivia channels, in which the bot will ask users questions and give customizable rewards to the first answerers.")]
 	public partial class TriviaSystem : BotSystem
 	{
 		[Serializable]

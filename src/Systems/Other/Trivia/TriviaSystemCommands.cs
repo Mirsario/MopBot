@@ -16,7 +16,7 @@ using MopBotTwo.Extensions;
 
 namespace MopBotTwo.Systems
 {
-	public partial class TriviaSystem : BotSystem
+	public partial class TriviaSystem
 	{
 		[Command("skip")]
 		[RequirePermission("triviasystem.skip")]

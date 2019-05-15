@@ -7,7 +7,7 @@ using MopBotTwo.Extensions;
 
 namespace MopBotTwo.Systems
 {
-	public partial class CommandShopSystem : BotSystem
+	public partial class CommandShopSystem
 	{
 		[Command("setup")]
 		[RequirePermission("commandshop.manage")]

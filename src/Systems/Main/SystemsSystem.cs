@@ -7,10 +7,10 @@ using MopBotTwo.Extensions;
 
 namespace MopBotTwo.Systems
 {
-	[Group("systems")]
-	[Alias("system")]
+	//TODO: Find a better name? Rofl.
+	[Group("systems")] [Alias("system")]
 	[RequirePermission(SpecialPermission.Owner,"managesystems")]
-	[SystemConfiguration(AlwaysEnabled = true)]
+	[SystemConfiguration(AlwaysEnabled = true,Description = "Lets admins select which systems will be enabled for this server.")]
 	public class SystemsSystem : BotSystem
 	{
 		[Command("enable")]
@@ -20,9 +20,7 @@ namespace MopBotTwo.Systems
 				throw new BotError($"Couldn't find a system named '{systemName}'.");
 			}
 
-			var context = Context;
-
-			system.GetMemory<ServerData>(context.server).isEnabled = true;
+			system.GetMemory<ServerData>(Context.server).isEnabled = true;
 		}
 		[Command("disable")]
 		public async Task DisableSystem(string systemName)
@@ -31,17 +29,21 @@ namespace MopBotTwo.Systems
 				throw new BotError($"Couldn't find a system named '{systemName}'.");
 			}
 
-			var context = Context;
-
-			system.GetMemory<ServerData>(context.server).isEnabled = false;
+			system.GetMemory<ServerData>(Context.server).isEnabled = false;
 		}
 
 		[Command("list")]
 		public async Task ListSystems()
 		{
-			var server = Context.server;
-			//more caching pls
-			await Context.ReplyAsync($"```{string.Join('\n',systems.Where(s => !s.configuration.AlwaysEnabled).OrderBy(s => s.GetType().Name).Select(s => $"{s.GetType().Name} - {(s.IsEnabledForServer(server) ? "On" : "Off")}"))}```");
+			var context = Context;
+			var server = context.server;
+			var builder = MopBot.GetEmbedBuilder(server);
+
+			foreach(var system in systems.Where(s => !s.configuration.AlwaysEnabled).OrderBy(s => s.GetType().Name)) {
+				builder.AddField($"{(system.IsEnabledForServer(server) ? ":white_check_mark:" : ":x:")} - {system.name}",system.configuration.Description ?? "`Configuration missing.`");
+			}
+
+			await ReplyAsync(embed:builder.Build());
 		}
 	}
 }

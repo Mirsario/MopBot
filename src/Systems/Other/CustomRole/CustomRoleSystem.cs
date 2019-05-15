@@ -11,10 +11,10 @@ using MopBotTwo.Extensions;
 
 namespace MopBotTwo.Systems
 {
-	[Group("customrole")]
-	[Alias("colorrole")]
-	[Summary("Lets you manage your unique color role.")]
 	[RequirePermission("customrole")]
+	[Group("customrole")] [Alias("colorrole")]
+	[Summary("Lets you manage your unique color role.")]
+	[SystemConfiguration(Description = "Lets 'VIP' users make unique roles for themselves.")]
 	public partial class CustomRoleSystem : BotSystem
 	{
 		public override void RegisterDataTypes()

@@ -12,7 +12,7 @@ namespace MopBotTwo.Systems
 	[Alias("configuration")]
 	[Summary("Group for bot's configuration. Currently very WIP!")]
 	[RequirePermission(SpecialPermission.Owner,"configuration")]
-	[SystemConfiguration(AlwaysEnabled = true)]
+	[SystemConfiguration(AlwaysEnabled = true,Description = "Lets admins configure some important things, like bot's nickname and command prefix symbol.")]
 	public class ConfigurationSystem : BotSystem
 	{
 		public class ConfigurationServerData : ServerData

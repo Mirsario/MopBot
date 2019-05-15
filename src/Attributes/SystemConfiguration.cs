@@ -8,5 +8,6 @@ namespace MopBotTwo.Systems
 	{
 		public bool EnabledByDefault;
 		public bool AlwaysEnabled;
+		public string Description;
 	}
 }

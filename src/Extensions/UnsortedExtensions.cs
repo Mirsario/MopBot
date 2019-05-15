@@ -85,7 +85,7 @@ namespace MopBotTwo.Extensions
 				await task;
 			}
 			catch(HttpException exception) {
-				if(MemorySystem.memory[server].GetData<ChannelSystem,ChannelServerData>().TryGetChannelByRoles(out var tempChannel,ChannelRole.Logs,ChannelRole.BotArea,ChannelRole.Default) && tempChannel is IMessageChannel logChannel) {
+				if(MemorySystem.memory[server].GetData<ChannelSystem,ChannelSystem.ChannelServerData>().TryGetChannelByRoles(out var tempChannel,ChannelRole.Logs,ChannelRole.BotArea,ChannelRole.Default) && tempChannel is IMessageChannel logChannel) {
 					await logChannel.SendMessageAsync($"Unable to add reactions in <#{message.Channel.Id}>, an HttpException has occured:\n{exception.Message}");
 				}
 			}
@@ -118,7 +118,7 @@ namespace MopBotTwo.Extensions
 				return result.ToArray();
 			}
 			catch(HttpException exception) {
-				if(MemorySystem.memory[server].GetData<ChannelSystem,ChannelServerData>().TryGetChannelByRoles(out var tempChannel,ChannelRole.Logs,ChannelRole.BotArea,ChannelRole.Default) && tempChannel is IMessageChannel logChannel) {
+				if(MemorySystem.memory[server].GetData<ChannelSystem,ChannelSystem.ChannelServerData>().TryGetChannelByRoles(out var tempChannel,ChannelRole.Logs,ChannelRole.BotArea,ChannelRole.Default) && tempChannel is IMessageChannel logChannel) {
 					await logChannel.SendMessageAsync($"Unable to add reactions in <#{message.Channel.Id}>, an HttpException has occured:\n{exception.Message}");
 				}
 			}

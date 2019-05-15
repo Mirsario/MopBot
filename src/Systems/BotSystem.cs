@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Discord.Commands;
 using Discord.WebSocket;
 
@@ -14,7 +15,15 @@ namespace MopBotTwo.Systems
 		public static Dictionary<Type,BotSystem> typeToSystem = new Dictionary<Type,BotSystem>();
 		public static Dictionary<string,BotSystem> nameToSystem = new Dictionary<string,BotSystem>(StringComparer.InvariantCultureIgnoreCase);
 
-		public SystemConfiguration configuration;
+		public readonly string name;
+		public readonly SystemConfiguration configuration;
+
+		public BotSystem()
+		{
+			var type = GetType();
+			name = type.Name;
+			configuration = GetConfiguration(type);
+		}
 
 		public virtual async Task PreInitialize() {}
 		public virtual async Task Initialize() {}
@@ -53,8 +62,7 @@ namespace MopBotTwo.Systems
 
 		public static async Task CallForEnabledSystems(SocketGuild server,Func<BotSystem,Task> func)
 		{
-			for(int i = 0;i<systems.Count;i++) {
-				var system = systems[i];
+			foreach(var system in systems) {
 				if(system.IsEnabledForServer(server)) {
 					await func(system);
 				}

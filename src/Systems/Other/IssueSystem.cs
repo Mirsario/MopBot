@@ -17,6 +17,7 @@ namespace MopBotTwo.Systems
 	[Alias("issues","knownissues")]
 	[Summary("Helps managing project issues channels")]
 	[RequirePermission(SpecialPermission.Owner,"issuesystem")]
+	[SystemConfiguration(Description = "In-discord bug tracker. Can write to ChangelogSystem when an issue gets fixed.")]
 	public class IssueSystem : BotSystem
 	{
 		public enum IssueStatus

@@ -8,7 +8,7 @@ namespace MopBotTwo.Systems
 	[Group("imaging")]
 	[Alias("img","image")]
 	[Summary("Group for random commands related to working with images")]
-	[SystemConfiguration(EnabledByDefault = true)]
+	[SystemConfiguration(EnabledByDefault = true,Description = "Currently only contains an avatar-getting command.")]
 	public class ImagingSystem : BotSystem
 	{
 		public override void RegisterDataTypes()

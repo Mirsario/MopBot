@@ -10,6 +10,7 @@ using MopBotTwo.Extensions;
 
 namespace MopBotTwo.Systems
 {
+	[SystemConfiguration(Description = "Contains moderation commands, like !clear, !kick and !ban.")]
 	public class ModerationCommandsSystem : BotSystem
 	{
 		[Command("ban")]

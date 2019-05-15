@@ -15,7 +15,7 @@ namespace MopBotTwo.Systems
 
 	[Group("tag")] [Alias("tags")]
 	[Summary(@"Group for managing and using shortcuts called ""tags"".")]
-	[SystemConfiguration(EnabledByDefault = true)]
+	[SystemConfiguration(EnabledByDefault = true,Description = "Lets people create and use cross-server tags (aka message shortcuts). Supports tag groups, tag/tag group subscription and globalization. Is cool.")]
 	public class TagSystem : BotSystem
 	{
 		public class TagGlobalData : GlobalData

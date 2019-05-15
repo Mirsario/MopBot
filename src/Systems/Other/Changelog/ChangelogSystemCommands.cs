@@ -13,7 +13,7 @@ using MopBotTwo.Extensions;
 
 namespace MopBotTwo.Systems
 {
-	public partial class ChangelogSystem : BotSystem
+	public partial class ChangelogSystem
 	{
 		[Command("setchannel")]
 		public async Task SetChannel(SocketGuildChannel channel)

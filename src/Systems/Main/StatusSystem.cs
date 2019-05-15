@@ -20,7 +20,7 @@ namespace MopBotTwo.Systems
 		}
 	}
 
-	[SystemConfiguration(AlwaysEnabled = true)]
+	[SystemConfiguration(AlwaysEnabled = true,Description = "Manages bot's activity status, i.e. what it's 'playing'.")]
 	public class StatusSystem : BotSystem
 	{
 		private static List<Activity> activities = new List<Activity>() {

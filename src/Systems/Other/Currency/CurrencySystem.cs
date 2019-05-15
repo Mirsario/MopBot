@@ -11,6 +11,7 @@ namespace MopBotTwo.Systems
 {
 	[Group("currency")] [Alias("currencies","money","cash","coins","points","score")]
 	[Summary("Group for anything related to currencies and points.")]
+	[SystemConfiguration(Description = "Implements customizable currencies, which people can be rewarded with through other systems, and which people can for example use in CommandShops.")]
 	public partial class CurrencySystem : BotSystem
 	{
 		public override void RegisterDataTypes()

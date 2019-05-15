@@ -13,9 +13,9 @@ using MopBotTwo.Extensions;
 namespace MopBotTwo.Systems
 {
 	//TODO: Rather old system. Needs a rewrite that'll use same code for reposting as quotes in MessageManagingSystem.
-
 	[Group("channellink")]
 	[RequirePermission(SpecialPermission.Owner,"managechannellinking")]
+	[SystemConfiguration(Description = "Bit outdated, but it's a really cool system that lets admins of servers interconnect selected channels of their servers through MopBot.")]
 	public class ChannelLinkingSystem : BotSystem
 	{
 		public struct ChannelLink

@@ -41,6 +41,7 @@ namespace MopBotTwo.Systems
 	
 	[Group("showcase")]
 	[RequirePermission("showcasesystem")]
+	[SystemConfiguration(Description = "Lets admins setup channels with reaction-based voting. There's also spotlighting support, which moves channels with X score to a selected channel, and also gives author customizable rewards if needed.")]
 	public class ShowcaseSystem : BotSystem
 	{
 		#region SubClasses
@@ -255,7 +256,7 @@ namespace MopBotTwo.Systems
 							catch {}
 						}
 					} else {
-						var channelMemory = serverMemory.GetData<ChannelSystem,ChannelServerData>();
+						var channelMemory = serverMemory.GetData<ChannelSystem,ChannelSystem.ChannelServerData>();
 						if(channelMemory.TryGetChannelByRoles(out var logChannel,ChannelRole.Logs,ChannelRole.BotArea,ChannelRole.Default)) {
 							throw new BotError($"Unable to grant `{role.Name}` role to user {socketServerUser.Username}#{socketServerUser.Discriminator}: Missing `Manage Roles` permission.");
 						}
@@ -283,7 +284,7 @@ namespace MopBotTwo.Systems
 			}
 
 			if(!silent) {
-				var general = server.GetMemory()?.GetData<ChannelSystem,ChannelServerData>()?.GetChannelByRole(ChannelRole.Default);
+				var general = server.GetMemory()?.GetData<ChannelSystem,ChannelSystem.ChannelServerData>()?.GetChannelByRole(ChannelRole.Default);
 				if(general!=null) {
 					await ((IMessageChannel)general).SendMessageAsync(congratsText);
 				}

@@ -56,7 +56,6 @@ namespace MopBotTwo
 
 			system.RegisterDataType<ServerMemory,ServerData>();
 			system.RegisterDataTypes();
-			system.configuration = BotSystem.GetConfiguration(type);
 
 			systems.Add(system);
 			BotSystem.systems.Add(system);

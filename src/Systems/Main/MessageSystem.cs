@@ -8,7 +8,7 @@ using Discord.WebSocket;
 
 namespace MopBotTwo.Systems
 {
-	[SystemConfiguration(AlwaysEnabled = true)]
+	[SystemConfiguration(AlwaysEnabled = true,Description = "Internal system that forwards message events to other systems.")]
 	public class MessageSystem : BotSystem
 	{
 		public static List<ulong> messagesToIgnore = new List<ulong>();
@@ -26,7 +26,7 @@ namespace MopBotTwo.Systems
 		{
 			if(!notifiedAboutStart && MopBot.client.Guilds.Count>0) {
 				foreach(var server in MopBot.client.Guilds) {
-					if(MemorySystem.memory[server].GetData<ChannelSystem,ChannelServerData>().GetChannelByRole(ChannelRole.Logs) is ITextChannel logsChannel) {
+					if(MemorySystem.memory[server].GetData<ChannelSystem,ChannelSystem.ChannelServerData>().GetChannelByRole(ChannelRole.Logs) is ITextChannel logsChannel) {
 						await logsChannel.SendMessageAsync($"MopBot started. {Utils.Choose("Howdy, pardner!","Heya!","Heyooo!","hi.","o hey, didn't se ya ther.","Soo, how are things?","quack.")}");
 					}
 				}

@@ -13,7 +13,7 @@ namespace MopBotTwo.Systems
 {
 	//TODO: old. improv.
 
-	public partial class CustomRoleSystem : BotSystem
+	public partial class CustomRoleSystem
 	{
 		[Command("set")]
 		[RequirePermission("customrole.manage")]

@@ -7,6 +7,7 @@ using MopBotTwo.Extensions;
 namespace MopBotTwo.Systems
 {
 	[Group("roles")] [Alias("role")]
+	[SystemConfiguration(Description = "Contains commands for giving and taking roles. It's also possible to let users join selected roles on their own, with per-role permissions.")]
 	public class RoleSystem : BotSystem
 	{
 		//TODO: Add discord permission checks before give/remove role calls, instead of just trycatching these calls

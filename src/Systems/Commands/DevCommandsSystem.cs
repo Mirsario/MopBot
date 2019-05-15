@@ -16,7 +16,7 @@ namespace MopBotTwo.Systems
 	[Group("dev")]
 	[Summary("Group for commands that are only available to the bot's developer.")]
 	[RequirePermission]
-	[SystemConfiguration(AlwaysEnabled = true)]
+	[SystemConfiguration(AlwaysEnabled = true,Description = "Contains some testing and totally overpowered commands, which only masters of the bot can use.")]
 	public class DevCommandsSystem : BotSystem
 	{
 		//Reprocesses messages.. Basically makes the bot act as if an already existing message just got sent.

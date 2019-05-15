@@ -8,7 +8,7 @@ using Discord.WebSocket;
 
 namespace MopBotTwo.Systems
 {
-	[SystemConfiguration(AlwaysEnabled = true)]
+	[SystemConfiguration(AlwaysEnabled = true,Description = "Controls connection to discord.")]
 	public class DiscordConnectionSystem : BotSystem
 	{
 		public static bool isFullyReady;
