@@ -10,6 +10,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using MopBotTwo.Systems;
 using MopBotTwo.Extensions;
+using MopBotTwo.TypeReaders;
 
 #pragma warning disable CS0162
 #pragma warning disable CS1998 //This async method lacks 'await' operators
