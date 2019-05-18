@@ -215,7 +215,6 @@ namespace MopBotTwo.Systems
 					break;
 				case SocketUserMessage socketMessage:
 					await socketMessage.GetReactionUsersAsync(emote,100).ForEachAsync(list => { count += list.Count; });
-					Console.WriteLine($"Got reactions from SocketUserMessage!");
 					break;
 				default:
 					Console.WriteLine($"Unable to get amount of reactions. Message type is '{message?.GetType()?.Name ?? "null"}'.");
@@ -391,7 +390,6 @@ namespace MopBotTwo.Systems
 			ArrayUtils.ModifyOrAddFirst(ref showcaseData.spotlightChannels,c => c.id==channelId,() => new SpotlightChannel(),c => {
 				c.id = channel.Id;
 				c.rewardRoles = (rewardRoles==null || rewardRoles.Length==0) ? null : rewardRoles.SelectIgnoreNull(role => role.Id).ToList();
-				Console.WriteLine($"rewardRoles length: {c.rewardRoles?.Count.ToString() ?? "null"}");
 			},true);
 		}
 
