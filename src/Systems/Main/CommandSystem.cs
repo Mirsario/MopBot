@@ -8,6 +8,7 @@ using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
 using MopBotTwo.Extensions;
+using MopBotTwo.TypeReaders;
 
 #pragma warning disable CS1998
 
@@ -47,6 +48,15 @@ namespace MopBotTwo.Systems
 			});
 			commandService.Log += CommandServiceLogging;
 			commandService.CommandExecuted += OnCommandExecuted;
+
+			foreach(var type in MopBot.botTypes.Where(t => !t.IsAbstract && typeof(CustomTypeReader).IsAssignableFrom(t))) {
+				var instance = (CustomTypeReader)Activator.CreateInstance(type);
+				
+				foreach(Type assignedType in instance.Types) {
+					Console.WriteLine($"Registering {type.Name} for type {assignedType.Name}");
+					commandService.AddTypeReader(assignedType,instance);
+				}
+			}
 		}
 
 		public override void RegisterDataTypes()
@@ -124,15 +134,19 @@ namespace MopBotTwo.Systems
 				var preconditionResult = await commandMatch.CheckPreconditionsAsync(context,MopBot.serviceProvaider);
 				var parseResult = await commandMatch.ParseAsync(context,searchResult,preconditionResult,MopBot.serviceProvaider);
 				var result = await commandMatch.ExecuteAsync(context,parseResult,MopBot.serviceProvaider); //commandService.ExecuteAsync(context,commandText,MopBot.serviceProvaider);
-				 
+
 				if(!result.IsSuccess) {
 					var e = result.Error;
 					switch(e) {
 						case CommandError.UnmetPrecondition:
 							await context.ReplyAsync(result.ErrorReason);
 							break;
+						case CommandError.Exception:
+							await context.ReplyAsync($"An error has occured when trying to execute the last command: {result.ErrorReason}");
+							await context.Failure();
+							break;
 						default: {
-							if(e!=CommandError.Exception && e!=CommandError.Unsuccessful && e!=CommandError.UnmetPrecondition) {
+							if(e!=CommandError.Unsuccessful && e!=CommandError.UnmetPrecondition) {
 								string text = null;
 								switch(e) {
 									case CommandError.BadArgCount:

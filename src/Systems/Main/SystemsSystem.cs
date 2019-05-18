@@ -35,8 +35,7 @@ namespace MopBotTwo.Systems
 		[Command("list")]
 		public async Task ListSystems()
 		{
-			var context = Context;
-			var server = context.server;
+			var server = Context.server;
 			var builder = MopBot.GetEmbedBuilder(server);
 
 			foreach(var system in systems.Where(s => !s.configuration.AlwaysEnabled).OrderBy(s => s.GetType().Name)) {

@@ -28,7 +28,7 @@ namespace MopBotTwo.Systems
 		public const string BackupDirectory = "MemoryBackups";
 		public const string TempMemoryFile = "TempMemoryCopy.json";
 
-		public static Dictionary<(Type memoryType,string systemName),(IDataTypeProvaider instance,Type dataType)> dataProvaiderInfo = new Dictionary<(Type,string),(IDataTypeProvaider,Type)>();
+		public static Dictionary<(Type memoryType,string systemName),(BotSystem instance,Type dataType)> dataProvaiderInfo = new Dictionary<(Type,string),(BotSystem,Type)>();
 
 		public static MemorySystem instance;
 		public static Memory memory;

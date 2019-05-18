@@ -81,7 +81,7 @@ namespace MopBotTwo
 		#region SystemData
 		public virtual void OnDataCreated(TPerSystemDataType data) {}
 
-		public TDataType GetData<TProvaider,TDataType>() where TProvaider : IDataTypeProvaider where TDataType : TPerSystemDataType => (TDataType)GetData(typeof(TProvaider));
+		public TDataType GetData<TSystem,TDataType>() where TSystem : BotSystem where TDataType : TPerSystemDataType => (TDataType)GetData(typeof(TSystem));
 		public TDataType GetData<TDataType>(Type provaiderType) where TDataType : TPerSystemDataType => (TDataType)GetData(provaiderType);
 		public TPerSystemDataType GetData(Type provaiderType)
 		{
@@ -90,24 +90,17 @@ namespace MopBotTwo
 			var (_,realDataType) = MemorySystem.dataProvaiderInfo[infoKey];
 
 			if(!systemData.TryGetValue(key,out TPerSystemDataType dataObj) || dataObj==null) {
-				//dataObj = (TPerSystemDataType)Activator.CreateInstance(realDataType);
-				//OnDataObjectInitializing(dataObj,provaiderInstance);
-				if(realDataType==null) {
-					throw new Exception("realDataType is null");
-				}
 				systemData[key] = dataObj = (TPerSystemDataType)Activator.CreateInstance(realDataType);
 				OnDataCreated(dataObj);
 			}
 
-			//OnDataObjectAccessed(dataObj,provaiderInstance);
-
 			return dataObj;
 		}
-		public void SetData<TProvaider,TDataType>(TDataType value) where TProvaider : IDataTypeProvaider where TDataType : TPerSystemDataType
+		public void SetData<TSystem,TDataType>(TDataType value) where TSystem : BotSystem where TDataType : TPerSystemDataType
 		{
 			var dataType = typeof(TDataType);
 
-			string provaiderName = typeof(TProvaider).Name;
+			string provaiderName = typeof(TSystem).Name;
 			if(!MemorySystem.dataProvaiderInfo.TryGetValue((GetType(),provaiderName),out var tuple) || dataType!=tuple.dataType) {
 				throw new ArgumentException($@"Incorrect TDataType generic: ""{dataType}""");
 			}

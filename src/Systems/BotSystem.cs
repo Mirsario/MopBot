@@ -9,7 +9,7 @@ using Discord.WebSocket;
 
 namespace MopBotTwo.Systems
 {
-	public class BotSystem : ModuleBase<MessageExt>, IDataTypeProvaider
+	public class BotSystem : ModuleBase<MessageExt>
 	{
 		public static List<BotSystem> systems = new List<BotSystem>();
 		public static Dictionary<Type,BotSystem> typeToSystem = new Dictionary<Type,BotSystem>();
