@@ -15,7 +15,7 @@ using MopBotTwo.TypeReaders;
 namespace MopBotTwo.Systems
 {
 	[SystemConfiguration(AlwaysEnabled = true,Description = "Internal system that detects and executes commands.")]
-	public class CommandSystem : BotSystem
+	public partial class CommandSystem : BotSystem
 	{
 		public class CommandServerData : ServerData
 		{
@@ -229,61 +229,6 @@ namespace MopBotTwo.Systems
 			
 			var user = context.User;
 			recentContexts.Remove($@"""{commandInfo.Value.Name}"" for {user.Id} in {context.Guild.Id}/{context.Channel.Id}");
-		}
-
-		[Command("help")]
-		[Alias("commands")]
-		[Summary("Lists commands that are currently available to you.")]
-		public async Task HelpCommand()
-		{
-			try {
-				var builder = MopBot.GetEmbedBuilder(Context);
-				builder.WithAuthor($"Commands available to @{Context.socketServerUser.Name()}:",Context.user.GetAvatarUrl());
-
-				foreach((var aliases,string description,_) in GetAvailableCommands(Context.server,Context.socketServerUser,true)) {
-					builder.AddField(string.Join("/",aliases),description);
-				}
-
-				builder.WithFooter($"You can type {MemorySystem.memory[Context.server].GetData<CommandSystem,CommandServerData>().commandPrefix}help <command> to see groups' commands and commands' syntaxes.");
-				await Context.socketTextChannel.SendMessageAsync(embed:builder.Build());
-			}
-			catch(Exception e) {
-				await MopBot.HandleException(e);
-			}
-		}
-		[Command("help")]
-		[Alias("commands")]
-		[Summary("Lists commands of a group or shows you syntax of a command.")]
-		public async Task HelpCommand(string cmdOrGroup)
-		{
-			try {
-				var builder = MopBot.GetEmbedBuilder(Context);
-				builder.WithAuthor($"Commands available to @{Context.socketServerUser.Name()}:",Context.user.GetAvatarUrl());
-
-				foreach(var m in commandService.Modules) {
-					if(m.Group==cmdOrGroup) {
-						
-						break;
-					}else if(m.Group==null) {
-						bool doBreak = false;
-						foreach(var c in m.Commands) {
-							if(c.Name==cmdOrGroup) {
-								doBreak = true;
-								break;
-							}
-						}
-						if(doBreak) {
-							break;
-						}
-					}
-				}
-
-				builder.WithFooter($"You can type {MemorySystem.memory[Context.server].GetData<CommandSystem,CommandServerData>().commandPrefix}help <command> to see groups' commands and commands' syntaxes.");
-				await Context.socketTextChannel.SendMessageAsync(embed:builder.Build());
-			}
-			catch(Exception e) {
-				await MopBot.HandleException(e);
-			}
 		}
 
 		public static List<(string[] aliases,string description,bool isGroup)> GetAvailableCommands(SocketGuild server,SocketGuildUser user,bool fillNullDescription = false)

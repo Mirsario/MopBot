@@ -8,6 +8,7 @@ namespace MopBotTwo
 		public static string ChangeForm(string str,bool singular) => singular ? GetSingular(str) : GetPlural(str);
 		public static string GetSingular(string str) => (str.Length<=1 || !str.EndsWith('s')) ? str : str.Substring(0,str.Length-1);
 		public static string GetPlural(string str) => str.EndsWith('s') ? str : str+'s';
+		public static string AppendIfNotNull(string str,string toAppend) => str==null ? null : str+toAppend;
 
 		public static void RemoveQuotemarks(ref string str)
 		{
@@ -22,7 +23,6 @@ namespace MopBotTwo
 				str = length==2 ? "" : str.Substring(1,length-2);
 			}
 		}
-
 		public static void CheckAndLowerStringId(ref string id)
 		{
 			int length = id.Length;

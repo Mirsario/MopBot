@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using MopBotTwo.Extensions;
@@ -43,6 +44,25 @@ namespace MopBotTwo
 				case "?": return @"https://i.imgur.com/NDZdstw.png";
 				default: return "";
 			}
+		}
+		public static string NumberToEmotes(int number)
+		{
+			var sb = new StringBuilder();
+			foreach(char c in number.ToString()) {
+				switch(c) {
+					case '0': sb.Append(":zero:");	break;
+					case '1': sb.Append(":one:");	break;
+					case '2': sb.Append(":two:");	break;
+					case '3': sb.Append(":three:");	break;
+					case '4': sb.Append(":four:");	break;
+					case '5': sb.Append(":five:");	break;
+					case '6': sb.Append(":six:");	break;
+					case '7': sb.Append(":seven:");	break;
+					case '8': sb.Append(":eight:");	break;
+					case '9': sb.Append(":nine:");	break;
+				}
+			}
+			return sb.ToString();
 		}
 		
 		public static async Task<string> DownloadString(string url)
