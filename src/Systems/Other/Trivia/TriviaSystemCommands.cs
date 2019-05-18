@@ -156,11 +156,11 @@ namespace MopBotTwo.Systems
 		#region ConfigCommands
 		//TODO: (!!!) Need proper configuration helper thing, to replace "setinterval" and "setchannel" commands with one...
 
-		[Command("setchannel")]
+		[Command("setchannels")] [Alias("setchannel")]
 		[RequirePermission("triviasystem.manage")]
-		public async Task SetChannelCommand(SocketTextChannel channel)
+		public async Task SetChannelsCommand([Remainder]ITextChannel[] channels)
 		{
-			Context.server.GetMemory().GetData<TriviaSystem,TriviaServerData>().triviaChannel = channel.Id;
+			Context.server.GetMemory().GetData<TriviaSystem,TriviaServerData>().triviaChannels = channels.Select(c => c.Id).ToList();
 		}
 		[Command("setrole")]
 		[RequirePermission("triviasystem.manage")]

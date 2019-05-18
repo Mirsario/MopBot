@@ -32,20 +32,21 @@ namespace MopBotTwo.Systems
 
 		public class TriviaServerData : ServerData
 		{
+			public ulong currentChannel;
 			public TriviaQuestion currentQuestion;
 			public List<TriviaQuestion> questions; //Not thread safe
 
 			public bool lockTriviaChannel;
 			public bool autoClearCache;
-			public ulong triviaChannel;
 			public ulong triviaRole;
 			public ulong postIntervalInSeconds = 5*60;
-			public string[] thumbnailUrls;
 			public DateTime lastTriviaPost;
+			public string[] thumbnailUrls;
+			public List<ulong> triviaChannels;
 			//public SudoCommand command;
 			public CurrencyAmount[] currencyRewards;
 
-			[JsonIgnore] public bool IsReady => postIntervalInSeconds>=MinPostIntervalInSeconds && triviaChannel!=0 && questions!=null && questions.Count>0;
+			[JsonIgnore] public bool IsReady => postIntervalInSeconds>=MinPostIntervalInSeconds && triviaChannels!=null && triviaChannels.Count!=0 && questions!=null && questions.Count!=0;
 
 			public override void Initialize(SocketGuild server) {}
 		}
@@ -76,8 +77,11 @@ namespace MopBotTwo.Systems
 
 			triviaServerData.lastTriviaPost = now;
 
-			var channel = server.GetTextChannel(triviaServerData.triviaChannel);
+			triviaServerData.currentChannel = triviaServerData.triviaChannels[MopBot.random.Next(triviaServerData.triviaChannels.Count)];
+			Console.WriteLine("Chose: "+triviaServerData.currentChannel);
+			var channel = server.GetTextChannel(triviaServerData.currentChannel);
 			if(channel==null) {
+				Console.WriteLine("No such channel");
 				return; //TODO: Same as above
 			}
 
@@ -162,7 +166,7 @@ namespace MopBotTwo.Systems
 			}
 			var triviaServerMemory = server.GetMemory().GetData<TriviaSystem,TriviaServerData>();
 			var qa = triviaServerMemory.currentQuestion;
-			if(qa==null || channel.Id!=triviaServerMemory.triviaChannel) {
+			if(qa==null || channel.Id!=triviaServerMemory.currentChannel) {
 				return;
 			}
 
