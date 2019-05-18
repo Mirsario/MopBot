@@ -56,6 +56,7 @@ namespace MopBotTwo.Systems
 			public ulong id;
 			public List<ulong> rewardRoles;
 		}
+		[Serializable]
 		public class ShowcaseChannel : ChannelInfo
 		{
 			public ulong spotlightChannel;
@@ -63,6 +64,7 @@ namespace MopBotTwo.Systems
 
 			public SocketTextChannel GetSpotlightChannel(SocketGuild server) => spotlightChannel==0 ? null : (server.GetChannel(spotlightChannel) as SocketTextChannel);
 		}
+		[Serializable]
 		public class SpotlightChannel : ChannelInfo
 		{
 			public List<ulong> spotlightedMessages;
@@ -179,60 +181,71 @@ namespace MopBotTwo.Systems
 			if(!showcaseData.TryGetEmote(server,"upvote",out var upvoteEmote)) {
 				return;
 			}
-			
-			var downvoteEmote = showcaseData.GetEmote(server,"downvote",false);
-			int numUpvotes = await GetNumReactions(message.restMessage,upvoteEmote);
-			int numDownvotes = downvoteEmote==null ? 0 : await GetNumReactions(message.restMessage,downvoteEmote);
+
+			int numUpvotes = Math.Max(1,await GetNumReactions(message.message,upvoteEmote));
+			int numDownvotes = showcaseData.TryGetEmote(server,"downvote",out var downvoteEmote) ? Math.Max(1,await GetNumReactions(message.message,downvoteEmote)) : 1;
 			int totalScore = numUpvotes-numDownvotes;
 
-			if(showcaseChannelInfo.minSpotlightScore>0 && totalScore==showcaseChannelInfo.minSpotlightScore
-				&& showcaseData.TryGetChannelInfo<SpotlightChannel>(spotlightChannel,out var spotlightChannelInfo)
-				&& (spotlightChannelInfo.spotlightedMessages==null || !spotlightChannelInfo.spotlightedMessages.Contains(message.message.Id))
-			) {
-				await SpotlightPost(message,spotlightChannel);
+			//Console.WriteLine($"Total score: {upvoteEmote.Name}:{numUpvotes} - {downvoteEmote?.Name ?? null}:{numDownvotes} = {totalScore}");
+
+			if(showcaseChannelInfo.minSpotlightScore==0 || totalScore!=showcaseChannelInfo.minSpotlightScore) {
+				return;
 			}
-		}
-		
-		public async Task<int> GetNumReactions(RestUserMessage restMessage,IEmote emote)
-		{
-			if(restMessage==null) {
-				return -1;
+			if(!showcaseData.TryGetChannelInfo<SpotlightChannel>(spotlightChannel,out var spotlightChannelInfo)) {
+				return;
+			}
+			if(spotlightChannelInfo.spotlightedMessages!=null && spotlightChannelInfo.spotlightedMessages.Contains(message.message.Id)) {
+				return;
 			}
 
-			int count = 0;
-			int numTries = 0;
-			
-			while(numTries<3) {
-				try { await restMessage.GetReactionUsersAsync(emote,100).ForEachAsync(list => { count += list.Count; }); }
-				catch {
-					numTries++;
-				}
-				break;
+			await SpotlightPost(message,spotlightChannel,votes:(numUpvotes,numDownvotes));
+		}
+
+		public static async Task<int> GetNumReactions(IMessage message,IEmote emote)
+		{
+			if(emote==null) {
+				return 0;
 			}
+			
+			int count = 0;
+			
+			switch(message) {
+				case RestUserMessage restMessage:
+					await restMessage.GetReactionUsersAsync(emote,100).ForEachAsync(list => { count += list.Count; });
+					break;
+				case SocketUserMessage socketMessage:
+					await socketMessage.GetReactionUsersAsync(emote,100).ForEachAsync(list => { count += list.Count; });
+					Console.WriteLine($"Got reactions from SocketUserMessage!");
+					break;
+				default:
+					Console.WriteLine($"Unable to get amount of reactions. Message type is '{message?.GetType()?.Name ?? "null"}'.");
+					return 0;
+			}
+
 			return count;
 		}
 
-		public static async Task SpotlightPost(MessageExt message,SocketTextChannel spotlightChannel,bool silent = false)
+		public static async Task SpotlightPost(MessageExt context,SocketTextChannel spotlightChannel,bool silent = false,(int upvotes,int downvotes)? votes = null)
 		{
-			var server = message.server;
+			var server = context.server;
 			if(server==null) {
 				throw new BotError("Server was null?");
 			}
-			var sourceTextChannel = message.socketTextChannel;
+			var sourceTextChannel = context.socketTextChannel;
 			var serverMemory = server.GetMemory();
 			var showcaseData = serverMemory.GetData<ShowcaseSystem,ShowcaseServerData>();
 			var sourceChannelInfo = sourceTextChannel==null ? null : showcaseData.GetChannelInfo<ShowcaseChannel>(sourceTextChannel,false);
 			var spotlightChannelInfo = showcaseData.GetChannelInfo<SpotlightChannel>(spotlightChannel);
-			var msg = message.message;
+			var msg = context.message;
 
 			string url = msg.Attachments.FirstOrDefault()?.Url ?? msg.Embeds.FirstOrDefault(e => e.Type==EmbedType.Image || e.Type==EmbedType.Gifv)?.Url;
 			if(url==null) {
 				throw new BotError("Couldn't get image url from that message.");
 			}
 
-			var socketServerUser = server.GetUser(message.user.Id);
+			var socketServerUser = server.GetUser(context.user.Id);
 			
-			string congratsText = $"{message.user.Mention}, your <#{message.Channel.Id}> post has made it to {spotlightChannel.Mention}!";
+			string congratsText = $"{context.user.Mention}, your <#{context.Channel.Id}> post has made it to {spotlightChannel.Mention}!";
 			async Task TryGiveRewards(List<ulong> roles)
 			{
 				if(roles==null) {
@@ -267,16 +280,29 @@ namespace MopBotTwo.Systems
 			await TryGiveRewards(sourceChannelInfo?.rewardRoles);
 			await TryGiveRewards(spotlightChannelInfo.rewardRoles);
 
-			var builder = MopBot.GetEmbedBuilder(message)
-				.WithColor(socketServerUser.GetColor())
-				.WithAuthor($"By {socketServerUser?.Name() ?? message.user.Username}:",message.user.GetAvatarUrl(),BotUtils.GetMessageUrl(server,message.Channel,msg))
-				.WithImageUrl(url);
-				//.WithFooter("Final Score - {numUpvotes}/{numTotalVotes}",BotUtils.GetEmojiImageUrl("⭐"));
-			
-			if(!string.IsNullOrWhiteSpace(message.content)) {
-				builder.WithDescription(message.content.Replace(url,"").Trim());
-			}
+			var link = BotUtils.GetMessageUrl(server,context.Channel,msg);
 
+			string content = context.content?.Replace(url,"")?.Trim();
+			if(!string.IsNullOrWhiteSpace(content)) {
+				content += "\r\n";
+			}
+			content += $@"[\[source\]]({link})";
+
+			var (numUpvotes,numDownvotes)= votes ?? (
+				await GetNumReactions(context.message,showcaseData.GetEmote(context.server,"upvote",false)),
+				await GetNumReactions(context.message,showcaseData.GetEmote(context.server,"downvote",false))
+			);
+			numUpvotes -= 1;
+			numDownvotes -= 1;
+
+			var builder = MopBot.GetEmbedBuilder(context)
+				.WithColor(socketServerUser.GetColor())
+				//.WithTitle("[Click here to jump to the original message]").WithUrl(link)
+				.WithAuthor($"By {socketServerUser?.Name() ?? context.user.Username}:",context.user.GetAvatarUrl())
+				.WithDescription(content)
+				.WithImageUrl(url)
+				.WithFooter($"Final Score - {(numUpvotes/(float)(numUpvotes+numDownvotes))*100f:0.00}%",BotUtils.GetEmojiImageUrl("⭐"));
+			
 			await spotlightChannel.SendMessageAsync(embed:builder.Build());
 			var spotlightedMessages = Utils.GetSafe(ref spotlightChannelInfo.spotlightedMessages);
 			if(!spotlightedMessages.Contains(msg.Id)) {
@@ -328,45 +354,45 @@ namespace MopBotTwo.Systems
 
 		[Command("setupchannel showcase")]
 		[RequirePermission("showcasesystem.configure")]
-		public async Task SetupChannelShowcase(SocketTextChannel channel,[Remainder]params SocketRole[] rewardRoles)
+		public async Task SetupChannelShowcase(SocketTextChannel channel,[Remainder]SocketRole[] rewardRoles)
 			=> await SetupChannelShowcase(channel,null,0,rewardRoles);
 
 		[Command("setupchannel showcase")]
 		[RequirePermission("showcasesystem.configure")]
-		public async Task SetupChannelShowcase(SocketTextChannel channel,SocketTextChannel spotlightChannel,uint spotlightScore,[Remainder]params SocketRole[] rewardRoles)
+		[Priority(10)]
+		public async Task SetupChannelShowcase(SocketTextChannel channel,SocketTextChannel spotlightChannel,uint spotlightScore,[Remainder]SocketRole[] rewardRoles)
 		{
 			if(channel==spotlightChannel) {
 				throw new BotError("'channel' can't be the same value as 'spotlightChannel'.");
 			}
 			
-			var server = Context.server;
-			var showcaseData = server.GetMemory().GetData<ShowcaseSystem,ShowcaseServerData>();
+			var showcaseData = Context.server.GetMemory().GetData<ShowcaseSystem,ShowcaseServerData>();
+			var channelId = channel.Id;
 
 			if(spotlightChannel!=null && !showcaseData.ChannelIs<SpotlightChannel>(spotlightChannel)) {
 				throw new BotError($"Channel <#{spotlightChannel.Id}> is not a spotlight channel. Setup it as one first before setting up showcase channels for it.");
 			}
-			
-			showcaseData.RemoveChannel(channel.Id);
-			ArrayUtils.Add(ref showcaseData.showcaseChannels,new ShowcaseChannel {
-				id = channel.Id,
-				spotlightChannel = spotlightChannel==null ? 0 : spotlightChannel.Id,
-				minSpotlightScore = spotlightScore,
-				rewardRoles = (rewardRoles==null || rewardRoles.Length==0) ? null : rewardRoles.SelectIgnoreNull(role => role.Id).ToList()
-			});
+
+			ArrayUtils.ModifyOrAddFirst(ref showcaseData.showcaseChannels,c => c.id==channelId,() => new ShowcaseChannel(),c => {
+				c.id = channel.Id;
+				c.spotlightChannel = spotlightChannel==null ? 0 : spotlightChannel.Id;
+				c.minSpotlightScore = spotlightScore;
+				c.rewardRoles = (rewardRoles==null || rewardRoles.Length==0) ? null : rewardRoles.SelectIgnoreNull(role => role.Id).ToList();
+			},true);
 		}
 
 		[Command("setupchannel spotlight")]
 		[RequirePermission("showcasesystem.configure")]
-		public async Task SetupChannelSpotlight(SocketTextChannel channel,[Remainder]params SocketRole[] rewardRoles)
+		public async Task SetupChannelSpotlight(SocketTextChannel channel,[Remainder]SocketRole[] rewardRoles)
 		{
-			var server = Context.server;
-			var showcaseData = server.GetMemory().GetData<ShowcaseSystem,ShowcaseServerData>();
+			var showcaseData = Context.server.GetMemory().GetData<ShowcaseSystem,ShowcaseServerData>();
+			var channelId = channel.Id;
 
-			showcaseData.RemoveChannel(channel.Id);
-			ArrayUtils.Add(ref showcaseData.spotlightChannels,new SpotlightChannel {
-				id = channel.Id,
-				rewardRoles = (rewardRoles==null || rewardRoles.Length==0) ? null : rewardRoles.SelectIgnoreNull(role => role.Id).ToList()
-			});
+			ArrayUtils.ModifyOrAddFirst(ref showcaseData.spotlightChannels,c => c.id==channelId,() => new SpotlightChannel(),c => {
+				c.id = channel.Id;
+				c.rewardRoles = (rewardRoles==null || rewardRoles.Length==0) ? null : rewardRoles.SelectIgnoreNull(role => role.Id).ToList();
+				Console.WriteLine($"rewardRoles length: {c.rewardRoles?.Count.ToString() ?? "null"}");
+			},true);
 		}
 
 		[Command("setemote")]
