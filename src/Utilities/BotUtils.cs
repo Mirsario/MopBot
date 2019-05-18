@@ -39,12 +39,10 @@ namespace MopBotTwo
 		public static string GetEmojiImageUrl(string name)
 		{
 			switch(name) {
-				case "⭐":
-					return @"https://discordapp.com/assets/e4d52f4d69d7bba67e5fd70ffe26b70d.svg";
-				case "?":
-					return @"https://discordapp.com/assets/cef2d5ab02888e885953f945f9c39304.svg";
+				case "⭐": return @"https://i.imgur.com/Wh8s8Gp.png";
+				case "?": return @"https://i.imgur.com/NDZdstw.png";
+				default: return "";
 			}
-			return "";
 		}
 		
 		public static async Task<string> DownloadString(string url)
