@@ -116,10 +116,17 @@ namespace MopBotTwo
 			return result.ToArray();
 		}
 
-		public static string EscapeDiscordText(string text) => text
-			.Replace("`","\\`")
-			.Replace("*","\\*")
-			.Replace("|","\\|")
-			.Replace("~","\\~");
+		public static string EscapeDiscordText(string text,bool forCodeBlock = false)
+		{
+			if(forCodeBlock) {
+				return text.Replace("```",@"\`\`\`");
+			} else {
+				return text
+					.Replace("`",@"\`")
+					.Replace("*",@"\*")
+					.Replace("|",@"\|")
+					.Replace("~",@"\~");
+			}
+		}
 	}
 }

@@ -6,8 +6,6 @@ using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Core.Systems.Commands;
 using Discord.WebSocket;
 
-#pragma warning disable 1998
-
 namespace MopBotTwo.Common.Systems.Tags
 {
 	public partial class TagSystem
@@ -53,9 +51,7 @@ namespace MopBotTwo.Common.Systems.Tags
 
 			var user = Context.user;
 			var server = Context.server;
-			var memory = MemorySystem.memory;
-			var globalData = memory.GetData<TagSystem,TagGlobalData>();
-			var userData = memory[user].GetData<TagSystem,TagUserData>();
+			var userData = MemorySystem.memory[user].GetData<TagSystem,TagUserData>();
 
 			ulong userId = user.Id;
 
@@ -86,9 +82,11 @@ namespace MopBotTwo.Common.Systems.Tags
 				if(tag.owner==userId && tag.name==tagName) {
 					globalData.tags.Remove(id);
 					numRemoved++;
-					return (false, true);
+
+					return (false,true);
 				}
-				return (false, true);
+
+				return (false,true);
 			});
 
 			if(numRemoved==0) {
@@ -104,27 +102,27 @@ namespace MopBotTwo.Common.Systems.Tags
 		[Priority(-1)]
 		public Task TagCommand(SocketUser user,string tagName) => TagShowCommand(user,tagName);
 
-		[Command("show")]
-		[Alias("use")]
+		[Command("use")]
+		[Alias("show")]
 		[Summary("Shows a tag.")]
 		public Task TagShowCommand(string tagName) => ShowTagInternal(Context.socketServerUser,tagName);
 
-		[Command("show")]
-		[Alias("use")]
+		[Command("use")]
+		[Alias("show")]
 		[Summary("Shows another user's tag.")]
 		public Task TagShowCommand(SocketUser user,string tagName) => ShowTagInternal(user,tagName);
 
-		[Command("showraw")]
-		[Alias("getraw")]
+		[Command("useraw")]
+		[Alias("showraw","getraw","raw")]
 		[Summary("Shows source text of a tag.")]
-		public Task TagShowRawCommand(string tagName) => ShowTagRawInternal(Context.socketServerUser,tagName);
+		public Task TagShowRawCommand(string tagName) => ShowTagInternal(Context.socketServerUser,tagName,true);
 
-		[Command("showraw")]
-		[Alias("getraw")]
+		[Command("useraw")]
+		[Alias("showraw","getraw","raw")]
 		[Summary("Shows source text of another user's tag.")]
-		public Task TagShowRawCommand(SocketUser user,string tagName) => ShowTagRawInternal(user,tagName);
+		public Task TagShowRawCommand(SocketUser user,string tagName) => ShowTagInternal(user,tagName,true);
 
-		private async Task ShowTagInternal(SocketUser tagOwner,string tagName)
+		private async Task ShowTagInternal(SocketUser tagOwner,string tagName,bool raw = false)
 		{
 			var context = Context;
 			var tagUser = context.socketServerUser;
@@ -134,29 +132,11 @@ namespace MopBotTwo.Common.Systems.Tags
 			var embed = MopBot.GetEmbedBuilder(context)
 				.WithAuthor($"{tagUser.Name()}:",tagUser.GetAvatarUrl())
 				.WithFooter($@"""{tagName}"" by {MopBot.client.GetUser(tag.owner)?.Name() ?? "Unknown user"}")
-				.WithDescription(tag.text)
+				.WithDescription(raw ? ($"```{StringUtils.EscapeDiscordText(tag.text,true)}\r\n```") : tag.text)
 				.WithColor(tagUser.GetColor())
 				.Build();
 
 			await context.Channel.SendMessageAsync(embed:embed);
-
-			await context.Delete();
-		}
-		private async Task ShowTagRawInternal(SocketUser tagOwner,string tagName)
-		{
-			var context = Context;
-			var tagUser = context.socketServerUser;
-
-			var tag = GetSingleTagInternal(tagOwner,tagName);
-
-			var embed = MopBot.GetEmbedBuilder(context)
-				.WithAuthor($"{tagUser.Name()}:",tagUser.GetAvatarUrl())
-				.WithFooter($@"""{tagName}"" by {MopBot.client.GetUser(tag.owner)?.Name() ?? "Unknown user"}")
-				.WithDescription($"```{StringUtils.EscapeDiscordText(tag.text)}```")
-				.WithColor(tagUser.GetColor())
-				.Build();
-
-			await context.Channel.SendMessageAsync(embed: embed);
 
 			await context.Delete();
 		}
