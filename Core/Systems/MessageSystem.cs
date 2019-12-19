@@ -16,13 +16,13 @@ namespace MopBotTwo.Core.Systems
 
 		public bool notifiedAboutStart;
 
-		public override async Task Initialize()
+		/*public override async Task Initialize()
 		{
-			/*newMessageBuffer = new List<Message>();
+			newMessageBuffer = new List<Message>();
 			newMessages = new Dictionary<SocketGuild,List<Message>>();
 			newReactionsBuffer = new List<(Message,SocketReaction,SocketGuild)>();
-			newReactions = new Dictionary<SocketGuild,List<(Message,SocketReaction,SocketGuild)>>();*/
-		}
+			newReactions = new Dictionary<SocketGuild,List<(Message,SocketReaction,SocketGuild)>>();
+		}*/
 		public override async Task<bool> Update()
 		{
 			if(!notifiedAboutStart && MopBot.client.Guilds.Count>0) {
@@ -37,7 +37,14 @@ namespace MopBotTwo.Core.Systems
 
 			return true;
 		}
-		
+
+		public static void IgnoreMessage(IMessage message)
+		{
+			if(message!=null) {
+				messagesToIgnore.Add(message.Id);
+			}
+		}
+
 		public static async Task MessageReceived(SocketMessage message)
 		{
 			if(!DiscordConnectionSystem.isFullyReady || messagesToIgnore.Contains(message.Id)) {

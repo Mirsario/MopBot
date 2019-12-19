@@ -2,7 +2,7 @@
 
 namespace MopBotTwo.Core.Systems.Memory
 {
-	public class Memory : MemoryBase<GlobalData>
+	public sealed class Memory : MemoryBase<GlobalData>
 	{
 		public ServerMemory this[IGuild server] {
 			get => GetSubMemory<ServerMemory>(server.Id);

@@ -4,8 +4,6 @@ namespace MopBotTwo
 {
 	public static class Utils
 	{
-		private static readonly byte[] RandomBuffer = new byte[8];
-		
 		public static T[] GetEnumValues<T>() where T : Enum
 		{
 			return (T[])Enum.GetValues(typeof(T));
@@ -18,12 +16,6 @@ namespace MopBotTwo
 			return value;
 		}
 		public static T Choose<T>(params T[] arr) => arr[MopBot.random.Next(arr.Length)];
-
-		public static ulong GetRandomULong()
-		{
-			MopBot.random.NextBytes(RandomBuffer);
-			return BitConverter.ToUInt64(RandomBuffer,0);
-		}
 		
 		//Is there a better way? Am I dumb?
 		public static ulong SafeAdd(ulong valueA,ulong valueB)

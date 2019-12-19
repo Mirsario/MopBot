@@ -39,8 +39,8 @@ namespace MopBotTwo.Core.Systems
 			var server = Context.server;
 			var builder = MopBot.GetEmbedBuilder(server);
 
-			foreach(var system in systems.Where(s => !s.configuration.AlwaysEnabled).OrderBy(s => s.GetType().Name)) {
-				builder.AddField($"{(system.IsEnabledForServer(server) ? ":white_check_mark:" : ":x:")} - {system.name}",system.configuration.Description ?? "`Configuration missing.`");
+			foreach(var system in allSystems.Where(s => !s.Configuration.AlwaysEnabled).OrderBy(s => s.GetType().Name)) {
+				builder.AddField($"{(system.IsEnabledForServer(server) ? ":white_check_mark:" : ":x:")} - {system.Name}",system.Configuration.Description ?? "`Configuration missing.`");
 			}
 
 			await ReplyAsync(embed:builder.Build());

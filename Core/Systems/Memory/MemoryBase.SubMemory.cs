@@ -9,6 +9,8 @@ namespace MopBotTwo.Core.Systems.Memory
 	{
 		public void RegisterSubMemory<T>() where T : MemoryBase
 		{
+			Console.WriteLine($"Registering submemory '{typeof(T).Name}' for memory '{GetType().Name}'.");
+
 			subMemory.Add(typeof(T),new Dictionary<ulong,MemoryBase>());
 		}
 
@@ -16,8 +18,10 @@ namespace MopBotTwo.Core.Systems.Memory
 		{
 			var type = typeof(T);
 			var dict = subMemory[type];
+
 			if(!dict.TryGetValue(id,out MemoryBase tempMemory) || !(tempMemory is T resultMemory)) {
-				dict[id] = resultMemory = (T)Activator.CreateInstance(typeof(T));
+				dict[id] = resultMemory = (T)Activator.CreateInstance(type);
+
 				resultMemory.id = id;
 			}
 

@@ -3,7 +3,7 @@ using Discord.WebSocket;
 
 namespace MopBotTwo.Core.Systems.Memory
 {
-	public class ServerMemory : MemoryBase<ServerData>
+	public sealed class ServerMemory : MemoryBase<ServerData>
 	{
 		public SocketGuild Server => MopBot.client.GetGuild(id);
 

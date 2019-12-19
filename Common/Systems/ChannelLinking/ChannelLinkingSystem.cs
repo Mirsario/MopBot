@@ -57,9 +57,12 @@ namespace MopBotTwo.Common.Systems.ChannelLinking
 			//string inviteUrl = await BotUtils.GetInviteUrl(message.server);
 			//string linkedServerName = inviteUrl!=null ? $"({message.server.Name})[{inviteUrl}]" : message.server.Name;
 
+			string authorStr = $"{message.user.Username}#{message.user.Discriminator} [{message.server.Name}/#{message.Channel.Name}]";
+			string authorAvatarUrl = message.user.GetAvatarUrl();
+
 			var builder = MopBot.GetEmbedBuilder(message)
 				.WithColor(message.socketServerUser.Roles.OrderByDescending(r => r.Position).FirstOrDefault(r => !r.Color.ColorEquals(Discord.Color.Default))?.Color ?? Discord.Color.Default)
-				.WithAuthor($"{message.user.Username} [{message.server.Name}/#{message.Channel.Name}]",message.user.GetAvatarUrl())
+				.WithAuthor(authorStr,authorAvatarUrl) //,$@"https://discordapp.com/channels/@me/{message.user.Id}"
 				.WithDescription(message.content);
 
 			static bool IsImageUrl(string checkUrl)
@@ -75,13 +78,14 @@ namespace MopBotTwo.Common.Systems.ChannelLinking
 						builder.WithImageUrl(test.Url);
 						break;
 					case EmbedType.Video:
-						builder.Description = builder.Description.Replace(test.Url,"");
+						//builder.Description = builder.Description.Replace(test.Url,"");
+						builder.ThumbnailUrl = test.Thumbnail?.Url;
 						break;
 					case EmbedType.Tweet:
 					case EmbedType.Article:
 					case EmbedType.Link:
-						builder.Description = builder.Description.Replace(test.Url,"");
-						builder.WithUrl(test.Url);
+						//builder.Description = builder.Description.Replace(test.Url,"");
+						//builder.WithUrl(test.Url);
 						break;
 				}
 			}
@@ -92,6 +96,10 @@ namespace MopBotTwo.Common.Systems.ChannelLinking
 					builder.WithImageUrl(attachment.Url);
 				}
 			}
+
+			ulong botId = MopBot.client.CurrentUser.Id;
+
+			string embedDescription = builder.Description;
 
 			for(int i = 0;i<channelLink.connectedChannels.Count;i++) {
 				var channelInfo = channelLink.connectedChannels[i];
@@ -105,11 +113,42 @@ namespace MopBotTwo.Common.Systems.ChannelLinking
 					continue;
 				}
 
-				ulong? id = (await channel.SendMessageAsync(embed:builder.Build()))?.Id;
+				var asyncCollection = channel.GetMessagesAsync(1);
+				var enumerable = await asyncCollection.FlattenAsync();
 
-				if(id!=null) {
-					MessageSystem.messagesToIgnore.Add(id.Value);
+				//Try to append to the previous message instead of posting a new one, if possible.
+				if(enumerable?.FirstOrDefault() is SocketUserMessage lastMsg && lastMsg.Author.Id==botId) {
+					var lastEmbed = lastMsg.Embeds.FirstOrDefault();
+
+					if(lastEmbed!=null && lastEmbed.Author.HasValue) {
+						var author = lastEmbed.Author.Value;
+
+						if(author.Name==authorStr && author.IconUrl==authorAvatarUrl) {
+							if(!lastEmbed.Image.HasValue) {
+								bool modified = false;
+
+								string newDescription = lastEmbed.Description+"\r\n"+embedDescription;
+
+								await lastMsg.ModifyAsync(p => {
+									builder.Description = newDescription;
+
+									p.Content = lastMsg.Content;
+									p.Embed = builder.Build();
+
+									modified = true;
+								});
+
+								if(modified) {
+									continue;
+								}
+							} else {
+								builder.WithAuthor(null,null); //Remove author field for new posts.
+							}
+						}
+					}
 				}
+
+				MessageSystem.IgnoreMessage(await channel.SendMessageAsync(embed:builder.Build()));
 			}
 		}
 
@@ -170,27 +209,16 @@ namespace MopBotTwo.Common.Systems.ChannelLinking
 				throw new BotError("Remote channel's owner has already been invited to link it.");
 			}
 
-			await remoteChannel.SendMessageAsync($"<@{remoteServer.OwnerId}>\r\nAn administrator of server `{localServer.Name}` is requesting to message-link this channel ({remoteChannel.Name}) with their channel `{localChannel.Name}`.\r\nType `!channellink accept {linkId}` to accept.");
-			await Context.ReplyAsync("Channel linking request has been sent to the owner of the remote server.");
+			string notification = $"<@{remoteServer.OwnerId}>\r\nAn administrator of server `{localServer.Name}` is requesting to message-link this channel ({remoteChannel.Name}) with their channel `{localChannel.Name}`.\r\nType `!channellink accept {linkId}` to accept.";
+
+			if(!IsEnabledForServer<ChannelLinkingSystem>(remoteServer)) {
+				notification += $"\r\n\r\nNote: You need to enable the {nameof(ChannelLinkingSystem)} first. You can do that via this command:\r\n`!systems enable {nameof(ChannelLinkingSystem)}`";
+			}
+
+			MessageSystem.IgnoreMessage(await remoteChannel.SendMessageAsync(notification));
+			MessageSystem.IgnoreMessage(await Context.ReplyAsync("Channel linking request has been sent to the owner of the remote server."));
 
 			link.invitedChannels.Add(remoteIds);
-
-			//bool fullyLinked = remoteChannelList.Any(l => l.serverId==localServer.Id && l.channelId==localChannel.Id);
-
-			/*if(localChannelList.Contains(link)) {
-				await localChannel.SendMessageAsync(fullyLinked ? "These channels are already linked." : "Link has already been created on this side. Awaiting remote server's admin's confirmation.");
-				return;
-			}*/
-
-			/*if(remoteChannelList.Any(l => l.serverId==localServer.Id && l.channelId==localChannel.Id)) {
-				const string Notification = "This channel is now linked with channel `{0}` from server `{1}`! :confetti_ball::confetti_ball::confetti_ball:";
-
-				await localChannel.SendMessageAsync(string.Format(Notification,remoteChannel.Name,remoteServer.Name));
-				await remoteChannel.SendMessageAsync(string.Format(Notification,localChannel.Name,localServer.Name));
-			} else {
-				await localChannel.SendMessageAsync("Channel linking request will be sent to the owner of the server that we're trying to link to.");
-				await remoteChannel.SendMessageAsync($"<@{remoteServer.OwnerId}>\nAn administrator of server `{localServer.Name}` is requesting to message-link this channel ({remoteChannel.Name}) with their channel `{localChannel.Name}`.\nType `!channellink add {localServer.Id} {localChannel.Name}` to accept this offer");
-			}*/
 		}
 	}
 }

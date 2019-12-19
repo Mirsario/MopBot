@@ -1,9 +1,11 @@
 ﻿using Discord.WebSocket;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System;
 
 namespace MopBotTwo.Core.Systems.Memory
 {
+	[Serializable]
 	public class ServerData : MemoryDataBase
 	{
 		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]

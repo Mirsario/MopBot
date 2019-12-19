@@ -1,6 +1,11 @@
-﻿#pragma warning disable CS1998 //The async method lacks 'await' operator.
+﻿using Discord.WebSocket;
+using System;
 
 namespace MopBotTwo.Core.Systems.Memory
 {
-	public class ServerUserData : MemoryDataBase {}
+	[Serializable]
+	public class ServerUserData : MemoryDataBase
+	{
+		public virtual void Initialize() { }
+	}
 }

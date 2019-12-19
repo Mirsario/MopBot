@@ -7,9 +7,11 @@ using MopBotTwo.Core.Systems.Memory;
 
 namespace MopBotTwo.Core.Systems
 {
-	public class SystemContainer
+	public abstract class SystemContainer
 	{
 		public List<BotSystem> systems;
+		
+		public bool RegisteringData { get; private set; }
 
 		public SystemContainer()
 		{
@@ -54,11 +56,19 @@ namespace MopBotTwo.Core.Systems
 		{
 			BotSystem system = (BotSystem)Activator.CreateInstance(type);
 
+			system.Owner = this;
+
+			RegisteringData = true;
+
 			system.RegisterDataType<ServerMemory,ServerData>();
 			system.RegisterDataTypes();
 
+			RegisteringData = false;
+
 			systems.Add(system);
-			BotSystem.systems.Add(system);
+
+			BotSystem.allSystems.Add(system);
+
 			BotSystem.typeToSystem[type] = system;
 			BotSystem.nameToSystem[type.Name] = system;
 

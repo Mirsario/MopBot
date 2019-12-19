@@ -8,8 +8,9 @@ using Newtonsoft.Json.Linq;
 
 namespace MopBotTwo.Core.Systems.Memory
 {
-	public abstract class MemoryDataBase {}
-	
+	[Serializable]
+	public abstract class MemoryDataBase { }
+
 	public abstract class MemoryBase
 	{
 		[JsonIgnore] public ulong id;
@@ -21,6 +22,7 @@ namespace MopBotTwo.Core.Systems.Memory
 		public virtual void WriteToJson(ref JObject jObj)
 		{
 			string name = Name;
+
 			if(!string.IsNullOrEmpty(name)) {
 				jObj["name"] = name;
 			}

@@ -77,8 +77,11 @@ namespace MopBotTwo.Common.Systems.Posting
 					case "image":
 						string url = GetGroup(2);
 						string filename = BotUtils.GetValidFileName($"TempFile_{url}");
+
 						await BotUtils.DownloadFile(GetGroup(2),filename);
+
 						newPiece = new FilePostPiece(filename,true);
+
 						split = true;
 						break;
 					default:
@@ -102,12 +105,15 @@ namespace MopBotTwo.Common.Systems.Posting
 						if(newPiece!=null) {
 							postPieces.Insert(i,newPiece);
 						}
+
 						textPiece.text = rightText;
 					} else {
 						textPiece.text = leftText;
+
 						if(newPiece!=null) {
 							postPieces.Add(newPiece);
 						}
+
 						postPieces.Add(new TextPostPiece(rightText));
 					}
 				}

@@ -14,8 +14,6 @@ namespace MopBotTwo
 {
 	public static class BotUtils
 	{
-		private static readonly byte[] RandomBuffer = new byte[sizeof(ulong)];
-
 		public static string GetMessageUrl(IGuild server,IChannel channel,IMessage message)
 			=> $@"https://discordapp.com/channels/{server.Id}/{channel.Id}/{message.Id}";
 		
@@ -131,9 +129,7 @@ namespace MopBotTwo
 			ulong result;
 
 			do {
-				MopBot.random.NextBytes(RandomBuffer);
-
-				result = BitConverter.ToUInt64(RandomBuffer,0);
+				result = MopBot.random.NextULong();
 			}
 			while(idExistsCheck(result));
 

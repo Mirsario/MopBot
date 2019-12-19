@@ -5,6 +5,7 @@ using Discord.Commands;
 using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Core.DataStructures;
+using MopBotTwo.Core.Systems;
 
 namespace MopBotTwo.Common.Systems.ChannelLinking
 {
@@ -73,9 +74,14 @@ namespace MopBotTwo.Common.Systems.ChannelLinking
 				await channel.SendMessageAsync(Notification);
 			}
 
-			string channelList = string.Join("\r\n",link.connectedChannels.Select(id => id.TryGetChannel(out var channel) ? $"{channel.Guild.Name}/#{channel.Name}" : "Unknown"));
+			string channelList = string.Join(
+				"\r\n",
+				link.connectedChannels
+					.Where(ids => ids.channelId!=localChannel.Id)
+					.Select(ids => ids.TryGetChannel(out var channel) ? $"{channel.Guild.Name}/#{channel.Name}" : "Unknown")
+			);
 
-			await localChannel.SendMessageAsync($"This channel is now linked with the following channels: ```\r\n{channelList}\r\n```\r\n:confetti_ball::confetti_ball::confetti_ball:");
+			MessageSystem.IgnoreMessage(await localChannel.SendMessageAsync($"This channel is now linked with the following channels: ```\r\n{channelList}\r\n```\r\n:confetti_ball::confetti_ball::confetti_ball:"));
 		}
 	}
 }
