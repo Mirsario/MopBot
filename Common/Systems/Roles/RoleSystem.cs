@@ -82,17 +82,19 @@ namespace MopBotTwo.Common.Systems.Roles
 		[Command("mentionrole")]
 		[Alias("pingrole","mention")]
 		[RequirePermission(SpecialPermission.Owner,"mentionroles")]
-		public async Task MentionRoleCommand(IRole role)
+		public async Task MentionRoleCommand([Remainder]params IRole[] roles)
 		{
-			bool wasMentionable = role.IsMentionable;
-			if(!wasMentionable) {
-				await role.ModifyAsync(rp => rp.Mentionable = true);
-			}
+			foreach(var role in roles) {
+				bool wasMentionable = role.IsMentionable;
+				if(!wasMentionable) {
+					await role.ModifyAsync(rp => rp.Mentionable = true);
+				}
 
-			await Context.Channel.SendMessageAsync(role.Mention);
+				await Context.Channel.SendMessageAsync(role.Mention);
 
-			if(!wasMentionable) {
-				await role.ModifyAsync(rp => rp.Mentionable = false);
+				if(!wasMentionable) {
+					await role.ModifyAsync(rp => rp.Mentionable = false);
+				}
 			}
 
 			await Context.Delete();

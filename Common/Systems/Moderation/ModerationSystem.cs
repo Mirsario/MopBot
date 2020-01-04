@@ -8,17 +8,17 @@ using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems;
 using MopBotTwo.Core.Systems.Permissions;
 
-
 namespace MopBotTwo.Common.Systems.Moderation
 {
 	[Group("mod")]
 	[Summary("Group for simple moderation commands, like `kick`, `ban` and `clear`.")]
 	[SystemConfiguration(Description = "This system adds simple moderation commands, like `kick`, `ban` and `clear`.")]
+	[RequirePermission(SpecialPermission.Owner,"moderation")]
 	public class ModerationSystem : BotSystem
 	{
 		[Command("ban")]
 		[Summary("Permamently bans a specified user.")]
-		[RequirePermission(SpecialPermission.Owner,"ban")]
+		[RequirePermission(SpecialPermission.Owner,"moderation.ban")]
 		public async Task BanCommand(SocketGuildUser targetUser,[Remainder]string reason = "No reason provided.")
 		{
 			var context = Context;
@@ -36,7 +36,7 @@ namespace MopBotTwo.Common.Systems.Moderation
 
 		[Command("kick")]
 		[Summary("Kicks a specified user.")]
-		[RequirePermission(SpecialPermission.Owner,"kick")]
+		[RequirePermission(SpecialPermission.Owner,"moderation.kick")]
 		public async Task KickCommand(SocketGuildUser targetUser,[Remainder]string reason = "No reason provided.")
 		{
 			var context = Context;
@@ -54,12 +54,12 @@ namespace MopBotTwo.Common.Systems.Moderation
 
 		[Command("clear")]
 		[Summary("Removes a specified amount of messages.")]
-		[RequirePermission(SpecialPermission.Owner,"clear")]
+		[RequirePermission(SpecialPermission.Owner,"moderation.clear")]
 		public Task ClearCommand(uint amount) => ClearCommand(Context.socketTextChannel,amount);
 
 		[Command("clear")]
 		[Summary("Removes a specified amount of messages.")]
-		[RequirePermission(SpecialPermission.Owner,"clear")]
+		[RequirePermission(SpecialPermission.Owner,"moderation.clear")]
 		public async Task ClearCommand(SocketTextChannel channel,uint amount)
 		{
 			var context = Context;
@@ -68,11 +68,13 @@ namespace MopBotTwo.Common.Systems.Moderation
 			server.CurrentUser.RequirePermission(channel,DiscordPermission.ManageMessages);
 
 			int highestRole = server.GetUser(MopBot.client.CurrentUser.Id).Roles.Max(r => r.Position);
+
 			var utcNow = DateTime.UtcNow.AddMinutes(1); //+1 min
 			var messages = (await channel.GetMessagesAsync((int)amount+1).FlattenAsync())
-				.Where(m => m!=null && (utcNow-m.Timestamp.UtcDateTime).TotalDays<14 && (m.Author?.Id==MopBot.client.CurrentUser.Id || (m.Author as SocketGuildUser)?.Roles?.All(r => r.Position<highestRole)==true));
+				.Where(m => m!=null && (m.Author?.Id==MopBot.client.CurrentUser.Id || ((utcNow-m.Timestamp.UtcDateTime).TotalDays<14 && (m.Author as SocketGuildUser)?.Roles?.All(r => r.Position<highestRole)==true)));
 
 			await channel.DeleteMessagesAsync(messages);
+
 			context.messageDeleted = true;
 		}
 	}

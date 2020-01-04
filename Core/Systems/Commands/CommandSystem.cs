@@ -85,13 +85,21 @@ namespace MopBotTwo.Core.Systems.Commands
 				return;
 			}
 
+			Console.WriteLine($"ExecuteCommand called.");
+
 			var commandServerData = server.GetMemory().GetData<CommandSystem,CommandServerData>();
 
 			//Regex parsing
 			char symbol = skipRegex ? ' ' : commandServerData.commandPrefix;
+
+			//string GetRegexCode() => $@"(^{(skipRegex ? null : $@"[{symbol}](?=\S)")}|&&)((?:"".*?""|[^&]*?)+)(?=&&|$)";
+			string GetRegexCode() => $@"({(skipRegex ? "$" : $"[{symbol}]")}|&&)((?:""[\s\S]*?""|[\s\S](?!&&))+)(?!&&)";
+
 			if(!commandRegex.TryGetValue(symbol,out Regex regex)) {
-				commandRegex[symbol] = regex = new Regex($@"(^{(skipRegex ? null : $@"[{symbol}](?=\S)")}|&&)((?:"".*?""|[^&]*?)+)(?=&&|$)",RegexOptions.Compiled);
+				commandRegex[symbol] = regex = new Regex(GetRegexCode(),RegexOptions.Compiled);
 			}
+
+			Console.WriteLine($"Executing regex '{GetRegexCode()}'.");
 
 			var matches = regex.Matches(context.content);
 
@@ -123,7 +131,7 @@ namespace MopBotTwo.Core.Systems.Commands
 
 					bool lastCommand = i==numCommands-1;
 
-					if(!TryGetCommandSystem(command,out BotSystem system) || !system.IsEnabledForServer(server)) {
+					if(!TryGetCommandsSystem(command,out BotSystem system) || !system.IsEnabledForServer(server)) {
 						continue;
 					}
 
@@ -207,7 +215,7 @@ namespace MopBotTwo.Core.Systems.Commands
 			}
 			return result;
 		}
-		public static bool TryGetCommandSystem(CommandInfo command,out BotSystem system)
+		public static bool TryGetCommandsSystem(CommandInfo command,out BotSystem system)
 		{
 			var group = command.Module.Group;
 			

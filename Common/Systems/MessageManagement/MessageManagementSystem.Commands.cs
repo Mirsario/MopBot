@@ -58,11 +58,27 @@ namespace MopBotTwo.Common.Systems.MessageManagement
 			Utils.RemoveQuotemarks(ref text);
 			await Context.socketTextChannel.SendMessageAsync(text);
 		}*/
-		[Command("send")] [Alias("say")]
+		[Command("send")]
+		[Alias("say")]
 		[RequirePermission(SpecialPermission.Owner,"messagemanaging.send")]
-		public async Task SendMessageCommand(SocketTextChannel textChannel,[Remainder]string text)
+		public Task SendMessageCommand(SocketTextChannel textChannel,[Remainder]string text) => SendMessageInternal(textChannel,text);
+
+		[Command("send")]
+		[Alias("say")]
+		[RequirePermission(SpecialPermission.BotMaster)]
+		public async Task SendMessageCommand(string serverName,string channelName,[Remainder]string text)
+		{
+			var server = MopBot.client.GetServer(serverName);
+			var textChannel = server.GetTextChannel(channelName);
+
+			StringUtils.RemoveQuotemarks(ref text);
+			await textChannel.SendMessageAsync(text);
+		}
+
+		private async Task SendMessageInternal(SocketTextChannel textChannel,string text)
 		{
 			StringUtils.RemoveQuotemarks(ref text);
+
 			await textChannel.SendMessageAsync(text);
 		}
 	}

@@ -33,6 +33,7 @@ namespace MopBotTwo.Common.Systems.Showcase
 			if(server==null || channel==null || message.user.IsBot) {
 				return;
 			}
+
 			var showcaseData = server.GetMemory().GetData<ShowcaseSystem,ShowcaseServerData>();
 			if(!showcaseData.ChannelIs<ShowcaseChannel>(message.socketTextChannel)) {
 				return;

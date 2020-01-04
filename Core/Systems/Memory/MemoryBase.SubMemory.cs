@@ -31,6 +31,7 @@ namespace MopBotTwo.Core.Systems.Memory
 		{
 			var type = typeof(T);
 			var dict = subMemory[type];
+
 			if(value==null) {
 				dict.Remove(id);
 			} else {

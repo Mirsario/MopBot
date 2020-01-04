@@ -10,7 +10,6 @@ namespace MopBotTwo.Common.Systems.Issues
 		public ulong messageId;
 		public ulong channelId;
 		public IssueStatus status;
-		public string version;
 		public string text;
 	}
 }

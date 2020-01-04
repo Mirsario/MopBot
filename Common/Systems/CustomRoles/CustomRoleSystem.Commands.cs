@@ -6,7 +6,6 @@ using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems.Permissions;
 using MopBotTwo.Core.Systems.Memory;
 
-
 namespace MopBotTwo.Common.Systems.CustomRoles
 {
 	//TODO: old. improv.

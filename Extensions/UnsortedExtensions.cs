@@ -34,10 +34,12 @@ namespace MopBotTwo.Extensions
 			if(emote==null) {
 				return null;
 			}
+
 			emote = emote.ToLower();
-			var emote2 = emote.Replace(":","");
-			var guildEmote = server.Emotes.FirstOrDefault(e => e.Name.ToLower()==emote2) ?? Emote.Parse(emote);
-			return guildEmote;
+
+			var emoteClean = emote.Replace(":","");
+
+			return server.Emotes.FirstOrDefault(e => e.Name.ToLower()==emoteClean);
 		}
 		public static async Task TryAddReaction(this MessageExt message,IEmote emote)
 		{

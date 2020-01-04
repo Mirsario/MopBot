@@ -14,7 +14,6 @@ namespace MopBotTwo.Common.Systems.Issues
 		public Dictionary<IssueStatus,string> statusPrefix;
 		public Dictionary<IssueStatus,string> statusText;
 		public List<IssueInfo> issues;
-		public string defaultFixVersion;
 		public uint nextIssueId;
 
 		[JsonIgnore] public uint NextIssueId => issues!=null && issues.Any(i => i.issueId==nextIssueId) ? (nextIssueId = issues.Max(i => i.issueId)+1) : nextIssueId;
@@ -32,8 +31,7 @@ namespace MopBotTwo.Common.Systems.Issues
 			
 			statusText = new Dictionary<IssueStatus,string> {
 				{ IssueStatus.Open,		"To be fixed" },
-				{ IssueStatus.Unknown,	"Possibly fixed for {version}" },
-				{ IssueStatus.Closed,	"Fixed for {version}" },
+				{ IssueStatus.Closed,	"Fixed for next release" },
 			};
 		}
 
@@ -74,11 +72,8 @@ namespace MopBotTwo.Common.Systems.Issues
 
 			string text = statusText[issue.status];
 
-			if(issue.version!=null) {
-				text = text.Replace("{version}",issue.version);
-			}
-
 			var message = await channel.SendMessageAsync($"{statusPrefix[issue.status]} - #**{issue.issueId}** - **{text}:** {issue.text}",options:MopBot.optAlwaysRetry);
+
 			issue.messageId = message.Id;
 			issue.channelId = channel.Id;
 		}

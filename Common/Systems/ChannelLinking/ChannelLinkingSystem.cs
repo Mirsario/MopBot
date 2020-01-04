@@ -18,7 +18,7 @@ namespace MopBotTwo.Common.Systems.ChannelLinking
 
 	[Group("channellink")]
 	[Summary("Group for commands for managing channel linking, which lets admins of servers interconnect selected channels of their servers through the bot.")]
-	[RequirePermission(SpecialPermission.Owner,"managechannellinking")]
+	[RequirePermission(SpecialPermission.Owner,"channellink")]
 	[SystemConfiguration(Description = "Bit outdated, but it's a really cool system that lets admins of servers interconnect selected channels of their servers through the bot.")]
 	public partial class ChannelLinkingSystem : BotSystem
 	{

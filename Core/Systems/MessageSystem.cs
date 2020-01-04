@@ -79,10 +79,14 @@ namespace MopBotTwo.Core.Systems
 			}
 
 			MessageExt newMessage = new MessageExt(message);
-			
-			Console.WriteLine($"MessageDeleted - '{newMessage.server.Name}' -> #{newMessage.messageChannel.Name} -> {newMessage.user.Username}#{newMessage.user.Discriminator}: {newMessage.content}");
-			
-			await CallForEnabledSystems(newMessage.server,s => s.OnMessageDeleted(newMessage));
+
+			if(newMessage.server!=null) {
+				Console.WriteLine($"MessageDeleted - '{newMessage.server.Name}' -> #{newMessage.messageChannel.Name} -> {newMessage.user.Username}#{newMessage.user.Discriminator}: {newMessage.content}");
+
+				await CallForEnabledSystems(newMessage.server,s => s.OnMessageDeleted(newMessage));
+			} else {
+				Console.WriteLine($"MessageDeleted - PMs -> {newMessage.user.Username}#{newMessage.user.Discriminator}: {newMessage.content}");
+			}
 		}
 
 		public static async Task ReactionAdded(Cacheable<IUserMessage,ulong> cachedMessage,ISocketMessageChannel channel,SocketReaction reaction)
