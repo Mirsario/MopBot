@@ -12,6 +12,7 @@ using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Core.Systems.Permissions;
 using MopBotTwo.Core.Systems;
 using MopBotTwo.Core.Systems.Channels;
+using MopBotTwo.Core;
 
 namespace MopBotTwo.Common.Systems.Showcase
 {

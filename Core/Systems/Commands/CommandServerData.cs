@@ -1,4 +1,5 @@
 ﻿using Discord.WebSocket;
+using MopBotTwo.Core.DataStructures;
 using MopBotTwo.Core.Systems.Memory;
 
 namespace MopBotTwo.Core.Systems.Commands

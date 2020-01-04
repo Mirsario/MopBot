@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Discord.Commands;
 using MopBotTwo.Common.Systems.Currency;
+using MopBotTwo.Core.DataStructures;
 using MopBotTwo.Core.Systems.Permissions;
 using MopBotTwo.Extensions;
 

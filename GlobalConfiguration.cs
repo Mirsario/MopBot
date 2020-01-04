@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-
 namespace MopBotTwo
 {
 	//Used for important things, like configuring a list of developers, or global permament toggling for systems.
+
 	public class GlobalConfiguration
 	{
 		public class Config
@@ -28,6 +28,7 @@ namespace MopBotTwo
 			if(File.Exists(ConfigurationFile)) {
 				config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(ConfigurationFile));
 			}
+
 			if(config==null) {
 				config = new Config();
 				Save();

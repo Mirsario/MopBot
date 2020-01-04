@@ -1,4 +1,4 @@
-﻿namespace MopBotTwo
+﻿namespace MopBotTwo.Core.DataStructures
 {
 	public struct Color
 	{

@@ -8,12 +8,12 @@ using Discord.Rest;
 using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems.Commands;
 
-namespace MopBotTwo
+namespace MopBotTwo.Core
 {
 	public class MessageExt : ICommandContext
 	{
 		//TODO: how did this mess happen?
-		
+
 		public IMessage message;
 		public SocketMessage socketMessage;
 		public RestUserMessage restMessage;
@@ -31,7 +31,7 @@ namespace MopBotTwo
 		public string content;
 		public bool isCommand;
 		public bool messageDeleted;
-		
+
 		public IDiscordClient Client => MopBot.client;
 		public IGuild Guild => server;
 		public IMessageChannel Channel => messageChannel;

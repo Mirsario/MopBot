@@ -14,6 +14,7 @@ using MopBotTwo.Core.Systems.Commands;
 using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Core.Systems.Channels;
 using MopBotTwo.Core.Systems.Status;
+using MopBotTwo.Core;
 
 #pragma warning disable CS0162
 
@@ -57,7 +58,7 @@ namespace MopBotTwo
 			random = new Random((int)DateTime.Now.Ticks);
 
 			AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
-			AppDomain.CurrentDomain.FirstChanceException += OnFirstChanceException;
+			//AppDomain.CurrentDomain.FirstChanceException += OnFirstChanceException;
 		}
 		public async Task Run()
 		{
@@ -142,8 +143,7 @@ namespace MopBotTwo
 			}
 		}
 
-		//TODO: It's much preferable to get rid of this
-		private static async void OnFirstChanceException(object sender,FirstChanceExceptionEventArgs args)
+		/*private static async void OnFirstChanceException(object sender,FirstChanceExceptionEventArgs args)
 		{
 			var e = args.Exception;
 
@@ -157,7 +157,7 @@ namespace MopBotTwo
 			}
 
 			await HandleException(e,"OnFirstChanceException - ");
-		}
+		}*/
 		private static void OnProcessExit(object sender,EventArgs e)
 		{
 			if(!StatusSystem.noActivityChanging) {
@@ -258,14 +258,18 @@ namespace MopBotTwo
 
 				//TODO: Replace this halfassed crap?
 				string[] texts = SplitIfNeeded(errorText,1900).ToArray();
+
 				for(int i = 0;i<texts.Length;i++) {
 					var tempText = texts[i];
+
 					if(i>0) {
 						tempText = "```"+tempText;
 					}
+
 					if(i<texts.Length-1) {
 						tempText += "```";
 					}
+
 					await logChannel.SendMessageAsync(tempText);
 				}
 			}

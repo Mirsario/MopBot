@@ -11,6 +11,7 @@ using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems.Permissions;
 using MopBotTwo.Core.Systems;
 using MopBotTwo.Core.Systems.Commands;
+using MopBotTwo.Core;
 
 namespace MopBotTwo.Common.Systems.Dev
 {
@@ -49,6 +50,12 @@ namespace MopBotTwo.Common.Systems.Dev
 		[Command("sudo")]
 		public async Task SudoCommand(SocketGuildUser user,SocketTextChannel channel,[Remainder]string command)
 			=> await CommandSystem.ExecuteCommand(new MessageExt(Context.message,Context.server,user,command,true,channel),true);
+
+		[Command("errortest")]
+		public async Task ErrorTest()
+		{
+			throw new Exception("An error has occured, as you requested!");
+		}
 
 		[Command("addreaction")]
 		public Task AddReaction(SocketTextChannel channel,ulong messageId,string emote) => AddReaction(Context.server.Id,channel.Id,messageId,emote);

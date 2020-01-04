@@ -9,6 +9,7 @@ using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems;
 using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Common.Systems.Currency;
+using MopBotTwo.Core;
 
 namespace MopBotTwo.Common.Systems.Trivia
 {

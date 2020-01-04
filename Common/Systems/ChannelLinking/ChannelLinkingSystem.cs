@@ -11,6 +11,7 @@ using MopBotTwo.Core.Systems.Permissions;
 using MopBotTwo.Core.Systems;
 using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Core.DataStructures;
+using MopBotTwo.Core;
 
 namespace MopBotTwo.Common.Systems.ChannelLinking
 {

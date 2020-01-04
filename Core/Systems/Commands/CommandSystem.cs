@@ -20,10 +20,6 @@ namespace MopBotTwo.Core.Systems.Commands
 		public static Dictionary<string,BotSystem> commandGroupToSystem;
 		public static Dictionary<string,BotSystem> commandToSystem;
 		public static Dictionary<char,Regex> commandRegex = new Dictionary<char,Regex>();
-		public static Dictionary<string,MessageExt> recentContexts = new Dictionary<string,MessageExt>();
-		[ThreadStatic] public static MessageExt currentThreadContext;
-
-		private static readonly Regex TempRegex = new Regex(@"Error occurred executing ("".+"" for .+#\d\d\d\d in .+\/[\w-_]+)\.");
 
 		public override void RegisterDataTypes()
 		{
@@ -36,6 +32,7 @@ namespace MopBotTwo.Core.Systems.Commands
 
 			foreach(var type in MopBot.botTypes.Where(t => !t.IsAbstract && t.IsDerivedFrom(typeof(BotSystem)))) {
 				string group = null;
+
 				var system = MopBot.instance.systems.First(t => t.GetType()==type);
 				if(system==null) {
 					throw new Exception($"Couldn't find instance of System {type.Name}");
@@ -66,8 +63,6 @@ namespace MopBotTwo.Core.Systems.Commands
 				DefaultRunMode = RunMode.Sync,
 				CaseSensitiveCommands = false
 			});
-			commandService.Log += CommandServiceLogging;
-			commandService.CommandExecuted += OnCommandExecuted;
 
 			foreach(var type in MopBot.botTypes.Where(t => !t.IsAbstract && typeof(CustomTypeReader).IsAssignableFrom(t))) {
 				var instance = (CustomTypeReader)Activator.CreateInstance(type);
@@ -98,13 +93,10 @@ namespace MopBotTwo.Core.Systems.Commands
 			}
 
 			var matches = regex.Matches(context.content);
+			bool fail = false;
 
 			foreach(Match match in matches) {
-				/*if(commandNum>0 && lastCmdFailed && match.Groups[1].Value=="&") {
-					return;
-				}*/
-				
-				string commandText = match.Groups[2].Value.Trim(); //Should try doing trimming in regex
+				string commandText = match.Groups[2].Value.Trim();
 
 				var searchResult = commandService.Search(context,commandText);
 				if(!searchResult.IsSuccess) {
@@ -114,7 +106,7 @@ namespace MopBotTwo.Core.Systems.Commands
 				var commandMatches = searchResult.Commands;
 				int numCommands = commandMatches.Count;
 
-				bool anythingSucceeded = false;
+				bool matchSucceeded = false;
 				bool forceBreak = false;
 
 				for(int i = 0;i<numCommands;i++) {
@@ -129,59 +121,82 @@ namespace MopBotTwo.Core.Systems.Commands
 
 					Console.WriteLine($"Executing command '{commandText}'.");
 
-					//TODO: Find another solution to pass context to CommandServiceLogging(LogMessage)
-					recentContexts[$@"""{command.Name}"" for {context.user.Id} in {context.server.Id}/{context.Channel.Id}"] = context;
-					currentThreadContext = context;
-
 					var preconditionResult = await commandMatch.CheckPreconditionsAsync(context,MopBot.serviceProvaider);
 					var parseResult = await commandMatch.ParseAsync(context,searchResult,preconditionResult,MopBot.serviceProvaider);
-					var result = await commandMatch.ExecuteAsync(context,parseResult,MopBot.serviceProvaider);
+					var result = (ExecuteResult)await commandMatch.ExecuteAsync(context,parseResult,MopBot.serviceProvaider);
 
 					if(result.IsSuccess) {
-						anythingSucceeded = true;
+						matchSucceeded = true;
 						break;
 					} else {
 						var e = result.Error;
+
+						EmbedBuilder embedBuilder;
+
 						switch(e) {
 							case CommandError.Exception:
-								await context.ReplyAsync($"An error has occured when trying to execute the last command: {result.ErrorReason}");
-								await context.Failure();
+								var exception = result.Exception;
+
+								embedBuilder = MopBot.GetEmbedBuilder(server);
+
+								if(exception is BotError botError) {
+									embedBuilder.Title = $"❌ - {botError.Message}";
+									embedBuilder.Color = Color.Orange;
+								} else {
+									embedBuilder.Title = "❗ - Unhandled Exception";
+									embedBuilder.Description = $"`{result.ErrorReason}`";
+									embedBuilder.Color = Color.Red;
+								}
+
+								await context.ReplyAsync(embedBuilder.Build());
 
 								forceBreak = true;
+
 								break;
 							case CommandError.UnmetPrecondition:
 								if(lastCommand) {
-									await context.ReplyAsync(result.ErrorReason);
+									await context.ReplyAsync(MopBot.GetEmbedBuilder(server)
+										.WithTitle($"❌ - {result.ErrorReason}")
+										.WithColor(Color.Orange)
+										.Build()
+									);
 								}
+
 								break;
 							default: {
 								if(!lastCommand || e==CommandError.Unsuccessful) {
 									break;
 								}
 
-								string text = e switch {
-									CommandError.BadArgCount => "Invalid number of arguments.",
-									_ => result.ErrorReason,
-								};
+								embedBuilder = MopBot.GetEmbedBuilder(server)
+									.WithTitle($"❌ - {(e==CommandError.BadArgCount ? "Invalid number of arguments." : result.ErrorReason)}")
+									.WithDescription($"**Usage:** `{commandMatch.Alias+(command.Parameters.Count==0 ? "" : " "+string.Join(' ',command.Parameters.Select(p => $"<{p.Name}>")))}`")
+									.WithColor(Color.Orange);
 
-								text += $"\r\n**Usage:** `{commandMatch.Alias+(command.Parameters.Count==0 ? "" : " "+string.Join(' ',command.Parameters.Select(p => $"<{p.Name}>")))}`";
-
-								if(text!=null) {
-									await context.ReplyAsync(text);
-									await context.Failure();
-								}
+								await context.ReplyAsync(embedBuilder.Build());
 
 								break;
 							}
 						}
 
-						continue;
+						if(e!=CommandError.Unsuccessful && (lastCommand || forceBreak)) {
+							await context.Failure();
+						}
+
+						if(forceBreak) {
+							break;
+						}
 					}
 				}
 
-				if(!anythingSucceeded || forceBreak) {
+				if(!matchSucceeded || forceBreak) {
+					fail = true;
 					break;
 				}
+			}
+
+			if(!fail && context is MessageExt c && !c.messageDeleted && c.message!=null && c.socketTextChannel!=null && await c.socketTextChannel.GetMessageAsync(c.message.Id)!=null) {
+				await context.Success();
 			}
 		}
 		public static List<(string[] aliases,string description,bool isGroup)> GetAvailableCommands(SocketGuild server,SocketGuildUser user,bool fillNullDescription = false)
@@ -224,62 +239,6 @@ namespace MopBotTwo.Core.Systems.Commands
 			}
 
 			return true;
-		}
-
-		private static async Task CommandServiceLogging(LogMessage logMsg)
-		{
-			var exception = logMsg.Exception;
-
-			if(exception is CommandException cmdException) {
-				var cmdInnerException = cmdException.InnerException;
-				var context = currentThreadContext;
-
-				//TODO: Replace this shitcode with something else..
-				var match = TempRegex.Match(cmdException.Message);
-				if(match.Success) {
-					string key = match.Groups[1].Value;
-					if(recentContexts.TryGetValue(key,out var newContext)) {
-						context = newContext;
-						recentContexts.Remove(key);
-					}
-				}
-
-				if(cmdInnerException is BotError botError) {
-					if(context!=null) {
-						string errorMsg = botError.Message;
-						var errorInnerException = botError.InnerException;
-
-						if(!string.IsNullOrEmpty(errorMsg)) {
-							if(errorInnerException!=null) {
-								await context.ReplyAsync($"{errorMsg}```\r\n{errorInnerException.Message}```");
-							} else {
-								await context.ReplyAsync(errorMsg);
-							}
-						} else if(errorInnerException!=null) {
-							await context.ReplyAsync(errorInnerException.Message);
-						}
-
-						await context.Failure();
-					} else {
-						Console.WriteLine($"InnerException is BotError, but context is null. Message: '{cmdInnerException.Message}'.");
-					}
-				} else {
-					Console.WriteLine($"InnerException is {(cmdInnerException!=null ? $"{cmdInnerException.GetType().Name}: '{cmdInnerException.Message}'." : "Null")}");
-				}
-			}
-		}
-		private static async Task OnCommandExecuted(Optional<CommandInfo> commandInfo,ICommandContext context,IResult result)
-		{
-			if(context is MessageExt c && !c.messageDeleted && c.message!=null && c.socketTextChannel!=null && await c.socketTextChannel.GetMessageAsync(c.message.Id)!=null) {
-				await context.Success();
-			}
-
-			if(!commandInfo.IsSpecified) {
-				return;
-			}
-
-			var user = context.User;
-			recentContexts.Remove($@"""{commandInfo.Value.Name}"" for {user.Id} in {context.Guild.Id}/{context.Channel.Id}");
 		}
 	}
 }

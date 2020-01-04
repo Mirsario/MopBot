@@ -4,7 +4,7 @@ using Discord.WebSocket;
 using Newtonsoft.Json;
 using MopBotTwo.Core.Systems.Memory;
 using System.Linq;
-
+using MopBotTwo.Core;
 
 namespace MopBotTwo.Common.Systems.Issues
 {

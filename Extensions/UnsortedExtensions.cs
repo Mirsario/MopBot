@@ -15,6 +15,7 @@ using DColor = Discord.Color;
 using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Core.Systems.Permissions;
 using MopBotTwo.Core.Systems.Channels;
+using MopBotTwo.Core;
 
 namespace MopBotTwo.Extensions
 {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Discord.WebSocket;
 using Newtonsoft.Json;
 using MopBotTwo.Core.Systems.Memory;
-
+using MopBotTwo.Core;
 
 namespace MopBotTwo.Common.Systems.Changelogs
 {
