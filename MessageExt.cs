@@ -114,10 +114,11 @@ namespace MopBotTwo
 		public async Task Delete()
 		{
 			if(!messageDeleted) {
+				messageDeleted = true;
+
 				if(socketTextChannel==null || server.CurrentUser.HasChannelPermission(socketTextChannel,DiscordPermission.ManageMessages)) {
 					await message.DeleteAsync();
 				}
-				messageDeleted = true;
 			}
 		}
 	}
