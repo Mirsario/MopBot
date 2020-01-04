@@ -61,6 +61,11 @@ namespace MopBotTwo.Common.Systems.MessageManagement
 		[Command("send")]
 		[Alias("say")]
 		[RequirePermission(SpecialPermission.Owner,"messagemanaging.send")]
+		public Task SendMessageCommand([Remainder]string text) => SendMessageInternal(Context.socketTextChannel,text);
+
+		[Command("send")]
+		[Alias("say")]
+		[RequirePermission(SpecialPermission.Owner,"messagemanaging.send")]
 		public Task SendMessageCommand(SocketTextChannel textChannel,[Remainder]string text) => SendMessageInternal(textChannel,text);
 
 		[Command("send")]
