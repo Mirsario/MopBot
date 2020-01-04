@@ -1,8 +1,6 @@
 ﻿using Discord.WebSocket;
 using MopBotTwo.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MopBotTwo.Core.DataStructures
 {

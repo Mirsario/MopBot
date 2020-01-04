@@ -1,10 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+﻿using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using Discord;
-using Discord.WebSocket;
 using Discord.Commands;
 using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems;

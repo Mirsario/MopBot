@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Discord.WebSocket;
 using MopBotTwo.Core.Systems.Memory;
 
 namespace MopBotTwo.Common.Systems.ChannelLinking

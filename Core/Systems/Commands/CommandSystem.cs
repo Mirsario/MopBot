@@ -8,8 +8,8 @@ using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
 using MopBotTwo.Extensions;
-using MopBotTwo.TypeReaders;
 using MopBotTwo.Core.Systems.Memory;
+using MopBotTwo.Core.TypeReaders;
 
 namespace MopBotTwo.Core.Systems.Commands
 {
@@ -86,20 +86,21 @@ namespace MopBotTwo.Core.Systems.Commands
 			//Regex parsing
 			char symbol = skipRegex ? ' ' : commandServerData.commandPrefix;
 
-			string GetRegexCode() => $@"({(skipRegex ? "$" : $"[{symbol}]")}|&&)((?:""[\s\S]*?""|[\s\S](?!&&))+)(?!&&)";
-
 			if(!commandRegex.TryGetValue(symbol,out Regex regex)) {
-				commandRegex[symbol] = regex = new Regex(GetRegexCode(),RegexOptions.Compiled);
+				//										([!]|&&)((?:"[\s\S]*?"|[\s\S](?!&&))+)(?!&&)
+				commandRegex[symbol] = regex = new Regex($@"({(skipRegex ? "$" : $"[{symbol}]")}|&&)((?:""[\s\S]*?""|[\s\S](?!&&))+)(?!&&)",RegexOptions.Compiled);
 			}
 
 			var matches = regex.Matches(context.content);
 			bool fail = false;
 
-			foreach(Match match in matches) {
+			for(int i = 0;i<matches.Count;i++) {
+				Match match = matches[i];
 				string commandText = match.Groups[2].Value.Trim();
 
 				var searchResult = commandService.Search(context,commandText);
 				if(!searchResult.IsSuccess) {
+					Console.WriteLine($"Search for '{commandText}' failed.");
 					return;
 				}
 
@@ -109,17 +110,17 @@ namespace MopBotTwo.Core.Systems.Commands
 				bool matchSucceeded = false;
 				bool forceBreak = false;
 
-				for(int i = 0;i<numCommands;i++) {
-					var commandMatch = commandMatches[i];
+				for(int j = 0;j<numCommands;j++) {
+					var commandMatch = commandMatches[j];
 					var command = commandMatch.Command;
 
-					bool lastCommand = i==numCommands-1;
+					bool lastCommand = j==numCommands-1;
 
 					if(!TryGetCommandsSystem(command,out BotSystem system) || !system.IsEnabledForServer(server)) {
 						continue;
 					}
 
-					Console.WriteLine($"Executing command '{commandText}'.");
+					Console.WriteLine($"Executing command [{i+1}/{matches.Count}] '{commandText}'.");
 
 					var preconditionResult = await commandMatch.CheckPreconditionsAsync(context,MopBot.serviceProvaider);
 					var parseResult = await commandMatch.ParseAsync(context,searchResult,preconditionResult,MopBot.serviceProvaider);

@@ -1,16 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using Discord;
-using Discord.WebSocket;
-using Discord.Rest;
+﻿using System.Threading.Tasks;
 using Discord.Commands;
 using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems.Permissions;
 using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Commands;
 using MopBotTwo.Core.Systems.Memory;
 
 namespace MopBotTwo.Common.Systems.MemoryTest

@@ -10,6 +10,7 @@ using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems;
 using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Core;
+using MopBotTwo.Utilities;
 
 namespace MopBotTwo.Common.Systems.XP
 {
@@ -89,7 +90,7 @@ namespace MopBotTwo.Common.Systems.XP
 			return 3*lvl*lvl*lvl+lvl;
 		}
 
-		private static async Task ModifyXP(Func<ulong,ulong> xpModifier,SocketGuildUser user,SocketGuild server,SocketMessage message = null)
+		private static async Task ModifyXP(Func<ulong,ulong> xpModifier,SocketGuildUser user,SocketGuild server,SocketUserMessage message = null)
 		{
 			var serverMemory = MemorySystem.memory[server];
 			var userMemory = serverMemory[user];
@@ -101,25 +102,9 @@ namespace MopBotTwo.Common.Systems.XP
 			uint newLvl = XPToLevel(xpUserData.xp);
 
 			if(message!=null) {
-				async Task AddMultipleReactions(IEnumerable<string> emotes)
-				{
-					foreach(var emote in emotes) {
-						await message.AddReactionAsync(server,server.GetEmote(emote));
-					}
-				}
-
 				if(newLvl>prevLvl) {
 					try {
-						await AddMultipleReactions(new[] {
-							"regional_indicator_l",
-							"regional_indicator_e",
-							"regional_indicator_v",
-							"regional_indicator_e",
-							"regional_indicator_l",
-							"regional_indicator_u",
-							"regional_indicator_p",
-							"star",
-						});
+						await message.AddReactionAsync(EmoteUtils.Parse("🌟"));
 					}
 					catch(Exception e) {
 						await MopBot.HandleException(e);

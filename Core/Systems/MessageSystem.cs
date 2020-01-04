@@ -56,8 +56,12 @@ namespace MopBotTwo.Core.Systems
 				return;
 			}
 
+			Console.ForegroundColor = ConsoleColor.Green;
+
 			Console.WriteLine($"MessageReceived - '{newMessage.server.Name}' -> #{newMessage.messageChannel.Name} -> {newMessage.user.Username}#{newMessage.user.Discriminator}: {newMessage.content}");
-			
+
+			Console.ResetColor();
+
 			await CallForEnabledSystems(newMessage.server,s => s.OnMessageReceived(newMessage));
 		}
 		public static async Task MessageDeleted(Cacheable<IMessage,ulong> cachedMessage,ISocketMessageChannel channel)

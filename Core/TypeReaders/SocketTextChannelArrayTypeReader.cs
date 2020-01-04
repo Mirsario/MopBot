@@ -6,13 +6,13 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
-namespace MopBotTwo.TypeReaders
+namespace MopBotTwo.Core.TypeReaders
 {
 	public class SocketTextChannelArrayTypeReader : DiscordEntityArrayTypeReader<SocketTextChannel>
 	{
-		public override Type[] Types => new[] { typeof(IChannel[]),typeof(ITextChannel[]),typeof(SocketTextChannel[]) };
-
 		protected Regex parseRegex;
+
+		public override Type[] Types => new[] { typeof(IChannel[]),typeof(ITextChannel[]),typeof(SocketTextChannel[]) };
 		public override Regex ParseRegex => parseRegex ?? (parseRegex = new Regex($@"(?:(<\#\d+>|\d+)|#([\w-]+))\s*",RegexOptions.Compiled));
 
 		public override async Task<SocketTextChannel> GetFromId(ICommandContext context,ulong id)

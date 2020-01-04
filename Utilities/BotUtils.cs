@@ -30,23 +30,27 @@ namespace MopBotTwo
 			foreach(var server in MopBot.client.Guilds) {
 				if(server.Emotes.TryGetFirst(e => MopBot.StrComparerIgnoreCase.Equals(name,e.Name),out var emote)) {
 					emoteText = $"<{(emote.Animated ? "a" : null)}:{emote.Name}:{emote.Id}>";
+
 					Console.WriteLine($"Emote found '{name}', emoteText is '{emoteText}'.");
+
 					return true;
 				}
 			}
+
 			Console.WriteLine($"Emote '{name}' not found.");
 			
 			emoteText = null;
+
 			return false;
 		}
 		//TODO:
 		public static string GetEmojiImageUrl(string name)
 		{
-			switch(name) {
-				case "⭐": return @"https://i.imgur.com/Wh8s8Gp.png";
-				case "?": return @"https://i.imgur.com/NDZdstw.png";
-				default: return "";
-			}
+			return name switch {
+				"⭐" => @"https://i.imgur.com/Wh8s8Gp.png",
+				"?" => @"https://i.imgur.com/NDZdstw.png",
+				_ => "",
+			};
 		}
 		public static string NumberToEmotes(int number)
 		{

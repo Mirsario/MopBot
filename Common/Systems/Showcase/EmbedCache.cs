@@ -1,7 +1,6 @@
 ﻿using System;
 using Discord;
 using Discord.WebSocket;
-using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Core.Systems.Commands;
 using Color = MopBotTwo.Core.DataStructures.Color;
 using MopBotTwo.Extensions;

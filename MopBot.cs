@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +14,7 @@ using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Core.Systems.Channels;
 using MopBotTwo.Core.Systems.Status;
 using MopBotTwo.Core;
+using System.Runtime.ExceptionServices;
 
 #pragma warning disable CS0162
 
@@ -58,7 +58,7 @@ namespace MopBotTwo
 			random = new Random((int)DateTime.Now.Ticks);
 
 			AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
-			//AppDomain.CurrentDomain.FirstChanceException += OnFirstChanceException;
+			AppDomain.CurrentDomain.FirstChanceException += OnFirstChanceException;
 		}
 		public async Task Run()
 		{
@@ -143,7 +143,7 @@ namespace MopBotTwo
 			}
 		}
 
-		/*private static async void OnFirstChanceException(object sender,FirstChanceExceptionEventArgs args)
+		private static async void OnFirstChanceException(object sender,FirstChanceExceptionEventArgs args)
 		{
 			var e = args.Exception;
 
@@ -157,7 +157,7 @@ namespace MopBotTwo
 			}
 
 			await HandleException(e,"OnFirstChanceException - ");
-		}*/
+		}
 		private static void OnProcessExit(object sender,EventArgs e)
 		{
 			if(!StatusSystem.noActivityChanging) {

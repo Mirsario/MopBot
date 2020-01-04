@@ -6,7 +6,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
-namespace MopBotTwo.TypeReaders
+namespace MopBotTwo.Core.TypeReaders
 {
 	public class SocketRoleArrayTypeReader : DiscordEntityArrayTypeReader<SocketRole>
 	{

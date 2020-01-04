@@ -4,7 +4,7 @@ using Discord;
 using Discord.WebSocket;
 using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems.Memory;
-
+using MopBotTwo.Utilities;
 
 namespace MopBotTwo.Common.Systems.Showcase
 {
@@ -12,7 +12,7 @@ namespace MopBotTwo.Common.Systems.Showcase
 	{
 		public ShowcaseChannel[] showcaseChannels;
 		public SpotlightChannel[] spotlightChannels;
-		public Dictionary<string,string> emotes;
+		public Dictionary<EmoteType,string> emotes;
 
 		public override void Initialize(SocketGuild server) { }
 
@@ -34,15 +34,24 @@ namespace MopBotTwo.Common.Systems.Showcase
 		}
 		public bool TryGetChannelInfo<T>(IChannel channel,out T result) where T : ChannelInfo => (result = GetChannelInfo<T>(channel,false))!=null;
 
-		public IEmote GetEmote(SocketGuild server,string emoteId,bool throwOnNull = true)
+		public bool TryGetEmote(EmoteType emoteType,out IEmote emote)
 		{
-			IEmote emote;
-			if(emotes==null || !emotes.TryGetValue(emoteId,out string emoteName) || (emote = server.GetEmote(emoteName))==null) {
-				throw new BotError($"Emote '{emoteId}' is not assigned.");
-			}
-			return emote;
+			emote = null;
+
+			return emotes!=null && emotes.TryGetValue(emoteType,out string emoteStr) && EmoteUtils.TryParse(emoteStr,out emote);
 		}
-		public bool TryGetEmote(SocketGuild server,string emoteId,out IEmote result) => (result = GetEmote(server,emoteId,false))!=null;
+		public IEmote GetEmote(EmoteType emoteType,bool throwOnFail = true)
+		{
+			if(TryGetEmote(emoteType,out var emote)) {
+				return emote;
+			}
+
+			if(!throwOnFail) {
+				return null;
+			}
+
+			throw new BotError($"Emote '{emoteType}' hasn't been set or is missing.");
+		}
 
 		public void RemoveChannel(ulong id)
 		{

@@ -6,7 +6,7 @@ using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems;
 using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Core.Systems.Permissions;
-
+using Discord;
 
 namespace MopBotTwo.Common.Systems.Currency
 {
@@ -97,7 +97,7 @@ namespace MopBotTwo.Common.Systems.Currency
 
 		[Command("setup")]
 		[RequirePermission(SpecialPermission.Owner,"currency.manage")]
-		public async Task SetupCurrencyCommand(string currencyId,string displayName,string description,string emote)
+		public async Task SetupCurrencyCommand(string currencyId,string displayName,string description,IEmote emote)
 		{
 			var context = Context;
 			var currencyServerData = context.server.GetMemory().GetData<CurrencySystem,CurrencyServerData>();
@@ -109,7 +109,7 @@ namespace MopBotTwo.Common.Systems.Currency
 
 			currency.displayName = displayName;
 			currency.description = description;
-			currency.emote = emote;
+			currency.emote = emote.ToString();
 		}
 		[Command("rename")]
 		[RequirePermission(SpecialPermission.Owner,"currency.manage")]

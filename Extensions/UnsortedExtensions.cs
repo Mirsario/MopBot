@@ -30,25 +30,6 @@ namespace MopBotTwo.Extensions
 		public static BindingFlags anyFlags = BindingFlags.Instance|BindingFlags.Static|BindingFlags.NonPublic|BindingFlags.Public;
 		public static string Name(this IUser user) => (user as IGuildUser)?.Nickname ?? user?.Username ?? "UnknownUser";
 
-		public static IEmote GetEmote(this SocketGuild server,string emote)
-		{
-			if(emote==null) {
-				return null;
-			}
-
-			emote = emote.ToLower();
-
-			var emoteClean = emote.Replace(":","");
-
-			return server.Emotes.FirstOrDefault(e => e.Name.ToLower()==emoteClean);
-		}
-		public static async Task TryAddReaction(this MessageExt message,IEmote emote)
-		{
-			if(emote!=null && message.server!=null) {
-				await message.socketMessage.AddReactionAsync(message.server,emote);
-			}
-		}
-
 		public static SocketUserMessage ToSocketUserMessage(this RestUserMessage restMessage,SocketTextChannel channel)
 		{
 			SocketUserMessage msgNew = MopBot.Construct<SocketUserMessage>(new Type[] { typeof(DiscordSocketClient),typeof(ulong),typeof(ISocketMessageChannel),typeof(SocketUser),typeof(MessageSource) },new object[] { MopBot.client,restMessage.Id,channel,restMessage.Author,restMessage.Source });
@@ -56,39 +37,6 @@ namespace MopBotTwo.Extensions
 			typeof(SocketUserMessage).GetField("_embeds",anyFlags).SetValue(msgNew,(ImmutableArray<Embed>)restMessage.Embeds);
 			typeof(SocketUserMessage).GetField("_attachments",anyFlags).SetValue(msgNew,(ImmutableArray<Attachment>)restMessage.Attachments);
 			return msgNew;
-		}
-		public static async Task AddReactionAsync(this SocketMessage message,IEmote emote,RequestOptions options = null)
-		{
-			//await MessageHelper.AddReactionAsync(this, emote, base.Discord, options);
-			Type discordRestApiClient = typeof(DiscordRestClient).Assembly.GetType("Discord.API.DiscordRestApiClient");
-			var method = discordRestApiClient.GetMethod("AddReactionAsync",BindingFlags.Public|BindingFlags.Instance);
-			var property = typeof(BaseDiscordClient).GetProperty("ApiClient",BindingFlags.NonPublic|BindingFlags.Instance);
-			var obj = property.GetValue(MopBot.client);
-			await (Task)method.Invoke(obj,new object[] {
-				message.Channel.Id,message.Id,emote is Emote e ? $"{e.Name}:{e.Id}" : emote.Name,options
-				//channel,		   message,	  emote,					MopBot.client,options
-			});
-		}
-		public static async Task AddReactionAsync(this SocketMessage message,SocketGuild server,IEmote emote,RequestOptions options = null)
-		{
-			//await MessageHelper.AddReactionAsync(this, emote, base.Discord, options);
-			Type discordRestApiClient = typeof(DiscordRestClient).Assembly.GetType("Discord.API.DiscordRestApiClient");
-			var method = discordRestApiClient.GetMethod("AddReactionAsync",BindingFlags.Public|BindingFlags.Instance);
-			var property = typeof(BaseDiscordClient).GetProperty("ApiClient",BindingFlags.NonPublic|BindingFlags.Instance);
-			var obj = property.GetValue(MopBot.client);
-			Task task = (Task)method.Invoke(obj,new object[] {
-				message.Channel.Id,message.Id,emote is Emote e ? $"{e.Name}:{e.Id}" : emote.Name,options
-				//message,emote,MopBot.client,options
-			});
-
-			try {
-				await task;
-			}
-			catch(HttpException exception) {
-				if(MemorySystem.memory[server].GetData<ChannelSystem,ChannelServerData>().TryGetChannelByRoles(out var tempChannel,ChannelRole.Logs,ChannelRole.BotArea,ChannelRole.Default) && tempChannel is IMessageChannel logChannel) {
-					await logChannel.SendMessageAsync($"Unable to add reactions in <#{message.Channel.Id}>, an HttpException has occured:\n{exception.Message}");
-				}
-			}
 		}
 		public static async Task<SocketGuildUser[]> GetReactionUsersAsync(this SocketMessage message,SocketGuild server,IEmote emote,RequestOptions options = null)
 		{
@@ -111,10 +59,12 @@ namespace MopBotTwo.Extensions
 				task.Wait();
 				var list = task.GetType().GetProperty("Result",BindingFlags.Public|BindingFlags.Instance).GetValue(task);
 				var enumerable = (IEnumerable)list;
-				List<SocketGuildUser> result = new List<SocketGuildUser>();
+				var result = new List<SocketGuildUser>();
+
 				foreach(var value in enumerable) {
 					result.Add(server.GetUser((ulong)userType.GetProperty("Id",BindingFlags.Public|BindingFlags.Instance).GetValue(value)));
 				}
+
 				return result.ToArray();
 			}
 			catch(HttpException exception) {

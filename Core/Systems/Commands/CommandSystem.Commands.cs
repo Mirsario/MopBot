@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -37,9 +36,11 @@ namespace MopBotTwo.Core.Systems.Commands
 			cmdOrGroup = cmdOrGroup.Trim().ToLower();
 
 			var match = GroupCommandRegex.Match(cmdOrGroup);
+
 			if(!match.Success) {
 				throw new BotError($"Invalid input: `{cmdOrGroup}`.");
 			}
+
 			string groupA = match.Groups[1].Value;
 			string groupB = match.Groups[2].Value;
 
@@ -47,15 +48,17 @@ namespace MopBotTwo.Core.Systems.Commands
 			var cmdPrefix = context.server.GetMemory().GetData<CommandSystem,CommandServerData>().commandPrefix;
 			
 			EmbedBuilder builder = null;
+
 			EmbedBuilder PrepareBuilder() => builder = MopBot.GetEmbedBuilder(context);
 
 			static IEnumerable<string> GetAliasesWithoutParent(IEnumerable<string> aliases)
 			{
-				HashSet<string> hashSet = new HashSet<string>();
+				var hashSet = new HashSet<string>();
 
 				foreach(var alias in aliases) {
 					var match = GroupCommandRegex.Match(alias);
 					var groups = match.Groups;
+
 					hashSet.Add(groups[2].Success ? groups[2].Value : groups[1].Value);
 				}
 

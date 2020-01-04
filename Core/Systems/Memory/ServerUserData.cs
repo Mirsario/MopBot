@@ -1,5 +1,4 @@
-﻿using Discord.WebSocket;
-using System;
+﻿using System;
 
 namespace MopBotTwo.Core.Systems.Memory
 {
