@@ -245,6 +245,7 @@ namespace MopBotTwo
 			string logText = $"Exception from `{DateTime.UtcNow}` (UTC):\r\n##### Exception Start #####\r\n{errorText}\r\n##### Exception End #####";
 
 			Console.WriteLine(logText);
+
 			File.AppendAllText("BotErrors.log",logText);
 
 			if(!noDiscordPosts && logChannel!=null && client?.ConnectionState==ConnectionState.Connected) {

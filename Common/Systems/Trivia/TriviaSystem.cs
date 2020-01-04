@@ -32,7 +32,7 @@ namespace MopBotTwo.Common.Systems.Trivia
 		{
 			var triviaServerData = server.GetMemory().GetData<TriviaSystem,TriviaServerData>();
 			if(!triviaServerData.IsReady) {
-				return; //TODO: Perhaps let the admins know that this is misconfigured.
+				return; //TODO: Let the admins know that this is misconfigured.
 			}
 
 			var now = DateTime.Now;
@@ -44,8 +44,6 @@ namespace MopBotTwo.Common.Systems.Trivia
 			triviaServerData.lastTriviaPost = now;
 
 			triviaServerData.currentChannel = triviaServerData.triviaChannels[MopBot.random.Next(triviaServerData.triviaChannels.Count)];
-
-			Console.WriteLine("Chose: "+triviaServerData.currentChannel);
 
 			var channel = server.GetTextChannel(triviaServerData.currentChannel);
 			if(channel==null) {

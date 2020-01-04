@@ -74,6 +74,7 @@ namespace MopBotTwo.Core.Systems.Commands
 
 				foreach(Type assignedType in instance.Types) {
 					Console.WriteLine($"Registering {type.Name} for type {assignedType.Name}");
+
 					commandService.AddTypeReader(assignedType,instance);
 				}
 			}
@@ -85,25 +86,18 @@ namespace MopBotTwo.Core.Systems.Commands
 				return;
 			}
 
-			Console.WriteLine($"ExecuteCommand called.");
-
 			var commandServerData = server.GetMemory().GetData<CommandSystem,CommandServerData>();
 
 			//Regex parsing
 			char symbol = skipRegex ? ' ' : commandServerData.commandPrefix;
 
-			//string GetRegexCode() => $@"(^{(skipRegex ? null : $@"[{symbol}](?=\S)")}|&&)((?:"".*?""|[^&]*?)+)(?=&&|$)";
 			string GetRegexCode() => $@"({(skipRegex ? "$" : $"[{symbol}]")}|&&)((?:""[\s\S]*?""|[\s\S](?!&&))+)(?!&&)";
 
 			if(!commandRegex.TryGetValue(symbol,out Regex regex)) {
 				commandRegex[symbol] = regex = new Regex(GetRegexCode(),RegexOptions.Compiled);
 			}
 
-			Console.WriteLine($"Executing regex '{GetRegexCode()}'.");
-
 			var matches = regex.Matches(context.content);
-
-			Console.WriteLine($"Found {matches.Count} matches.");
 
 			foreach(Match match in matches) {
 				/*if(commandNum>0 && lastCmdFailed && match.Groups[1].Value=="&") {
@@ -119,8 +113,6 @@ namespace MopBotTwo.Core.Systems.Commands
 
 				var commandMatches = searchResult.Commands;
 				int numCommands = commandMatches.Count;
-
-				Console.WriteLine($"Found {numCommands} commands.");
 
 				bool anythingSucceeded = false;
 				bool forceBreak = false;
@@ -143,7 +135,7 @@ namespace MopBotTwo.Core.Systems.Commands
 
 					var preconditionResult = await commandMatch.CheckPreconditionsAsync(context,MopBot.serviceProvaider);
 					var parseResult = await commandMatch.ParseAsync(context,searchResult,preconditionResult,MopBot.serviceProvaider);
-					var result = await commandMatch.ExecuteAsync(context,parseResult,MopBot.serviceProvaider); //commandService.ExecuteAsync(context,commandText,MopBot.serviceProvaider);
+					var result = await commandMatch.ExecuteAsync(context,parseResult,MopBot.serviceProvaider);
 
 					if(result.IsSuccess) {
 						anythingSucceeded = true;
@@ -197,8 +189,10 @@ namespace MopBotTwo.Core.Systems.Commands
 			var result = new List<(string[] aliases,string description,bool isGroup)>();
 			var shownCommands = new List<string>();
 			var context = new MessageExt(null,server,user);
+
 			foreach(var m in commandService.Modules) {
 				string noDescription = fillNullDescription ? "No description provided." : null;
+
 				if(m.Group!=null) {
 					if(!shownCommands.Contains(m.Group) && commandGroupToSystem.TryGetValue(m.Group,out BotSystem system) && system.IsEnabledForServer(server) && m.Preconditions.PermissionsMet(context)) {
 						result.Add((m.Aliases.ToArray(),m.Summary ?? noDescription,true));
@@ -213,6 +207,7 @@ namespace MopBotTwo.Core.Systems.Commands
 					}
 				}
 			}
+
 			return result;
 		}
 		public static bool TryGetCommandsSystem(CommandInfo command,out BotSystem system)
@@ -233,11 +228,9 @@ namespace MopBotTwo.Core.Systems.Commands
 
 		private static async Task CommandServiceLogging(LogMessage logMsg)
 		{
-			//Console.WriteLine($"CommandServiceLogging: exception is {arg.Exception?.GetType()?.Name ?? "NULL"}, message is '{arg.Message}', source is '{arg.Source}'");
 			var exception = logMsg.Exception;
-			if(exception is CommandException cmdException) {
-				Console.WriteLine($"CommandServiceLogging: cmdException.Message: {cmdException.Message}");
 
+			if(exception is CommandException cmdException) {
 				var cmdInnerException = cmdException.InnerException;
 				var context = currentThreadContext;
 

@@ -105,19 +105,15 @@ namespace MopBotTwo
 
 		public static async Task<string> GetInviteUrl(SocketGuild server)
 		{
+			//TODO: Require.. what permission?
+
 			IEnumerable<RestInviteMetadata> invites = await server.GetInvitesAsync();
 
-			Console.WriteLine($"{invites.Count()} invites found.");
-
 			invites = invites.Where(invite => {
-				Console.WriteLine($"Invite {invite.Code}: Revoked is {invite.IsRevoked}, Uses is {invite.Uses?.ToString() ?? "NULL"}, MaxUses is {invite.MaxUses?.ToString() ?? "NULL"}");
-
 				int maxUses = invite.MaxUses ?? 0;
 
 				return !invite.IsRevoked && invite.Uses.HasValue && (maxUses==0 || maxUses<invite.Uses);
 			});
-
-			Console.WriteLine($"{invites.Count()} invites chosen.");
 
 			return invites.OrderByDescending(invite => ((invite.IsTemporary || (invite.MaxUses ?? 0)>0) ? int.MinValue : 0)+invite.Uses).FirstOrDefault()?.Url;
 		}

@@ -44,21 +44,13 @@ namespace MopBotTwo.Common.Systems.XP
 		}
 		public override async Task OnMessageDeleted(MessageExt message)
 		{
-			Console.WriteLine("1");
-
 			if(message==null ||  message.isCommand || message.server==null || message.socketServerUser==null || message.socketServerUser.IsBot) {
 				return;
 			}
 
-			Console.WriteLine("2");
-
 			ulong xp = GetMessageXP(message);
 
-			Console.WriteLine("3");
-
 			await TakeXP(xp,message.socketServerUser,message.server,message.socketServerChannel);
-
-			Console.WriteLine("4");
 		}
 
 		public static ulong GetMessageXP(MessageExt message)
