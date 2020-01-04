@@ -63,7 +63,7 @@ namespace MopBotTwo.Core.Systems.Commands
 		public static void StaticInit()
 		{
 			commandService = new CommandService(new CommandServiceConfig {
-				DefaultRunMode = RunMode.Async,
+				DefaultRunMode = RunMode.Sync,
 				CaseSensitiveCommands = false
 			});
 			commandService.Log += CommandServiceLogging;
