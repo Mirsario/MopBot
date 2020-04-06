@@ -28,8 +28,10 @@ namespace MopBotTwo.Core.Systems.Status
 			var now = DateTime.Now;
 
 			if(!noActivityChanging && (currentActivity.name==null || (now-lastActivityChange).TotalMinutes>=5)) {
-				int index, indexOf = activities.IndexOf(currentActivity);
+				int index,indexOf = activities.IndexOf(currentActivity);
+
 				while((index = MopBot.random.Next(activities.Count))==indexOf) { }
+
 				currentActivity = activities[index];
 				lastActivityChange = now;
 			}
