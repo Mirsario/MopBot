@@ -1,16 +1,17 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using MopBotTwo.Core.Systems;
 using MopBotTwo.Core.Systems.Channels;
 using MopBotTwo.Core.Systems.Memory;
-
+using MopBotTwo.Extensions;
 
 namespace MopBotTwo.Common.Systems.Welcoming
 {
 	[SystemConfiguration(Description = "Welcomes users onto the server with customizable messages.")]
-	public class WelcomeSystem : BotSystem
+	public partial class WelcomeSystem : BotSystem
 	{
 		public override void RegisterDataTypes()
 		{
@@ -19,12 +20,13 @@ namespace MopBotTwo.Common.Systems.Welcoming
 
 		public override async Task OnUserJoined(SocketGuildUser user)
 		{
-			var memory = MemorySystem.memory[user.Guild];
+			var server = user.Guild;
+			var memory = server.GetMemory();
 			var welcomeData = memory.GetData<WelcomeSystem,WelcomeServerData>();
-			var channelData = memory.GetData<ChannelSystem,ChannelServerData>();
-			var welcomeChannel = channelData.GetChannelByRole(ChannelRole.Welcome) as ITextChannel;
-			var logsChannel = channelData.GetChannelByRole(ChannelRole.Logs) as ITextChannel;
-			var rulesChannel = channelData.GetChannelByRole(ChannelRole.Rules) as ITextChannel;
+
+			if(!server.TryGetTextChannel(welcomeData.channel,out var welcomeChannel)) {
+				return;
+			}
 
 			string msg;
 
@@ -34,7 +36,7 @@ namespace MopBotTwo.Common.Systems.Welcoming
 				msg = welcomeData.messageRejoin;
 			}
 
-			welcomeChannel?.SendMessageAsync(msg.Replace("{user}",user.Mention).Replace("{rules}",rulesChannel?.Mention ?? "{rules}"));
+			await welcomeChannel.SendMessageAsync(user.Mention,embed:MopBot.GetEmbedBuilder(server).WithDescription(msg).Build());
 		}
 	}
 }
