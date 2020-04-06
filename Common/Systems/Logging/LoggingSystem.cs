@@ -114,14 +114,20 @@ namespace MopBotTwo.Common.Systems.Logging
 		}
 		public override async Task OnMessageUpdated(MessageExt context,IMessage oldMessage)
 		{
-			if(!context.User.IsBot && !MessageSystem.MessageIgnored(oldMessage.Id)) {
-				var newMessage = context.Message;
-
-				await TrySendEmbed(context,embed => embed
-					.WithTitle($"Message updated in #{context.Channel.Name}")
-					.WithDescription($"**Before:** {oldMessage.Content}\r\n**‎‎After:**  ឵ {newMessage.Content}\r\n[[Jump to message]]({newMessage.GetJumpUrl()})") //TODO: This uses blank characters, which should be put into an util method.
-				);
+			if(context.User.IsBot || MessageSystem.MessageIgnored(oldMessage.Id)) {
+				return;
 			}
+
+			var newMessage = context.Message;
+
+			if(newMessage.Content==oldMessage.Content) {
+				return;
+			}
+
+			await TrySendEmbed(context,embed => embed
+				.WithTitle($"Message updated in #{context.Channel.Name}")
+				.WithDescription($"**Before:** {oldMessage.Content}\r\n**‎‎After:**  ឵ {newMessage.Content}\r\n[[Jump to message]]({newMessage.GetJumpUrl()})") //TODO: This uses blank characters, which should be put into an util method.
+			);
 		}
 		public override async Task OnMessageDeleted(MessageExt context)
 		{
