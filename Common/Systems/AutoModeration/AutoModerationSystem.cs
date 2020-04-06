@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
-using Discord.Commands;
 using Discord.WebSocket;
 using MopBotTwo.Core;
 using MopBotTwo.Core.Systems;
@@ -13,12 +12,9 @@ using MopBotTwo.Extensions;
 
 namespace MopBotTwo.Common.Systems.AutoModeration
 {
-	[Group("automoderation")]
-	[Alias("automod")]
-	[Summary("Group for controlling AutoModerationSystem")]
 	[SystemConfiguration(Description = "Automatically does moderation through various message filtering in a configurable way.")]
 	[RequirePermission(SpecialPermission.Owner,"automod")]
-	public class AutoModerationSystem : BotSystem
+	public partial class AutoModerationSystem : BotSystem
 	{
 		public override void RegisterDataTypes()
 		{
@@ -33,7 +29,7 @@ namespace MopBotTwo.Common.Systems.AutoModeration
 			foreach(var server in MopBot.client.Guilds) {
 				var data = server.GetMemory().GetData<AutoModerationSystem,AutoModerationServerData>();
 
-				if(data.mentionSpamAction==ModerationAction.None || data.userPingCounters==null || data.userPingCounters.Count<=0) {
+				if(data.mentionSpamPunishment==ModerationPunishment.None || data.userPingCounters==null || data.userPingCounters.Count<=0) {
 					continue;
 				}
 
@@ -65,7 +61,7 @@ namespace MopBotTwo.Common.Systems.AutoModeration
 			return true;
 		}
 
-		private async Task ExecuteAction(MessageExt context,ModerationAction action,string reason,SocketGuildUser user = null)
+		private async Task ExecuteAction(MessageExt context,ModerationPunishment action,string reason,SocketGuildUser user = null)
 		{
 			user ??= context.socketServerUser ?? throw new ArgumentNullException($"Both {nameof(user)} and {nameof(context)}.{nameof(MessageExt.socketServerUser)} are null.");
 
@@ -76,7 +72,7 @@ namespace MopBotTwo.Common.Systems.AutoModeration
 			bool RequirePermission(DiscordPermission discordPermission)
 			{
 				if(!context.server.CurrentUser.HasChannelPermission(context.socketServerChannel,DiscordPermission.BanMembers)) {
-					action = ModerationAction.Announce;
+					action = ModerationPunishment.Announce;
 
 					embedBuilder.Title = $"{embedBuilder.Title}\r\n**Attempted to execute action '{action}', but the following permission was missing: `{DiscordPermission.BanMembers}`.";
 
@@ -87,7 +83,7 @@ namespace MopBotTwo.Common.Systems.AutoModeration
 			}
 
 			switch(action) {
-				case ModerationAction.Kick:
+				case ModerationPunishment.Kick:
 					if(RequirePermission(DiscordPermission.KickMembers)) {
 						await user.KickAsync(reason:reason);
 
@@ -95,7 +91,7 @@ namespace MopBotTwo.Common.Systems.AutoModeration
 					}
 
 					break;
-				case ModerationAction.Ban:
+				case ModerationPunishment.Ban:
 					if(RequirePermission(DiscordPermission.KickMembers)) {
 						await user.BanAsync(reason: reason);
 
@@ -104,7 +100,7 @@ namespace MopBotTwo.Common.Systems.AutoModeration
 					break;
 			}
 
-			if(action==ModerationAction.Announce) {
+			if(action==ModerationPunishment.Announce) {
 				embedBuilder.Title = "User violation detected";
 			}
 
@@ -126,7 +122,7 @@ namespace MopBotTwo.Common.Systems.AutoModeration
 
 			var data = context.server.GetMemory().GetData<AutoModerationSystem,AutoModerationServerData>();
 
-			if(data.mentionSpamAction==ModerationAction.None || data.minMentionsForAction==0) {
+			if(data.mentionSpamPunishment==ModerationPunishment.None || data.minMentionsForAction==0) {
 				return;
 			}
 
@@ -141,8 +137,6 @@ namespace MopBotTwo.Common.Systems.AutoModeration
 				newPingCount = oldPingCount+numMentions;
 
 				if(newPingCount<data.minMentionsForAction) {
-					Console.WriteLine($"Recording {numMentions} pings.");
-
 					pingCounter.AddRange(Enumerable.Repeat(data.mentionCooldown,numMentions));
 					return;
 				}
@@ -151,42 +145,7 @@ namespace MopBotTwo.Common.Systems.AutoModeration
 				data.userPingCounters.TryRemove(context.user.Id,out _);
 			}
 
-			await ExecuteAction(context,data.mentionSpamAction,$"Exceeding maximum of {data.minMentionsForAction} user mentions in {data.mentionCooldown} seconds with {newPingCount} mentions.");
-		}
-
-		[Command("prefix")]
-		[Summary("Lets you define what comes before any announcement of automatic moderation actions. You can use this to make the bot mention roles or specific users, like admins.")]
-		public async Task PrefixCommand([Remainder]string prefix = null)
-		{
-			Context.server.GetMemory().GetData<AutoModerationSystem,AutoModerationServerData>().announcementPrefix = prefix;
-		}
-
-		[Command("mentionspam")]
-		[Summary("Sets the moderation action (none/announce/kick/ban) that should be taken onto the user who does mention-spam.")]
-		public async Task MentionSpamSetupCommand(ModerationAction moderationAction)
-		{
-			var data = Context.server.GetMemory().GetData<AutoModerationSystem,AutoModerationServerData>();
-
-			data.mentionSpamAction = moderationAction;
-		}
-
-		[Command("mentionspam")]
-		[Summary("Setups mention-spam moderation with the action (none/announce/kick/ban) and X minimal amount of pings in Y seconds needed to execute an action onto an user.")]
-		public async Task MentionSpamSetupCommand(ModerationAction moderationAction,uint minPingsForBan,byte pingCooldownInSeconds)
-		{
-			if(minPingsForBan<3) {
-				throw new BotError("For safety reasons, minimal amount of pings for a ban must be at least `3`.");
-			}
-
-			if(pingCooldownInSeconds<=0) {
-				throw new BotError("Ping cooldown can't be `0` seconds.");
-			}
-
-			var data = Context.server.GetMemory().GetData<AutoModerationSystem,AutoModerationServerData>();
-
-			data.mentionSpamAction = moderationAction;
-			data.minMentionsForAction = minPingsForBan;
-			data.mentionCooldown = pingCooldownInSeconds;
+			await ExecuteAction(context,data.mentionSpamPunishment,$"Exceeding maximum of {data.minMentionsForAction} user mentions in {data.mentionCooldown} seconds with {newPingCount} mentions.");
 		}
 	}
 }

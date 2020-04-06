@@ -1,6 +1,6 @@
 ﻿namespace MopBotTwo.Common.Systems.AutoModeration
 {
-	public enum ModerationAction
+	public enum ModerationPunishment
 	{
 		None,
 		Kick,

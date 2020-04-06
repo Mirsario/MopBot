@@ -6,7 +6,7 @@ namespace MopBotTwo.Common.Systems.AutoModeration
 {
 	public class AutoModerationServerData : ServerData
 	{
-		public ModerationAction mentionSpamAction;
+		public ModerationPunishment mentionSpamPunishment;
 		public byte mentionCooldown = 30;
 		public uint minMentionsForAction = 10;
 		public string announcementPrefix;
