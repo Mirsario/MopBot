@@ -27,7 +27,6 @@ namespace MopBotTwo.Core.Systems.Channels
 		public async Task SetChannelRole(ChannelRole role,IChannel channel)
 		{
 			Context.server.GetMemory().GetData<ChannelSystem,ChannelServerData>().channelByRole[role] = channel.Id;
-			await Context.ReplyAsync("Success.");
 		}
 
 		[Command("list")]
@@ -51,6 +50,7 @@ namespace MopBotTwo.Core.Systems.Channels
 
 				return $"{role} - {name}";
 			}
+
 			await Context.ReplyAsync($"```{string.Join('\n',Utils.GetEnumValues<ChannelRole>().Select(Pair))}```");
 		}
 	}

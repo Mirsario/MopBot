@@ -49,7 +49,6 @@ namespace MopBotTwo.Common.Systems.Moderation
 			}
 
 			await targetUser.KickAsync(reason: reason);
-			//await context.ReplyAsync($"User `{targetUser.Name()}` has been kicked with reason `{reason}`.");
 		}
 
 		[Command("clear")]
@@ -73,9 +72,9 @@ namespace MopBotTwo.Common.Systems.Moderation
 			var messages = (await channel.GetMessagesAsync((int)amount+1).FlattenAsync())
 				.Where(m => m!=null && (m.Author?.Id==MopBot.client.CurrentUser.Id || ((utcNow-m.Timestamp.UtcDateTime).TotalDays<14 && (m.Author as SocketGuildUser)?.Roles?.All(r => r.Position<highestRole)==true)));
 
-			await channel.DeleteMessagesAsync(messages);
+			MessageSystem.IgnoreMessage(context.message.Id);
 
-			context.messageDeleted = true;
+			await channel.DeleteMessagesAsync(messages);
 		}
 	}
 }

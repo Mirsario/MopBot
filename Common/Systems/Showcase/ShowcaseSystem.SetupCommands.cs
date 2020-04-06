@@ -1,19 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using Discord.Rest;
 using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Channels;
-using MopBotTwo.Core;
-using MopBotTwo.Utilities;
 
 namespace MopBotTwo.Common.Systems.Showcase
 {

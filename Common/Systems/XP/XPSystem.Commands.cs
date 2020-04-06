@@ -81,8 +81,8 @@ namespace MopBotTwo.Common.Systems.XP
 				int i = 1;
 
 				var builder = MopBot.GetEmbedBuilder(Context)
-					.WithAuthor($"#{i++} - {user.Name()} - {xpUserData.xp} Total XP (Level {XPToLevel(xpUserData.xp)})",user.GetAvatarUrl())
-					.WithDescription(string.Join("\n",tuples.TakeLast(tuples.Length-1).Select(t => $"#{i++} - {t.user.Name()} - {t.xpUserData.xp} Total XP (Level {XPToLevel(t.xpUserData.xp)})")));
+					.WithAuthor($"#{i++} - {user.GetDisplayName()} - {xpUserData.xp} Total XP (Level {XPToLevel(xpUserData.xp)})",user.GetAvatarUrl())
+					.WithDescription(string.Join("\n",tuples.TakeLast(tuples.Length-1).Select(t => $"#{i++} - {t.user.GetDisplayName()} - {t.xpUserData.xp} Total XP (Level {XPToLevel(t.xpUserData.xp)})")));
 
 				await Context.socketTextChannel.SendMessageAsync(embed: builder.Build());
 			}

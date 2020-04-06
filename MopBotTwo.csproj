@@ -27,7 +27,7 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if &quot;$(Username)&quot;==&quot;Merser&quot; (&#xD;&#xA;    chdir D:/Workspace/0-CSharp/Repositories/UpdateServer/&#xD;&#xA;    dotnet bin/netcoreapp3.0/UpdateServer.dll connect -config publishmopbot.json&#xD;&#xA;)" />
+    <Exec Command="if &quot;$(Username)&quot;==&quot;Merser&quot; (&#xD;&#xA;    chdir D:/Workspace/0-CSharp/Repositories/Applications/CLI/UpdateServer&#xD;&#xA;    dotnet bin/netcoreapp3.0/UpdateServer.dll connect -config publishmopbot.json&#xD;&#xA;)" />
   </Target>
 
 </Project>

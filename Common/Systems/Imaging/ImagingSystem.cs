@@ -16,9 +16,9 @@ namespace MopBotTwo.Common.Systems.Imaging
 		public async Task AvatarCommand(SocketGuildUser user,[Remainder]string args = null)
 		{
 			var embed = MopBot.GetEmbedBuilder(Context)
-				.WithAuthor($"{user.Name()}'s avatar")
+				.WithAuthor($"{user.GetDisplayName()}'s avatar")
 				.WithImageUrl(user.GetAvatarUrl())
-				.WithFooter($"Requested by {Context.socketServerUser.Name()}",Context.user.GetAvatarUrl())
+				.WithFooter($"Requested by {Context.socketServerUser.GetDisplayName()}",Context.user.GetAvatarUrl())
 				.Build();
 
 			await Context.ReplyAsync(embed,false);

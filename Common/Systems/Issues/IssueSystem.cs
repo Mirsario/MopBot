@@ -6,6 +6,7 @@ using MopBotTwo.Core.Systems;
 using MopBotTwo.Core.Systems.Permissions;
 using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Common.Systems.Changelogs;
+using System.Collections.Generic;
 
 namespace MopBotTwo.Common.Systems.Issues
 {
@@ -16,6 +17,15 @@ namespace MopBotTwo.Common.Systems.Issues
 	[SystemConfiguration(Description = "In-discord bug tracker. Can write to ChangelogSystem when an issue gets fixed.")]
 	public partial class IssueSystem : BotSystem
 	{
+		public static readonly Dictionary<IssueStatus,string> StatusPrefix = new Dictionary<IssueStatus,string> {
+			{ IssueStatus.Open,     ":exclamation:" },
+			{ IssueStatus.Closed,   ":white_check_mark:" },
+		};
+		public static readonly Dictionary<IssueStatus,string> StatusText = new Dictionary<IssueStatus,string> {
+			{ IssueStatus.Open,     "To be fixed" },
+			{ IssueStatus.Closed,   "Fixed for next release" },
+		};
+
 		public override void RegisterDataTypes()
 		{
 			RegisterDataType<ServerMemory,IssueServerData>();

@@ -1,14 +1,15 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Discord.Net;
 using Discord.Commands;
 using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems.Permissions;
 using MopBotTwo.Core.Systems.Memory;
+using System;
+using Discord;
 
 namespace MopBotTwo.Common.Systems.CustomRoles
 {
-	//TODO: old. improv.
+	//TODO: Old. To be re-reviewed.
 
 	public partial class CustomRoleSystem
 	{
@@ -16,35 +17,58 @@ namespace MopBotTwo.Common.Systems.CustomRoles
 		[RequirePermission(SpecialPermission.Owner,"customrole.manage")]
 		public async Task SetCustomRoleCommand(byte red,byte green,byte blue,[Remainder]string roleName)
 		{
-			await SetCustomRole(Context.server,Context.socketServerUser,new Discord.Color(red,green,blue),roleName,Context);
+			var server = Context.server;
+			var user = Context.socketServerUser;
+
+			server.CurrentUser.RequirePermission(Context.socketServerChannel,DiscordPermission.ManageRoles);
+
+			int topPos = -1;
+
+			foreach(var tempRole in user.Roles) {
+				if(!tempRole.IsEveryone) {
+					topPos = topPos==-1 ? tempRole.Position : Math.Max(topPos,tempRole.Position);
+				}
+			}
+
+			IRole role;
+			var customRoleUserData = MemorySystem.memory[server][user].GetData<CustomRoleSystem,CustomRoleServerUserData>();
+			var color = new Color(red,green,blue);
+
+			if(customRoleUserData.colorRole!=null && (role = server.GetRole(customRoleUserData.colorRole.Value))!=null) {
+				await role.ModifyAsync(properties => {
+					properties.Color = color;
+					properties.Name = roleName;
+				});
+			} else {
+				var tempRole = await server.CreateRoleAsync(roleName,null,color);
+
+				await server.ReorderRolesAsync(new[] { new ReorderRoleProperties(tempRole.Id,topPos+1) });
+				await user.AddRoleAsync(tempRole);
+
+				customRoleUserData.colorRole = tempRole.Id;
+			}
+
+			await Context.ReplyAsync("Role set! :ok_hand:");
 		}
 
 		[Command("remove")]
 		[RequirePermission(SpecialPermission.Owner,"customrole.manage")]
 		public async Task RemoveCustomRoleCommand()
 		{
-			var userMemory = MemorySystem.memory[Context.server][Context.user].GetData<CustomRoleSystem,CustomRoleServerUserData>();
-			if(userMemory.colorRole==null) {
-				await Context.ReplyAsync("You don't have a custom role set.");
-				return;
+			var server = Context.server;
+
+			server.CurrentUser.RequirePermission(Context.socketServerChannel,DiscordPermission.ManageRoles);
+
+			var user = Context.socketServerUser;
+			var userMemory = MemorySystem.memory[server][user].GetData<CustomRoleSystem,CustomRoleServerUserData>();
+
+			if(userMemory.colorRole==null || !user.Roles.TryGetFirst(r => r.Id==userMemory.colorRole.Value,out var role)) {
+				throw new BotError("You don't have a custom role set.");
 			}
 
-			if(!Context.socketServerUser.Roles.TryGetFirst(r => r.Id==userMemory.colorRole.Value,out var role)) {
-				await Context.ReplyAsync("You don't have a custom role set.");
-				return;
-			}
+			await user.RemoveRoleAsync(role);
 
-			try {
-				await Context.socketServerUser.RemoveRoleAsync(role);
-				await Context.ReplyAsync("Removed role.");
-			}
-			catch(HttpException e) {
-				if(e.DiscordCode==403) {
-					await Context.ReplyAsync("An error has occured: Bot doesn't have enough permissions.");
-				} else {
-					throw;
-				}
-			}
+			await Context.ReplyAsync("Removed role.");
 		}
 
 		[Command("detect")]
@@ -75,7 +99,7 @@ namespace MopBotTwo.Common.Systems.CustomRoles
 
 					if(user.Roles.OrderByDescending(r => r.Position).First().Id==role.Id) {
 						customRoleUserData.colorRole = role.Id;
-						string newText = $"Detected {user.Name()}'s custom role to be ''{role.Name}''.\n";
+						string newText = $"Detected {user.GetDisplayName()}'s custom role to be ''{role.Name}''.\n";
 						if(text.Length+newText.Length>=2000) {
 							await Context.ReplyAsync(text,false);
 							text = "";
@@ -84,9 +108,6 @@ namespace MopBotTwo.Common.Systems.CustomRoles
 					}
 				} else if(members.Length==0) {
 					unused += $"{role.Name} is unused.\n";
-					//if(arguments.Length>0 && arguments[0]=="deleteunused") {
-					//	await role.DeleteAsync();
-					//}
 				}
 			}
 

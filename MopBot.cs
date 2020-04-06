@@ -18,6 +18,8 @@ using System.Runtime.ExceptionServices;
 
 #pragma warning disable CS0162
 
+//TODO: Needs major refactoring.
+
 namespace MopBotTwo
 {
 	public class MopBot : SystemContainer
@@ -35,7 +37,6 @@ namespace MopBotTwo
 		public static RequestOptions optAlwaysRetry;
 		public static ConsoleColor defaultConsoleColor;
 		public static string tempFolder;
-
 		public static SocketTextChannel logChannel;
 		
 		static void Main(string[] args)
@@ -60,6 +61,7 @@ namespace MopBotTwo
 			AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 			AppDomain.CurrentDomain.FirstChanceException += OnFirstChanceException;
 		}
+
 		public async Task Run()
 		{
 			GlobalConfiguration.Initialize();
@@ -131,7 +133,7 @@ namespace MopBotTwo
 			while(true) {
 				try {
 					await UpdateSystems(true);
-					await Task.Delay(100);
+					await Task.Delay(1000);
 				}
 				catch(FatalException e) {
 					await HandleException(e);
@@ -176,7 +178,19 @@ namespace MopBotTwo
 			Console.WriteLine("Tried saving on quit.");
 		}
 
-		#region Hooks
+		public static async Task OnClientInit(DiscordSocketClient client)
+		{
+			client.MessageReceived += MessageSystem.MessageReceived;
+			client.MessageUpdated += MessageSystem.MessageUpdated;
+			client.MessageDeleted += MessageSystem.MessageDeleted;
+			client.ReactionAdded += MessageSystem.ReactionAdded;
+			client.UserJoined += async user => await BotSystem.CallForEnabledSystems(user.Guild,s => s.OnUserJoined(user));
+			client.UserLeft += async user => await BotSystem.CallForEnabledSystems(user.Guild,s => s.OnUserLeft(user));
+
+			client.GuildMemberUpdated += async (oldUser,newUser) => {
+				await BotSystem.CallForEnabledSystems(newUser.Guild,s => s.OnUserUpdated(oldUser,newUser));
+			};
+		}
 		public static async Task OnReady()
 		{
 			if(GlobalConfiguration.config.logChannel.HasValue) {
@@ -189,16 +203,6 @@ namespace MopBotTwo
 				}
 			}
 		}
-		public static async Task UserJoined(SocketGuildUser user)
-		{
-			await BotSystem.CallForEnabledSystems(user.Guild,s => s.OnUserJoined(user));
-		}
-		public static async Task UserLeft(SocketGuildUser user)
-		{
-			var logsChannel = MemorySystem.memory[user.Guild].GetData<ChannelSystem,ChannelServerData>().GetChannelByRole(ChannelRole.Logs) as ITextChannel;
-			logsChannel?.SendMessageAsync($"<@{user.Id}> ( `{user.Nickname}#{user.Discriminator}` / `{user.Name()}` ) has left the server.");
-		}
-		#endregion
 
 		public static EmbedBuilder GetEmbedBuilder(MessageExt context) => GetEmbedBuilder(context.server);
 		public static EmbedBuilder GetEmbedBuilder(SocketGuild server) => new EmbedBuilder().WithColor(MemorySystem.memory[server].GetData<CommandSystem,CommandServerData>().embedColor.Value);
@@ -231,7 +235,6 @@ namespace MopBotTwo
 
 			Console.ForegroundColor = defaultConsoleColor;
 		}
-
 		public static async Task HandleException(Exception e,string prefix = null,bool mentionMasters = true,bool noDiscordPosts = false)
 		{
 			await HandleError($"{prefix}{e.GetType().Name}: {e.Message}\n```\n{e.StackTrace}```",mentionMasters,noDiscordPosts);
@@ -274,21 +277,12 @@ namespace MopBotTwo
 				}
 			}
 		}
-
-		private static IEnumerable<string> SplitIfNeeded(string str,int maxChunkSize)
-		{
-			for(int i = 0;i<str.Length;i += maxChunkSize) {
-				yield return str.Substring(i,Math.Min(maxChunkSize,str.Length-i));
-			}
-		}
 		public static T Construct<T>(Type[] paramTypes,object[] paramValues)
 		{
 			Type t = typeof(T);
 			ConstructorInfo ci = t.GetConstructor(BindingFlags.Instance|BindingFlags.NonPublic,null,paramTypes,null);
 			return (T)ci.Invoke(paramValues);
 		}
-
-		
 		public static string GetTempFileName(string baseName,string ext)
 		{
 			string name;
@@ -296,7 +290,6 @@ namespace MopBotTwo
 			while(File.Exists(name));
 			return name;
 		}
-		
 		public static void CheckForNull(object obj,string argName)
 		{
 			if(obj==null) {
@@ -307,6 +300,13 @@ namespace MopBotTwo
 		{
 			if(string.IsNullOrWhiteSpace(str)) {
 				throw new BotError($"Argument `{argName}` cannot be null or empty.");
+			}
+		}
+
+		private static IEnumerable<string> SplitIfNeeded(string str,int maxChunkSize)
+		{
+			for(int i = 0;i<str.Length;i += maxChunkSize) {
+				yield return str.Substring(i,Math.Min(maxChunkSize,str.Length-i));
 			}
 		}
 	}

@@ -4,8 +4,7 @@ namespace MopBotTwo.Common.Systems.Issues
 {
 	public enum IssueStatus
 	{
-		Open,
-		Unknown,
-		Closed
+		Open = 0,
+		Closed = 2 //TODO: Update this and '2' memory entries to '1'.
 	}
 }

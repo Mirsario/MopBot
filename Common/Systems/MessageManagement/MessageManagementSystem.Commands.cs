@@ -60,6 +60,7 @@ namespace MopBotTwo.Common.Systems.MessageManagement
 		}*/
 		[Command("send")]
 		[Alias("say")]
+		[Priority(-1)]
 		[RequirePermission(SpecialPermission.Owner,"messagemanaging.send")]
 		public Task SendMessageCommand([Remainder]string text) => SendMessageInternal(Context.socketTextChannel,text);
 
@@ -67,18 +68,6 @@ namespace MopBotTwo.Common.Systems.MessageManagement
 		[Alias("say")]
 		[RequirePermission(SpecialPermission.Owner,"messagemanaging.send")]
 		public Task SendMessageCommand(SocketTextChannel textChannel,[Remainder]string text) => SendMessageInternal(textChannel,text);
-
-		[Command("send")]
-		[Alias("say")]
-		[RequirePermission(SpecialPermission.BotMaster)]
-		public async Task SendMessageCommand(string serverName,string channelName,[Remainder]string text)
-		{
-			var server = MopBot.client.GetServer(serverName);
-			var textChannel = server.GetTextChannel(channelName);
-
-			StringUtils.RemoveQuotemarks(ref text);
-			await textChannel.SendMessageAsync(text);
-		}
 
 		private async Task SendMessageInternal(SocketTextChannel textChannel,string text)
 		{

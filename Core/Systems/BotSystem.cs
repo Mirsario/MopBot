@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Discord.Commands;
 using Discord.WebSocket;
 using MopBotTwo.Core.Systems.Memory;
-
+using Discord;
 
 namespace MopBotTwo.Core.Systems
 {
@@ -34,9 +34,12 @@ namespace MopBotTwo.Core.Systems
 		public virtual async Task ServerUpdate(SocketGuild server) {}
 
 		public virtual async Task OnUserJoined(SocketGuildUser user) {}
-		public virtual async Task OnMessageReceived(MessageExt message) {}
-		public virtual async Task OnMessageDeleted(MessageExt message) {}
-		public virtual async Task OnReactionAdded(MessageExt message,SocketReaction reaction) {}
+		public virtual async Task OnUserLeft(SocketGuildUser user) { }
+		public virtual async Task OnUserUpdated(SocketGuildUser oldUser,SocketGuildUser newUser) { }
+		public virtual async Task OnMessageReceived(MessageExt context) {}
+		public virtual async Task OnMessageDeleted(MessageExt context) {}
+		public virtual async Task OnMessageUpdated(MessageExt context,IMessage oldMessage) {}
+		public virtual async Task OnReactionAdded(MessageExt context,SocketReaction reaction) {}
 
 		public T GetMemory<T>(SocketGuild server) where T : ServerData => MemorySystem.memory[server].GetData<T>(GetType());
 
@@ -53,9 +56,11 @@ namespace MopBotTwo.Core.Systems
 		public static SystemConfiguration GetConfiguration(Type type)
 		{
 			var attributes = type.GetCustomAttributes(typeof(SystemConfiguration),true);
+
 			if(attributes!=null && attributes.Length>0) {
 				return (SystemConfiguration)attributes[0];
 			}
+
 			return new SystemConfiguration();
 		}
 		

@@ -45,7 +45,7 @@ namespace MopBotTwo.Common.Systems.MessageManagement
 					var author = message.Author;
 					var builder = new EmbedBuilder()
 						.WithColor(author.GetColor())
-						.WithAuthor(author.Name(),author.GetAvatarUrl())
+						.WithAuthor(author.GetDisplayName(),author.GetAvatarUrl())
 						.WithFooter("Sent at ")
 						.WithTimestamp(message.Timestamp);
 					

@@ -7,6 +7,7 @@ using Discord.Commands;
 using Discord.Rest;
 using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems.Commands;
+using MopBotTwo.Core.Systems;
 
 namespace MopBotTwo.Core
 {
@@ -113,8 +114,10 @@ namespace MopBotTwo.Core
 
 		public async Task Delete()
 		{
-			if(!messageDeleted) {
-				messageDeleted = true;
+			ulong id = message.Id;
+
+			if(!MessageSystem.MessageIgnored(id)) {
+				MessageSystem.IgnoreMessage(id);
 
 				if(socketTextChannel==null || server.CurrentUser.HasChannelPermission(socketTextChannel,DiscordPermission.ManageMessages)) {
 					await message.DeleteAsync();

@@ -27,12 +27,11 @@ namespace MopBotTwo.Common.Systems.Welcoming
 			var rulesChannel = channelData.GetChannelByRole(ChannelRole.Rules) as ITextChannel;
 
 			string msg;
+
 			if(!memory.GetSubMemories<ServerUserMemory>().Any(p => p.Key==user.Id)) {
 				msg = welcomeData.messageJoin;
-				logsChannel?.SendMessageAsync("<@!"+user.Id+"> has joined the server.");
 			} else {
 				msg = welcomeData.messageRejoin;
-				logsChannel?.SendMessageAsync("<@!"+user.Id+"> has re-joined the server.");
 			}
 
 			welcomeChannel?.SendMessageAsync(msg.Replace("{user}",user.Mention).Replace("{rules}",rulesChannel?.Mention ?? "{rules}"));

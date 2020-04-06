@@ -11,8 +11,6 @@ namespace MopBotTwo.Common.Systems.Issues
 	public class IssueServerData : ServerData
 	{
 		public ulong issueChannel;
-		public Dictionary<IssueStatus,string> statusPrefix;
-		public Dictionary<IssueStatus,string> statusText;
 		public List<IssueInfo> issues;
 		public uint nextIssueId;
 
@@ -22,17 +20,6 @@ namespace MopBotTwo.Common.Systems.Issues
 		public override void Initialize(SocketGuild server)
 		{
 			issues = new List<IssueInfo>();
-
-			statusPrefix = new Dictionary<IssueStatus,string> {
-				{ IssueStatus.Open,		":exclamation:" },
-				{ IssueStatus.Unknown,	":grey_question:" },
-				{ IssueStatus.Closed,	":white_check_mark:" },
-			};
-			
-			statusText = new Dictionary<IssueStatus,string> {
-				{ IssueStatus.Open,		"To be fixed" },
-				{ IssueStatus.Closed,	"Fixed for next release" },
-			};
 		}
 
 		public IssueInfo NewIssue(string text,IssueStatus status = IssueStatus.Open)
@@ -70,9 +57,10 @@ namespace MopBotTwo.Common.Systems.Issues
 		{
 			await UnpublishIssue(issue,channel.Guild);
 
-			string text = statusText[issue.status];
+			string prefix = IssueSystem.StatusPrefix[issue.status];
+			string text = IssueSystem.StatusText[issue.status];
 
-			var message = await channel.SendMessageAsync($"{statusPrefix[issue.status]} - #**{issue.issueId}** - **{text}:** {issue.text}",options:MopBot.optAlwaysRetry);
+			var message = await channel.SendMessageAsync($"{prefix} - #**{issue.issueId}** - **{text}:** {issue.text}",options:MopBot.optAlwaysRetry);
 
 			issue.messageId = message.Id;
 			issue.channelId = channel.Id;

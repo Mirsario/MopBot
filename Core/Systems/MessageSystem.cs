@@ -16,13 +16,6 @@ namespace MopBotTwo.Core.Systems
 
 		public bool notifiedAboutStart;
 
-		/*public override async Task Initialize()
-		{
-			newMessageBuffer = new List<Message>();
-			newMessages = new Dictionary<SocketGuild,List<Message>>();
-			newReactionsBuffer = new List<(Message,SocketReaction,SocketGuild)>();
-			newReactions = new Dictionary<SocketGuild,List<(Message,SocketReaction,SocketGuild)>>();
-		}*/
 		public override async Task<bool> Update()
 		{
 			if(!notifiedAboutStart && MopBot.client.Guilds.Count>0) {
@@ -38,61 +31,67 @@ namespace MopBotTwo.Core.Systems
 			return true;
 		}
 
+		public static bool MessageIgnored(ulong id) => messagesToIgnore.Contains(id);
+		public static void IgnoreMessage(ulong id) => messagesToIgnore.Add(id);
 		public static void IgnoreMessage(IMessage message)
 		{
 			if(message!=null) {
-				messagesToIgnore.Add(message.Id);
+				IgnoreMessage(message.Id);
 			}
 		}
 
 		public static async Task MessageReceived(SocketMessage message)
 		{
-			if(!DiscordConnectionSystem.isFullyReady || messagesToIgnore.Contains(message.Id)) {
+			if(!DiscordConnectionSystem.isFullyReady || MessageIgnored(message.Id)) {
 				return;
 			}
 
 			MessageExt newMessage = new MessageExt(message);
+
 			if(newMessage.server==null) {
 				return;
 			}
 
 			Console.ForegroundColor = ConsoleColor.Green;
-
 			Console.WriteLine($"MessageReceived - '{newMessage.server.Name}' -> #{newMessage.messageChannel.Name} -> {newMessage.user.Username}#{newMessage.user.Discriminator}: {newMessage.content}");
-
 			Console.ResetColor();
 
 			await CallForEnabledSystems(newMessage.server,s => s.OnMessageReceived(newMessage));
 		}
-		public static async Task MessageDeleted(Cacheable<IMessage,ulong> cachedMessage,ISocketMessageChannel channel)
+		public static async Task MessageUpdated(Cacheable<IMessage,ulong> cachedMessage,SocketMessage currentMessage,ISocketMessageChannel channel)
 		{
-			if(!DiscordConnectionSystem.isFullyReady) {
+			if(!DiscordConnectionSystem.isFullyReady || !cachedMessage.HasValue || MessageIgnored(currentMessage.Id)) {
 				return;
 			}
 
-			IMessage message;
+			var context = new MessageExt(currentMessage);
 
-			try {
-				message = await cachedMessage.GetOrDownloadAsync();
-				if(message==null) {
-					return;
-				}
-			}
-			catch {
-				return;
-			}
-
-			MessageExt newMessage = new MessageExt(message);
-
-			if(newMessage.server!=null) {
-				Console.WriteLine($"MessageDeleted - '{newMessage.server.Name}' -> #{newMessage.messageChannel.Name} -> {newMessage.user.Username}#{newMessage.user.Discriminator}: {newMessage.content}");
-
-				await CallForEnabledSystems(newMessage.server,s => s.OnMessageDeleted(newMessage));
-			} else {
-				Console.WriteLine($"MessageDeleted - PMs -> {newMessage.user.Username}#{newMessage.user.Discriminator}: {newMessage.content}");
+			if(context.server!=null) {
+				await CallForEnabledSystems(context.server,s => s.OnMessageUpdated(context,cachedMessage.Value));
 			}
 		}
+		public static async Task MessageDeleted(Cacheable<IMessage,ulong> cachedMessage,ISocketMessageChannel channel)
+		{
+			if(!DiscordConnectionSystem.isFullyReady || !cachedMessage.HasValue) {
+				return;
+			}
 
+			var message = cachedMessage.Value;
+
+			if(MessageIgnored(message.Id)) {
+				return;
+			}
+
+			var context = new MessageExt(message);
+
+			if(context.server!=null) {
+				Console.WriteLine($"MessageDeleted - '{context.server.Name}' -> #{context.messageChannel.Name} -> {context.user.Username}#{context.user.Discriminator}: {context.content}");
+
+				await CallForEnabledSystems(context.server,s => s.OnMessageDeleted(context));
+			} else {
+				Console.WriteLine($"MessageDeleted - PMs -> {context.user.Username}#{context.user.Discriminator}: {context.content}");
+			}
+		}
 		public static async Task ReactionAdded(Cacheable<IUserMessage,ulong> cachedMessage,ISocketMessageChannel channel,SocketReaction reaction)
 		{
 			if(!DiscordConnectionSystem.isFullyReady) {
@@ -109,12 +108,6 @@ namespace MopBotTwo.Core.Systems
 			Console.WriteLine($"ReactionAdded - '{newMessage.server.Name}' -> #{newMessage.messageChannel.Name} -> {newMessage.user.Username}#{newMessage.user.Discriminator}: {reaction.Emote.Name}");
 			
 			await CallForEnabledSystems(newMessage.server,s => s.OnReactionAdded(newMessage,reaction));
-		}
-		public static async Task MessageUpdated(Cacheable<IMessage,ulong> arg1,SocketMessage arg2,ISocketMessageChannel arg3)
-		{
-			/*if(!DiscordConnectionSystem.isFullyReady) {
-				return;
-			}*/
 		}
 	}
 }

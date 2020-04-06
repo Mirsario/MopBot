@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Discord;
 using Discord.WebSocket;
-using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Utilities;
 

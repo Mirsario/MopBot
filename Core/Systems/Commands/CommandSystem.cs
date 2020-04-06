@@ -34,11 +34,13 @@ namespace MopBotTwo.Core.Systems.Commands
 				string group = null;
 
 				var system = MopBot.instance.systems.First(t => t.GetType()==type);
+
 				if(system==null) {
 					throw new Exception($"Couldn't find instance of System {type.Name}");
 				}
 
 				var groupAttribute = type.GetCustomAttribute<GroupAttribute>();
+
 				if(groupAttribute!=null) {
 					group = groupAttribute.Prefix;
 					commandGroupToSystem[group] = system;
@@ -46,6 +48,7 @@ namespace MopBotTwo.Core.Systems.Commands
 
 				foreach(var method in type.GetMethods()) {
 					var cmdAttribute = method.GetCustomAttribute<CommandAttribute>();
+
 					if(cmdAttribute!=null) {
 						commandToSystem[$"{(group==null ? null : $"{group} ")}{cmdAttribute.Text}"] = system;
 					}
@@ -77,6 +80,7 @@ namespace MopBotTwo.Core.Systems.Commands
 		public static async Task ExecuteCommand(MessageExt context,bool skipRegex = false)
 		{
 			var server = context.server;
+
 			if(server==null || !context.isCommand) {
 				return;
 			}
@@ -104,6 +108,7 @@ namespace MopBotTwo.Core.Systems.Commands
 				string commandText = match.Groups[2].Value.Trim();
 
 				var searchResult = commandService.Search(context,commandText);
+
 				if(!searchResult.IsSuccess) {
 					Console.WriteLine($"Search for '{commandText}' failed.");
 					return;
@@ -201,7 +206,7 @@ namespace MopBotTwo.Core.Systems.Commands
 				}
 			}
 
-			if(!fail && context is MessageExt c && !c.messageDeleted && c.message!=null && c.socketTextChannel!=null && await c.socketTextChannel.GetMessageAsync(c.message.Id)!=null) {
+			if(!fail && context is MessageExt c && c.message!=null && !MessageSystem.MessageIgnored(c.message.Id) && c.socketTextChannel!=null && await c.socketTextChannel.GetMessageAsync(c.message.Id)!=null) {
 				await context.Success();
 			}
 		}

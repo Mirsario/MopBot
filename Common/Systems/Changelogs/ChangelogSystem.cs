@@ -3,7 +3,8 @@ using Discord.Commands;
 using MopBotTwo.Core.Systems.Permissions;
 using MopBotTwo.Core.Systems;
 using MopBotTwo.Core.Systems.Memory;
-
+using System.Threading.Tasks;
+using MopBotTwo.Extensions;
 
 namespace MopBotTwo.Common.Systems.Changelogs
 {
@@ -16,6 +17,25 @@ namespace MopBotTwo.Common.Systems.Changelogs
 		public override void RegisterDataTypes()
 		{
 			RegisterDataType<ServerMemory,ChangelogServerData>();
+		}
+
+		private async Task<ChangelogEntry> NewEntryInternal(string type,string entryText,bool publish,ChangelogServerData data = null)
+		{
+			if(data==null) {
+				data = Context.server.GetMemory().GetData<ChangelogSystem,ChangelogServerData>();
+			}
+
+			if(!data.GetChangelogChannel(out var channel)) {
+				throw new BotError("Changelog channel has not been set!");
+			}
+
+			var newEntry = data.NewEntry(type,entryText);
+
+			if(publish) {
+				await data.PublishEntry(newEntry,channel);
+			}
+
+			return newEntry;
 		}
 	}
 }

@@ -27,13 +27,7 @@ namespace MopBotTwo.Core.Systems
 				MessageCacheSize = 1000
 			});
 
-			client.MessageReceived += MessageSystem.MessageReceived;
-			client.MessageDeleted += MessageSystem.MessageDeleted;
-			client.ReactionAdded += MessageSystem.ReactionAdded;
-			client.MessageUpdated += MessageSystem.MessageUpdated;
-			client.UserJoined += MopBot.UserJoined;
-			client.UserLeft += MopBot.UserLeft;
-			client.Ready += MopBot.OnReady;
+			await MopBot.OnClientInit(client);
 
 			await MopBot.TryCatchLogged("Attempting Login...",() => client.LoginAsync(TokenType.Bot,GlobalConfiguration.config.token.Trim()));
 			
@@ -41,39 +35,40 @@ namespace MopBotTwo.Core.Systems
 		}
 		public override async Task<bool> Update()
 		{
-			/*if(client.LoginState!=LoginState.LoggedIn && client.LoginState!=LoginState.LoggingIn) {
-				isFullyReady = false;
-
-				await MopBot.TryCatchLogged("Attempting Login...",() => client.LoginAsync(TokenType.Bot,GlobalConfiguration.config.token.Trim()));
-			}
-			if(client.LoginState==LoginState.LoggedIn && client.ConnectionState!=ConnectionState.Connected && client.ConnectionState!=ConnectionState.Connecting) {
-				if(started) {
-					await MopBot.TryCatchLogged("Disposing client and reinitializing it...",async () => {
-						client.Dispose();
-						started = false;
-						isFullyReady = false;
-
-						await Initialize();
-					});
-					return false;
-				}
-			}*/
-
 			if(client.LoginState!=LoginState.LoggedIn || client.ConnectionState!=ConnectionState.Connected) {
 				if(started) {
 					Console.WriteLine("Trying to restart client...");
 
-					await MopBot.TryCatchLogged("Disposing it...",async () => {
+					Console.Write("Disposing it... ");
+
+					try {
 						client.Dispose();
-					});
-					client = null;
+
+						client = null;
+
+						Console.WriteLine("Success.");
+					}
+					catch(Exception e) {
+						Console.WriteLine("Fail.");
+
+						Console.WriteLine($"{e.GetType().Name}: {e.Message}");
+					}
 
 					started = false;
 					isFullyReady = false;
 
-					await MopBot.TryCatchLogged("Reinitializing...",async () => {
+					Console.Write("Reinitializing... ");
+
+					try {
 						await Initialize();
-					});
+
+						Console.WriteLine("Success.");
+					}
+					catch(Exception e) {
+						Console.WriteLine("Fail.");
+
+						Console.WriteLine($"{e.GetType().Name}: {e.Message}");
+					}
 				}
 				
 				return false;
@@ -85,6 +80,7 @@ namespace MopBotTwo.Core.Systems
 			{
 				if(lastConsoleWrite!=text) {
 					Console.WriteLine(text);
+
 					lastConsoleWrite = text;
 				}
 			}
@@ -96,31 +92,23 @@ namespace MopBotTwo.Core.Systems
 				}
 
 				foreach(var server in client.Guilds) {
-					bool wrote = false;
-					void TryWrite()
-					{
-						if(!wrote) {
-							SmartWrite($"Awaiting information about server {server.Id}...");
-							wrote = true;
-						}
-					}
-
-					if(server.MemberCount>server.DownloadedMemberCount) {
-						TryWrite(); //Console.WriteLine("Downloading Users...");
-						await server.DownloadUsersAsync();
-					}
+					void TryWrite(string part) => SmartWrite($"Awaiting information about server '{server.Name}' / {server.Id} ({part})...");
 
 					var channels = server.Channels;
+
 					if(channels==null || channels.Count==0 || channels.Any(c => c==null || c.Name==null || c.Users==null)) {
-						TryWrite(); //Console.WriteLine("Awaiting channels...");
+						TryWrite("Channels");
+
 						return false;
 					}
 
 					if(server.EveryoneRole==null) {
-						TryWrite(); //Console.WriteLine("Awaiting roles...");
+						TryWrite("Roles");
+
 						return false;
 					}
 				}
+
 				SmartWrite("Ready!");
 
 				isFullyReady = true;

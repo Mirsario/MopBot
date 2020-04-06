@@ -10,7 +10,7 @@ namespace MopBotTwo.Common.Systems.Issues
 	public partial class IssueSystem
 	{
 		[Command("setchannel")]
-		[RequirePermission(SpecialPermission.Owner,"issuesystem.manage.setchannel")]
+		[RequirePermission(SpecialPermission.Owner,"issuesystem.configure")]
 		public async Task SetChannel(SocketGuildChannel channel)
 		{
 			var data = Context.server.GetMemory().GetData<IssueSystem,IssueServerData>();
@@ -20,18 +20,9 @@ namespace MopBotTwo.Common.Systems.Issues
 			await RepublishAll();
 		}
 
-		[Command("setstatusprefix")]
-		[RequirePermission(SpecialPermission.Owner,"issuesystem.manage.setstatusprefix")]
-		public async Task SetStatusPrefix(IssueStatus status,string prefix)
-		{
-			var data = Context.server.GetMemory().GetData<IssueSystem,IssueServerData>();
-
-			data.statusPrefix[status] = prefix;
-		}
-
 		[Command("new")]
 		[Alias("add","open")]
-		[RequirePermission(SpecialPermission.Owner,"issuesystem.issues.add")]
+		[RequirePermission(SpecialPermission.Owner,"issuesystem.issues.manage")]
 		public async Task New([Remainder]string issueText)
 		{
 			if(await NewIssueInternal(issueText,true)==null) {
@@ -41,12 +32,12 @@ namespace MopBotTwo.Common.Systems.Issues
 
 		[Command("close")]
 		[Alias("fix")]
-		[RequirePermission(SpecialPermission.Owner,"issuesystem.issues.fix")]
+		[RequirePermission(SpecialPermission.Owner,"issuesystem.issues.manage")]
 		public Task FixIssue(uint issueId) => FixIssueInternal(issueId,true);
 
 		[Command("newclosed")]
 		[Alias("addclosed","openandclose","newfixed","addfixed","openandfix")]
-		[RequirePermission(SpecialPermission.Owner,"issuesystem.issues.newclosed")]
+		[RequirePermission(SpecialPermission.Owner,"issuesystem.issues.manage")]
 		public async Task AddFixedIssue([Remainder]string issueText)
 		{
 			var newIssue = await NewIssueInternal(issueText,false);
@@ -56,7 +47,7 @@ namespace MopBotTwo.Common.Systems.Issues
 
 		[Command("edit")]
 		[Alias("modify")]
-		[RequirePermission(SpecialPermission.Owner,"issuesystem.issues.edit")]
+		[RequirePermission(SpecialPermission.Owner,"issuesystem.issues.manage")]
 		public async Task EditIssue(uint issueId,[Remainder]string issueText)
 		{
 			var data = Context.server.GetMemory().GetData<IssueSystem,IssueServerData>();
@@ -80,22 +71,23 @@ namespace MopBotTwo.Common.Systems.Issues
 			var data = Context.server.GetMemory().GetData<IssueSystem,IssueServerData>();
 
 			var issue = data.issues.FirstOrDefault(i => i.issueId==issueId);
+
 			if(issue==null) {
 				throw new BotError($"An issue with Id #{issueId} could not be found.");
 			}
 
 			var user = Context.user;
 			var builder = MopBot.GetEmbedBuilder(Context)
-				.WithAuthor($"Requested by {user.Name()}",user.GetAvatarUrl())
+				.WithAuthor($"Requested by {user.GetDisplayName()}",user.GetAvatarUrl())
 				.WithTitle($"Issue #{issue.issueId}")
-				.WithDescription($"**Status:** {data.statusText[issue.status]}```\n{issue.text}```");
+				.WithDescription($"**Status:** {StatusText[issue.status]}```\n{issue.text}```");
 
 			await Context.messageChannel.SendMessageAsync(embed: builder.Build());
 		}
 
 		[Command("remove")]
 		[Alias("delete")]
-		[RequirePermission(SpecialPermission.Owner,"issuesystem.issues.remove")]
+		[RequirePermission(SpecialPermission.Owner,"issuesystem.issues.manage")]
 		public async Task RemoveIssue(uint issueId)
 		{
 			var server = Context.server;
@@ -113,13 +105,12 @@ namespace MopBotTwo.Common.Systems.Issues
 
 		[Command("clearclosed")]
 		[Alias("clearfixed")]
-		[RequirePermission(SpecialPermission.Owner,"issuesystem.issues.clearfixed")]
+		[RequirePermission(SpecialPermission.Owner,"issuesystem.issues.manage")]
 		public async Task ClearFixedIssues(string justReleasedVersion)
 		{
 			var server = Context.server;
 			var data = server.GetMemory().GetData<IssueSystem,IssueServerData>();
 			int numClosed = 0;
-			int numOpen = 0;
 			var channel = await data.GetIssueChannel(Context);
 
 			for(int i = 0;i<data.issues.Count;i++) {
@@ -131,13 +122,11 @@ namespace MopBotTwo.Common.Systems.Issues
 					data.issues.RemoveAt(i--);
 
 					numClosed++;
-				} else {
-					numOpen++;
 				}
 			}
 
 			if(justReleasedVersion!=null) {
-				await channel.SendMessageAsync($"***{justReleasedVersion} has just released, channel cleared.***\n{numClosed} issues were fixed, ~{numOpen} remained.");
+				await channel.SendMessageAsync($"***{justReleasedVersion} has just been released. Channel has been cleared.***\r\n{numClosed}+ issues were fixed.");
 			}
 		}
 	}

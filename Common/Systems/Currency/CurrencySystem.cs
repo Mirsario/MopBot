@@ -37,7 +37,7 @@ namespace MopBotTwo.Common.Systems.Currency
 			}
 
 			var builder = MopBot.GetEmbedBuilder(context)
-				.WithAuthor($"{context.user.Name()}'s Coins & Points",context.user.GetAvatarUrl());
+				.WithAuthor($"{context.user.GetDisplayName()}'s Coins & Points",context.user.GetAvatarUrl());
 
 			foreach(var nameIdValue in currencies) {
 				var id = nameIdValue.id;
@@ -80,7 +80,7 @@ namespace MopBotTwo.Common.Systems.Currency
 			string GetLine(bool useBold,int number,ulong userId,ulong amount,SocketGuildUser user = null)
 			{
 				string b = useBold ? "**" : null;
-				return $"{(number<=1 ? null : $"{b}#{number}{b} - ")}{b}{amount}{b} - {(user ?? server.GetUser(userId))?.Name() ?? $"{UnknownUser} ({userId})"}";
+				return $"{(number<=1 ? null : $"{b}#{number}{b} - ")}{b}{amount}{b} - {(user ?? server.GetUser(userId))?.GetDisplayName() ?? $"{UnknownUser} ({userId})"}";
 			}
 
 			int i = 1;

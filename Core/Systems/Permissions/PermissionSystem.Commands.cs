@@ -17,19 +17,23 @@ namespace MopBotTwo.Core.Systems.Permissions
 		public async Task ListFullCommand()
 		{
 			var data = MemorySystem.memory[Context.server].GetData<PermissionSystem,PermissionServerData>();
+
 			if(data.permissionGroups.Count==0) {
 				throw new BotError($"This server currently has no permission groups. Has something went wrong? This shouldn't ever be the case.");
 			}
 
 			var roles = Context.server.Roles;
 			string listStr = "";
+
 			foreach(var pair in data.permissionGroups) {
-				string roleList = string.Join("\n",roles.SelectIgnoreNull(r => data.roleGroups.TryGetValue(r.Id,out string groupName) && groupName==pair.Key ? "\t\t"+r.Name.Replace("@","") : null));
-				string roleStr = $"\tAssociated roles:\n{(roleList.Length==0 ? "\t\tNo role associations." : roleList)}";
-				string permList = string.Join("\n",pair.Value.permissions.Where(p => p.Value!=null).Select(p => $"\t\t{(p.Value.Value ? "✓" : "✗")} - {p.Key}"));
-				string permStr = $"\tPermission overrides:\n{(permList.Length==0 ? "\t\tNo permission overrides." : permList)}";
-				listStr += $"{pair.Key}:\n{roleStr}\n{permStr}\n\n";
+				string roleList = string.Join("\r\n",roles.SelectIgnoreNull(r => data.roleGroups.TryGetValue(r.Id,out string groupName) && groupName==pair.Key ? "\t\t"+r.Name.Replace("@","") : null));
+				string roleStr = $"\tAssociated roles:\r\n{(roleList.Length==0 ? "\t\tNo role associations." : roleList)}";
+				string permList = string.Join("\r\n",pair.Value.permissions.Where(p => p.Value!=null).Select(p => $"\t\t{(p.Value.Value ? "✓" : "✗")} - {p.Key}"));
+				string permStr = $"\tPermission overrides:\r\n{(permList.Length==0 ? "\t\tNo permission overrides." : permList)}";
+
+				listStr += $"{pair.Key}:\r\n{roleStr}\r\n{permStr}\r\n\r\n";
 			}
+
 			await Context.ReplyAsync($"Full permission setup: ```\n{listStr}```");
 		}
 
@@ -73,6 +77,7 @@ namespace MopBotTwo.Core.Systems.Permissions
 		public async Task SetRolePermissionGroupCommand(SocketRole role,string permGroup)
 		{
 			string properName = role.Name.Replace("@","");
+
 			if(properName=="everyone" && !role.IsEveryone) {
 				role = Context.server.EveryoneRole;
 			}
@@ -81,12 +86,15 @@ namespace MopBotTwo.Core.Systems.Permissions
 			if(!data.permissionGroups.ContainsKey(permGroup)) {
 				throw new BotError($"Permission group `{permGroup}` doesn't exists.");
 			}
+
 			if(role.Id==Context.server.EveryoneRole.Id) {
 				throw new BotError($"Cannot reassign `everyone` role's group.");
 			}
+
 			if(permGroup=="everyone") {
 				throw new BotError($"Cannot assign `everyone` permission group to any roles.");
 			}
+
 			data.roleGroups.TryGetValue(role.Id,out string prevGroup);
 			data.roleGroups[role.Id] = permGroup;
 		}
@@ -154,8 +162,10 @@ namespace MopBotTwo.Core.Systems.Permissions
 
 			List<string> removed = new List<string>();
 			List<string> skipped = new List<string>();
+
 			for(int i = 0;i<permissions.Length;i++) {
 				var perm = permissions[i];
+
 				if(perms.permissions.ContainsKey(perm)) {
 					perms[perm] = null;
 					removed.Add(perm);
@@ -166,11 +176,11 @@ namespace MopBotTwo.Core.Systems.Permissions
 
 			string text = "";
 			if(removed.Count>0) {
-				text += $"Removed the following permissions: ```\n{string.Join("\n",removed)}```\n";
+				text += $"Removed the following permissions: ```\r\n{string.Join("\r\n",removed)}```\r\n";
 			}
 
 			if(skipped.Count>0) {
-				text += $"The following permissions already weren't present: ```\n{string.Join("\n",skipped)}```\n";
+				text += $"The following permissions already weren't present: ```\r\n{string.Join("\r\n",skipped)}```\r\n";
 			}
 
 			await Context.ReplyAsync(text);

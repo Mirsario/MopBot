@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Core.Systems.Permissions;
+using MopBotTwo.Extensions;
 
 namespace MopBotTwo.Core.Systems
 {
@@ -17,7 +18,7 @@ namespace MopBotTwo.Core.Systems
 		[Command("enable")]
 		public async Task EnableSystem(string systemName)
 		{
-			if(!nameToSystem.TryGetValue(systemName,out BotSystem system)) {
+			if(!nameToSystem.TryGetValue(systemName,out BotSystem system) || (system.Configuration.Hidden && !Context.user.IsBotMaster())) {
 				throw new BotError($"Couldn't find a system named '{systemName}'.");
 			}
 
@@ -37,9 +38,10 @@ namespace MopBotTwo.Core.Systems
 		public async Task ListSystems()
 		{
 			var server = Context.server;
+			var isMaster = Context.user.IsBotMaster();
 			var builder = MopBot.GetEmbedBuilder(server);
 
-			foreach(var system in allSystems.Where(s => !s.Configuration.AlwaysEnabled).OrderBy(s => s.GetType().Name)) {
+			foreach(var system in allSystems.Where(s => (!s.Configuration.Hidden || isMaster) && !s.Configuration.AlwaysEnabled).OrderBy(s => s.GetType().Name)) {
 				builder.AddField($"{(system.IsEnabledForServer(server) ? ":white_check_mark:" : ":x:")} - {system.Name}",system.Configuration.Description ?? "`Configuration missing.`");
 			}
 

@@ -18,7 +18,7 @@ namespace MopBotTwo.Core.Systems.Commands
 		{
 			var context = Context;
 			var builder = MopBot.GetEmbedBuilder(context)
-				.WithAuthor($"Commands available to @{context.socketServerUser.Name()}:",context.user.GetAvatarUrl())
+				.WithAuthor($"Commands available to @{context.socketServerUser.GetDisplayName()}:",context.user.GetAvatarUrl())
 				.WithFooter($"You can type {context.server.GetMemory().GetData<CommandSystem,CommandServerData>().commandPrefix}help <command> to see groups' commands and commands' syntaxes.");
 
 			foreach((var aliases,string description,_) in GetAvailableCommands(context.server,context.socketServerUser,true)) {
@@ -89,6 +89,7 @@ namespace MopBotTwo.Core.Systems.Commands
 
 					foreach(var c in m.Commands) {
 						var (name,description) = GetCommandNameAndDescription(c,group);
+
 						builder.AddField($"• {name}",description);
 					}
 

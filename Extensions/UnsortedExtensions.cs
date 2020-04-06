@@ -28,7 +28,7 @@ namespace MopBotTwo.Extensions
 	public static class UnsortedExtensions
 	{
 		public static BindingFlags anyFlags = BindingFlags.Instance|BindingFlags.Static|BindingFlags.NonPublic|BindingFlags.Public;
-		public static string Name(this IUser user) => (user as IGuildUser)?.Nickname ?? user?.Username ?? "UnknownUser";
+		public static string GetDisplayName(this IUser user) => (user as IGuildUser)?.Nickname ?? user?.Username ?? "UnknownUser";
 
 		public static SocketUserMessage ToSocketUserMessage(this RestUserMessage restMessage,SocketTextChannel channel)
 		{
@@ -126,11 +126,15 @@ namespace MopBotTwo.Extensions
 		public static bool HasDiscordPermission(this SocketGuildUser user,Func<GuildPermissions,bool> getPerm)
 		{
 			var roles = user.Roles.OrderBy(r => r.Position);
+
 			foreach(var role in roles) {
-				if(getPerm(role.Permissions)) {
+				var permissions = role.Permissions;
+
+				if(permissions.Administrator || getPerm(permissions)) {
 					return true;
 				}
 			}
+
 			return false;
 		}
 		public static bool HasChannelPermission(this SocketGuildUser user,SocketGuildChannel channel,DiscordPermission permission)
@@ -138,12 +142,14 @@ namespace MopBotTwo.Extensions
 			if(channel==null) {
 				throw new ArgumentNullException(nameof(channel));
 			}
-			
-			var roles = user.Roles.OrderBy(r => r.Position);
+
+			if(user.Roles.Any(r => r.Permissions.Administrator)) {
+				return true;
+			}
 
 			bool? result = null;
 			
-			foreach(var role in roles) {
+			foreach(var role in user.Roles.OrderBy(r => r.Position)) {
 				var rolePerms = role.Permissions;
 				if(rolePerms.TryGetValueFromEnum(permission,out bool roleResult)) {
 					result = roleResult;

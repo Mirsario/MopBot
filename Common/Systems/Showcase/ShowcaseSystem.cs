@@ -6,14 +6,12 @@ using System.Text.RegularExpressions;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using Discord.Rest;
 using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Core.Systems.Permissions;
 using MopBotTwo.Core.Systems;
 using MopBotTwo.Core.Systems.Channels;
 using MopBotTwo.Core;
-using MopBotTwo.Utilities;
 
 namespace MopBotTwo.Common.Systems.Showcase
 {
@@ -100,16 +98,10 @@ namespace MopBotTwo.Common.Systems.Showcase
 
 			int count = 0;
 
-			switch(message) {
-				case RestUserMessage restMessage:
-					await restMessage.GetReactionUsersAsync(emote,100).ForEachAsync(list => { count += list.Count; });
-					break;
-				case SocketUserMessage socketMessage:
-					await socketMessage.GetReactionUsersAsync(emote,100).ForEachAsync(list => { count += list.Count; });
-					break;
-				default:
-					Console.WriteLine($"Unable to get amount of reactions. Message type is '{message?.GetType()?.Name ?? "null"}'.");
-					return 0;
+			if(message is IUserMessage userMessage) {
+				await userMessage.GetReactionUsersAsync(emote,100).ForEachAsync(list => { count += list.Count; });
+			} else {
+				Console.WriteLine($"Unable to get amount of reactions. Message type is '{message?.GetType()?.Name ?? "null"}'.");
 			}
 
 			return count;
@@ -197,7 +189,7 @@ namespace MopBotTwo.Common.Systems.Showcase
 			var builder = MopBot.GetEmbedBuilder(context)
 				.WithColor(socketServerUser.GetColor())
 				//.WithTitle("[Click here to jump to the original message]").WithUrl(link)
-				.WithAuthor($"By {socketServerUser?.Name() ?? context.user.Username}:",context.user.GetAvatarUrl())
+				.WithAuthor($"By {socketServerUser?.GetDisplayName() ?? context.user.Username}:",context.user.GetAvatarUrl())
 				.WithDescription(content)
 				.WithImageUrl(url)
 				.WithFooter($"Final Score - {numUpvotes/(float)(numUpvotes+numDownvotes)*100f:0.00}%",BotUtils.GetEmojiImageUrl("⭐"));
