@@ -23,14 +23,7 @@ namespace MopBotTwo.Common.Systems.Tags
 			var globalData = memory.GetData<TagSystem,TagGlobalData>();
 			var userData = memory[user].GetData<TagSystem,TagUserData>();
 
-			ulong userId = user.Id;
-
-			var tags = GetTagsWithName(user,server,tagName);
-			if(tags.Count>0 && tags.Any(t => t.tagInfo.owner==userId)) {
-				char cmdSymbol = memory[server].GetData<CommandSystem,CommandServerData>().commandPrefix;
-
-				throw new BotError($"You already own a tag named '{tagName}'.\nUse `{cmdSymbol}tag edit {tagName} <text>` to edit it,\nOR use `{cmdSymbol}tag remove {tagName}` to remove it.");
-			}
+			EnsureTagIsNotDefined(tagName);
 
 			ulong tagId = BotUtils.GenerateUniqueId(globalData.tags.ContainsKey);
 
@@ -42,6 +35,7 @@ namespace MopBotTwo.Common.Systems.Tags
 				userData.subscribedTags.Add(tagId);
 			}
 		}
+
 		[Command("edit")]
 		[Alias("modify")]
 		[Summary("Edits a tag.")]
@@ -49,20 +43,26 @@ namespace MopBotTwo.Common.Systems.Tags
 		{
 			tagName = tagName.ToLowerInvariant();
 
-			var user = Context.user;
-			var server = Context.server;
-			var userData = MemorySystem.memory[user].GetData<TagSystem,TagUserData>();
-
-			ulong userId = user.Id;
-
-			var tags = GetTagsWithName(user,server,tagName);
-			if(tags.Count==0 || !tags.TryGetFirst(t => t.tagInfo.owner==userId,out var tag)) {
-				throw new BotError("Couldn't find any tag with such name that you own.");
-			}
+			var (_,tag) = GetSingleTagInternal(Context.server,Context.socketUser,tagName);
 
 			//Update tag text
-			tag.tagInfo.text = text;
+			tag.text = text;
 		}
+
+		[Command("rename")]
+		[Summary("Renames a tag.")]
+		public async Task TagRenameCommand(string tagOldName,string tagNewName)
+		{
+			tagOldName = tagOldName.ToLowerInvariant();
+			tagNewName = tagNewName.ToLowerInvariant();
+
+			var (_,tag) = GetSingleTagInternal(Context.server,Context.socketUser,tagOldName);
+
+			EnsureTagIsNotDefined(tagNewName);
+
+			tag.name = tagNewName;
+		}
+
 		[Command("remove")]
 		[Alias("delete")]
 		[Summary("Removes a tag.")]
@@ -122,16 +122,29 @@ namespace MopBotTwo.Common.Systems.Tags
 		[Summary("Shows source text of another user's tag.")]
 		public Task TagShowRawCommand(SocketUser user,string tagName) => ShowTagInternal(user,tagName,true);
 
+		private void EnsureTagIsNotDefined(string tagName)
+		{
+			var user = Context.socketUser;
+			var tags = GetTagsWithName(user,null,tagName);
+			ulong userId = user.Id;
+
+			if(tags.Count>0 && tags.Any(t => t.tagInfo.owner==userId)) {
+				char cmdSymbol = Context.server.GetMemory().GetData<CommandSystem,CommandServerData>().commandPrefix;
+
+				throw new BotError($"You already own a tag named '{tagName}'.\r\nUse `{cmdSymbol}tag edit {tagName} <text>` to edit it,\r\nOR use `{cmdSymbol}tag remove {tagName}` to remove it.");
+			}
+		}
+
 		private async Task ShowTagInternal(SocketUser tagOwner,string tagName,bool raw = false)
 		{
 			var context = Context;
 			var tagUser = context.socketServerUser;
 
-			var tag = GetSingleTagInternal(tagOwner,tagName);
+			var tag = GetSingleTagInternal(Context.server,tagOwner,tagName).tag;
 
 			var embed = MopBot.GetEmbedBuilder(context)
-				.WithAuthor($"{tagUser.Name()}:",tagUser.GetAvatarUrl())
-				.WithFooter($@"""{tagName}"" by {MopBot.client.GetUser(tag.owner)?.Name() ?? "Unknown user"}")
+				.WithAuthor($"{tagUser.GetDisplayName()}:",tagUser.GetAvatarUrl())
+				.WithFooter($@"""{tagName}"" by {MopBot.client.GetUser(tag.owner)?.GetDisplayName() ?? "Unknown user"}")
 				.WithDescription(raw ? ($"```{StringUtils.EscapeDiscordText(tag.text,true)}\r\n```") : tag.text)
 				.WithColor(tagUser.GetColor())
 				.Build();
@@ -139,27 +152,6 @@ namespace MopBotTwo.Common.Systems.Tags
 			await context.Channel.SendMessageAsync(embed:embed);
 
 			await context.Delete();
-		}
-		private Tag GetSingleTagInternal(SocketUser tagOwner,string tagName)
-		{
-			var context = Context;
-
-			tagName = tagName.ToLowerInvariant();
-
-			var server = context.server;
-			var tagsFound = GetTagsWithName(tagOwner,server,tagName);
-
-			if(tagsFound.Count==0) {
-				throw new BotError("Found no tags with such name that you're subscribed to.");
-			}
-
-			if(tagsFound.Count!=1) {
-				const int MaxTextLength = 30;
-
-				throw new BotError($"{tagsFound.Count} tags have been found: \r\n```{string.Join('\n',tagsFound.Select(t => $"{t.tagId} - {t.tagInfo.text.TruncateWithDots(MaxTextLength)}"))}```");
-			}
-
-			return tagsFound[0].tagInfo;
 		}
 	}
 }

@@ -5,6 +5,8 @@ using Discord;
 using Discord.Commands;
 using MopBotTwo.Core.Systems;
 using MopBotTwo.Core.Systems.Memory;
+using Discord.WebSocket;
+using MopBotTwo.Extensions;
 
 #pragma warning disable 1998
 
@@ -26,7 +28,7 @@ namespace MopBotTwo.Common.Systems.Tags
 			RegisterDataType<ServerMemory,TagServerData>();
 		}
 
-		public static List<(ulong tagId, Tag tagInfo)> GetTagsWithName(IUser user,IGuild server,string name)
+		public static List<(ulong tagId,Tag tagInfo)> GetTagsWithName(IUser user,IGuild server,string name)
 		{
 			name = name.ToLowerInvariant();
 
@@ -56,6 +58,24 @@ namespace MopBotTwo.Common.Systems.Tags
 			}
 
 			return tagsFound;
+		}
+		public static (ulong tagId,Tag tag) GetSingleTagInternal(SocketGuild server,SocketUser tagOwner,string tagName)
+		{
+			tagName = tagName.ToLowerInvariant();
+
+			var tagsFound = GetTagsWithName(tagOwner,server,tagName);
+
+			if(tagsFound.Count==0) {
+				throw new BotError("Found no tags with such name that you're subscribed to.");
+			}
+
+			if(tagsFound.Count!=1) {
+				const int MaxTextLength = 30;
+
+				throw new BotError($"{tagsFound.Count} tags have been found: \r\n```{string.Join('\n',tagsFound.Select(t => $"{t.tagId} - {t.tagInfo.text.TruncateWithDots(MaxTextLength)}"))}```");
+			}
+
+			return tagsFound[0];
 		}
 
 		public static void ForeachTag(TagGlobalData globalData,List<ulong> tagIds,Action<ulong,Tag> action)

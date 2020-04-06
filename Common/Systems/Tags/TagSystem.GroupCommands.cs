@@ -4,6 +4,7 @@ using Discord.Commands;
 using MopBotTwo.Extensions;
 using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Core.Systems.Permissions;
+using Discord.WebSocket;
 
 #pragma warning disable 1998
 
@@ -34,36 +35,13 @@ namespace MopBotTwo.Common.Systems.Tags
 			//Subscribe the user to it
 			userData.subscribedTagGroups.Add(groupId);
 		}
+
 		[Command("group addtag")]
-		public async Task TagGroupAddTagCommand(string groupName,string tagName)
-		{
-			groupName = groupName.ToLowerInvariant();
-			int groupNameHash = groupName.GetHashCode();
+		public Task TagGroupAddTagCommand(string groupName,string tagName) => TagGroupAddTagInternal(Context.socketUser,groupName,Context.socketUser,tagName);
 
-			var user = Context.user;
-			var memory = MemorySystem.memory;
-			var globalData = memory.GetData<TagSystem,TagGlobalData>();
-			var userData = memory[user].GetData<TagSystem,TagUserData>();
-			ulong userId = user.Id;
+		[Command("group addtag")]
+		public Task TagGroupAddTagCommand(string groupName,SocketUser tagOwner,string tagName) => TagGroupAddTagInternal(Context.socketUser,groupName,tagOwner,tagName);
 
-			if(!globalData.tagGroups.TryGetFirst(g => g.Value.name==groupName,out var idGroupPair)) {
-				throw new BotError($@"Group `{groupName}` does not exist.");
-			}
-			var group = idGroupPair.Value;
-			if(group.owner!=userId) {
-				throw new BotError($@"Can't add tags to group `{groupName}`, you're neither that group's owner nor its maintainer.");
-			}
-
-			if(!ForeachTag(globalData,userData.subscribedTags,out (ulong tagId, Tag tag) result,(id,tag) => (tag.name==tagName, false))) {
-				throw new BotError($"Couldn't find a tag named `{tagName}`.");
-			}
-
-			if(group.tagIDs.Contains(result.tagId)) {
-				throw new BotError($"Group `{groupName}` already contains tag `{tagName}`.");
-			}
-
-			group.tagIDs.Add(result.tagId);
-		}
 		[Command("group subscribe")]
 		[Alias("group sub")]
 		public async Task TagGroupSubscribeCommand(string groupName)
@@ -88,6 +66,7 @@ namespace MopBotTwo.Common.Systems.Tags
 			//Subscribe the user to it
 			userData.subscribedTagGroups.Add(groupId);
 		}
+
 		[Command("group unsubscribe")]
 		[Alias("group unsub")]
 		public async Task TagGroupUnsubscribeCommand(string groupName)
@@ -117,6 +96,7 @@ namespace MopBotTwo.Common.Systems.Tags
 			//Unsubscribe the user from it
 			userData.subscribedTagGroups.Remove(groupId);
 		}
+
 		[Command("group global")]
 		[Alias("group setglobal")]
 		[RequirePermission(SpecialPermission.Owner,"tagsystem.manageglobals")]
@@ -143,6 +123,33 @@ namespace MopBotTwo.Common.Systems.Tags
 			} else {
 				serverData.globalTagGroups.Remove(groupId);
 			}
+		}
+
+		private async Task TagGroupAddTagInternal(SocketUser user,string groupName,SocketUser tagOwner,string tagName)
+		{
+			var (tagId,tag) = GetSingleTagInternal(Context.server,tagOwner,tagName);
+			
+			groupName = groupName.ToLowerInvariant();
+
+			int groupNameHash = groupName.GetHashCode();
+
+			var memory = MemorySystem.memory;
+			var globalData = memory.GetData<TagSystem,TagGlobalData>();
+
+			if(!globalData.tagGroups.TryGetFirst(g => g.Value.name==groupName,out var idGroupPair)) {
+				throw new BotError($@"Group `{groupName}` does not exist.");
+			}
+
+			var group = idGroupPair.Value;
+			if(user.Id!=group.owner) {
+				throw new BotError($@"Can't add tags to group `{groupName}`, you're neither that group's owner, nor its maintainer.");
+			}
+
+			if(group.tagIDs.Contains(tagId)) {
+				throw new BotError($"Group `{groupName}` already contains tag `{tagName}`.");
+			}
+
+			group.tagIDs.Add(tagId);
 		}
 	}
 }
