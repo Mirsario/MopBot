@@ -92,6 +92,11 @@ namespace MopBotTwo.Core.Systems.Commands
 			}
 
 			var matches = regex.Matches(context.content);
+
+			if(matches.Count==0) {
+				return;
+			}
+
 			bool fail = false;
 
 			for(int i = 0;i<matches.Count;i++) {
