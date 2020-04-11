@@ -7,7 +7,7 @@ using MopBotTwo.Core.Systems;
 namespace MopBotTwo.Common.Systems.Imaging
 {
 	[Group("imaging")]
-	[Alias("img","image")]
+	[Alias("imageg","img")]
 	[Summary("Group for random commands related to working with images")]
 	[SystemConfiguration(EnabledByDefault = true,Description = "Currently only contains an avatar-getting command.")]
 	public class ImagingSystem : BotSystem
@@ -17,7 +17,7 @@ namespace MopBotTwo.Common.Systems.Imaging
 		{
 			var embed = MopBot.GetEmbedBuilder(Context)
 				.WithAuthor($"{user.GetDisplayName()}'s avatar")
-				.WithImageUrl(user.GetAvatarUrl())
+				.WithImageUrl(user.GetAvatarUrl(size:1024))
 				.WithFooter($"Requested by {Context.socketServerUser.GetDisplayName()}",Context.user.GetAvatarUrl())
 				.Build();
 
