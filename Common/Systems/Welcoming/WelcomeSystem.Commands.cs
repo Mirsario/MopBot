@@ -7,6 +7,7 @@ using Discord.WebSocket;
 using MopBotTwo.Core.Systems;
 using MopBotTwo.Core.Systems.Channels;
 using MopBotTwo.Core.Systems.Memory;
+using MopBotTwo.Core.Systems.Permissions;
 using MopBotTwo.Extensions;
 
 namespace MopBotTwo.Common.Systems.Welcoming
@@ -14,6 +15,7 @@ namespace MopBotTwo.Common.Systems.Welcoming
 	[Group("welcoming")]
 	[Alias("welcome")]
 	[Summary("Group for controlling WelcomeSystem.")]
+	[RequirePermission("welcome.manage")]
 	partial class WelcomeSystem
 	{
 		[Command("setchannel")]
