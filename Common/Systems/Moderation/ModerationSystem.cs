@@ -19,19 +19,18 @@ namespace MopBotTwo.Common.Systems.Moderation
 		[Command("ban")]
 		[Summary("Permamently bans a specified user.")]
 		[RequirePermission(SpecialPermission.Owner,"moderation.ban")]
-		public async Task BanCommand(SocketGuildUser targetUser,[Remainder]string reason = "No reason provided.")
+		public async Task BanCommand(IUser targetUser,[Remainder]string reason = "No reason provided.")
 		{
 			var context = Context;
 			var user = context.socketServerUser;
 
 			context.server.CurrentUser.RequirePermission(context.socketServerChannel,DiscordPermission.BanMembers);
 
-			if(user.Roles.Max(r => r.Position)>targetUser.Roles.Max(r => r.Position)) {
+			if(targetUser is SocketGuildUser serverUser && user.Roles.Max(r => r.Position)>serverUser.Roles.Max(r => r.Position)) {
 				throw new BotError("You cannot ban a user who's above you in rights.");
 			}
 
-			await targetUser.BanAsync(reason: reason);
-			//await context.ReplyAsync($"User `{targetUser.Name()}` has been banned with reason `{reason}`.");
+			await context.server.AddBanAsync(user,reason:reason);
 		}
 
 		[Command("kick")]
