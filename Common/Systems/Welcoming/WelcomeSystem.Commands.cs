@@ -1,12 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Discord;
+﻿using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Channels;
-using MopBotTwo.Core.Systems.Memory;
 using MopBotTwo.Core.Systems.Permissions;
 using MopBotTwo.Extensions;
 
