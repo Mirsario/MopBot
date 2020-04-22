@@ -40,7 +40,7 @@ namespace MopBotTwo.Common.Systems.XP
 
 			ulong xp = GetMessageXP(message);
 
-			await GiveXP(xp,user,server,message.socketServerChannel);
+			await GiveXP(user,xp);
 		}
 		public override async Task OnMessageDeleted(MessageExt message)
 		{
@@ -50,14 +50,14 @@ namespace MopBotTwo.Common.Systems.XP
 
 			ulong xp = GetMessageXP(message);
 
-			await TakeXP(xp,message.socketServerUser,message.server,message.socketServerChannel);
+			await TakeXP(message.socketServerUser,xp);
 		}
 
 		public static ulong GetMessageXP(MessageExt message)
 		{
 			ulong xp = (ulong)Math.Min(1,Math.Max(10,Regex.Matches(message.content,@"\w+").Count/5));
-
 			string text = message.content.ToLower() ?? "";
+
 			if(text.Contains("welcome") || text.Contains("hello") || text.Contains("hi") || text.Contains("hey")) {
 				xp += 5;
 			} else if(message.message.Attachments.Any(a => a.Width>=256 && a.Height>=256) || message.message.Embeds.Any(e => e.Type==EmbedType.Image || e.Type==EmbedType.Video)) {
@@ -81,8 +81,9 @@ namespace MopBotTwo.Common.Systems.XP
 			return 3*lvl*lvl;
 		}
 
-		private static async Task ModifyXP(Func<ulong,ulong> xpModifier,SocketGuildUser user,SocketGuild server,SocketUserMessage message = null)
+		private static async Task ModifyXP(Func<ulong,ulong> xpModifier,SocketGuildUser user,SocketUserMessage message = null)
 		{
+			var server = user.Guild;
 			var serverMemory = MemorySystem.memory[server];
 			var userMemory = serverMemory[user];
 			var xpUserData = userMemory.GetData<XPSystem,XPServerUserData>();

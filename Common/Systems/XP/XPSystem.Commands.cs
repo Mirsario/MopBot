@@ -14,18 +14,19 @@ namespace MopBotTwo.Common.Systems.XP
 	{
 		[Command("give")]
 		[RequirePermission(SpecialPermission.Owner)]
-		public static async Task GiveXP(ulong numXP,SocketGuildUser user,SocketGuild server,SocketGuildChannel channel) => await ModifyXP(xp => xp+numXP,user,server);
+		public async Task GiveXP(SocketGuildUser user,ulong numXP) => await ModifyXP(xp => xp+numXP,user);
 
 		[Command("take")]
 		[RequirePermission(SpecialPermission.Owner)]
-		public static async Task TakeXP(ulong numXP,SocketGuildUser user,SocketGuild server,SocketGuildChannel channel) => await ModifyXP(xp => xp-numXP,user,server);
+		public async Task TakeXP(SocketGuildUser user,ulong numXP) => await ModifyXP(xp => xp-numXP,user);
 
 		[Command("set")]
 		[RequirePermission(SpecialPermission.Owner)]
-		public static async Task SetXP(ulong newXP,SocketGuildUser user,SocketGuild server) => await ModifyXP(xp => newXP,user,server);
+		public async Task SetXP(SocketGuildUser user,ulong newXP) => await ModifyXP(xp => newXP,user);
 
 		[Command]
 		[Summary("Shows your current XP, level and rank.")]
+		[Priority(1)]
 		public async Task ShowXPCommand(SocketGuildUser user = null)
 		{
 			user ??= Context.socketServerUser;
@@ -65,8 +66,8 @@ namespace MopBotTwo.Common.Systems.XP
 
 			const int NumShown = 10;
 
-			var leaders =
-				serverMemory.GetSubMemories<ServerUserMemory>()
+			var leaders = serverMemory
+				.GetSubMemories<ServerUserMemory>()
 				.Select<KeyValuePair<ulong,ServerUserMemory>,(ulong userId,XPServerUserData xpUserData)>(pair => (pair.Key, pair.Value.GetData<XPSystem,XPServerUserData>()))
 				.OrderByDescending(tuple => tuple.xpUserData?.xp ?? 0)
 				.Select<(ulong userId, XPServerUserData xpUserData),(SocketGuildUser user, XPServerUserData xpUserData)>(tuple => (server.GetUser(tuple.userId), tuple.xpUserData))
