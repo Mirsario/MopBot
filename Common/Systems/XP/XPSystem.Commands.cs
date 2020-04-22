@@ -60,35 +60,32 @@ namespace MopBotTwo.Common.Systems.XP
 		[Summary("Shows XP leaderboards.")]
 		public async Task ShowLeaderboardsCommand()
 		{
-			try {
-				var server = Context.server;
-				var serverMemory = MemorySystem.memory[server];
+			var server = Context.server;
+			var serverMemory = MemorySystem.memory[server];
 
-				const int NumShown = 10;
+			const int NumShown = 10;
 
-				var leaders =
-					serverMemory.GetSubMemories<ServerUserMemory>()
-					.Select<KeyValuePair<ulong,ServerUserMemory>,(ulong userId,XPServerUserData xpUserData)>(pair => (pair.Key, pair.Value.GetData<XPSystem,XPServerUserData>()))
-					.OrderByDescending(tuple => tuple.xpUserData?.xp ?? 0)
-					.Select<(ulong userId, XPServerUserData xpUserData),(SocketGuildUser user, XPServerUserData xpUserData)>(tuple => (server.GetUser(tuple.userId), tuple.xpUserData))
-					.Where(tuple => tuple.user!=null && tuple.xpUserData!=null)
-					.Take(NumShown);
+			var leaders =
+				serverMemory.GetSubMemories<ServerUserMemory>()
+				.Select<KeyValuePair<ulong,ServerUserMemory>,(ulong userId,XPServerUserData xpUserData)>(pair => (pair.Key, pair.Value.GetData<XPSystem,XPServerUserData>()))
+				.OrderByDescending(tuple => tuple.xpUserData?.xp ?? 0)
+				.Select<(ulong userId, XPServerUserData xpUserData),(SocketGuildUser user, XPServerUserData xpUserData)>(tuple => (server.GetUser(tuple.userId), tuple.xpUserData))
+				.Where(tuple => tuple.user!=null && tuple.xpUserData!=null)
+				.Take(NumShown);
 
-				var tuples = leaders as (SocketGuildUser user, XPServerUserData xpUserData)[] ?? leaders.ToArray();
+			var tuples = leaders as (SocketGuildUser user, XPServerUserData xpUserData)[] ?? leaders.ToArray();
+			var (user,xpUserData) = tuples.First();
 
-				var (user,xpUserData) = tuples.First();
+			int i = 1;
 
-				int i = 1;
+			var builder = MopBot.GetEmbedBuilder(Context)
+				.WithAuthor($"#{i++} - {user.GetDisplayName()} - {xpUserData.xp} Total XP (Level {XPToLevel(xpUserData.xp)})",user.GetAvatarUrl())
+				.WithDescription(string.Join("\n",tuples
+					.TakeLast(tuples.Length-1)
+					.Select(t => $"#{i++} - {t.user.GetDisplayName()} - {t.xpUserData.xp} Total XP (Level {XPToLevel(t.xpUserData.xp)})")
+				));
 
-				var builder = MopBot.GetEmbedBuilder(Context)
-					.WithAuthor($"#{i++} - {user.GetDisplayName()} - {xpUserData.xp} Total XP (Level {XPToLevel(xpUserData.xp)})",user.GetAvatarUrl())
-					.WithDescription(string.Join("\n",tuples.TakeLast(tuples.Length-1).Select(t => $"#{i++} - {t.user.GetDisplayName()} - {t.xpUserData.xp} Total XP (Level {XPToLevel(t.xpUserData.xp)})")));
-
-				await Context.socketTextChannel.SendMessageAsync(embed: builder.Build());
-			}
-			catch(Exception e) {
-				await MopBot.HandleException(e);
-			}
+			await Context.socketTextChannel.SendMessageAsync(embed:builder.Build());
 		}
 	}
 }

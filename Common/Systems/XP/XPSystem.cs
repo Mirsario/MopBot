@@ -68,24 +68,17 @@ namespace MopBotTwo.Common.Systems.XP
 		}
 		public static uint XPToLevel(ulong xp)
 		{
-			//Shitcode ahead!
-			uint lvl = 2;
-
-			while(true) {
-				ulong lvlXP = LevelToXP(lvl);
-
-				if(xp<lvlXP) {
-					return lvl-1;
-				}
-
-				lvl++;
+			if(xp==0) {
+				return 1;
 			}
+
+			return (uint)Math.Floor(Math.Sqrt(xp/3))+1;
 		}
 		public static ulong LevelToXP(uint level)
 		{
 			ulong lvl = level-1;
 
-			return 3*lvl*lvl*lvl+lvl;
+			return 3*lvl*lvl;
 		}
 
 		private static async Task ModifyXP(Func<ulong,ulong> xpModifier,SocketGuildUser user,SocketGuild server,SocketUserMessage message = null)
@@ -95,6 +88,7 @@ namespace MopBotTwo.Common.Systems.XP
 			var xpUserData = userMemory.GetData<XPSystem,XPServerUserData>();
 
 			uint prevLvl = XPToLevel(xpUserData.xp);
+
 			xpUserData.xp = xpModifier(xpUserData.xp);
 
 			uint newLvl = XPToLevel(xpUserData.xp);
