@@ -7,11 +7,13 @@ using System.Reflection;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core.TypeReaders;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core.TypeReaders;
 
-namespace MopBotTwo.Core.Systems.Commands
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Core.Systems.Commands
 {
 	[SystemConfiguration(AlwaysEnabled = true,Description = "Internal system that detects and executes commands.")]
 	public partial class CommandSystem : BotSystem
@@ -71,8 +73,6 @@ namespace MopBotTwo.Core.Systems.Commands
 				var instance = (CustomTypeReader)Activator.CreateInstance(type);
 
 				foreach(Type assignedType in instance.Types) {
-					Console.WriteLine($"Registering {type.Name} for type {assignedType.Name}");
-
 					commandService.AddTypeReader(assignedType,instance);
 				}
 			}
@@ -241,6 +241,7 @@ namespace MopBotTwo.Core.Systems.Commands
 			var group = command.Module.Group;
 			
 			string key;
+
 			if(!(group==null ? commandToSystem : commandGroupToSystem).TryGetValue(key = group ?? command.Name,out system)) {
 				throw new Exception($"Can't get system from module '{key}'!");
 			}

@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Common.Systems.Currency;
-using MopBotTwo.Core;
+using MopBot.Extensions;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Memory;
+using MopBot.Common.Systems.Currency;
+using MopBot.Core;
 
-namespace MopBotTwo.Common.Systems.Trivia
+namespace MopBot.Common.Systems.Trivia
 {
 	[Group("trivia")]
 	[Summary("Group for anything related to trivia questions.")]
@@ -32,6 +32,7 @@ namespace MopBotTwo.Common.Systems.Trivia
 		public override async Task ServerUpdate(SocketGuild server)
 		{
 			var triviaServerData = server.GetMemory().GetData<TriviaSystem,TriviaServerData>();
+
 			if(!triviaServerData.IsReady) {
 				return; //TODO: Let the admins know that this is misconfigured.
 			}
@@ -43,23 +44,17 @@ namespace MopBotTwo.Common.Systems.Trivia
 			}
 
 			triviaServerData.lastTriviaPost = now;
-
-			triviaServerData.currentChannel = triviaServerData.triviaChannels[MopBot.random.Next(triviaServerData.triviaChannels.Count)];
+			triviaServerData.currentChannel = triviaServerData.triviaChannels[MopBot.Random.Next(triviaServerData.triviaChannels.Count)];
 
 			var channel = server.GetTextChannel(triviaServerData.currentChannel);
+
 			if(channel==null) {
-				Console.WriteLine("No such channel");
 				return; //TODO: Same as above
 			}
 
-			/*string prefix = null;
-			if(triviaServerMemory.currentQuestion!=null) {
-				//Say that no one answered the previos question.
-				prefix = "*(No one has answered the last question in time!)*\r\n\r\n";
-			}*/
+			TriviaQuestion[] validQuestions;
 
 			//Find questions we didn't pick yet, handle running out of them.
-			TriviaQuestion[] validQuestions;
 			while(true) {
 				lock(triviaServerData.questions) {
 					validQuestions = triviaServerData.questions.Where(q => !q.wasPosted).ToArray();
@@ -69,16 +64,17 @@ namespace MopBotTwo.Common.Systems.Trivia
 					if(triviaServerData.autoClearCache && triviaServerData.questions.Count>0) {
 						ClearCache(triviaServerData);
 						continue;
-					}else{
+					} else {
 						await channel.SendMessageAsync($"{server.Owner.Mention} We're out of trivia questions!\r\n\r\nAdd new questions, or..\r\n• Use `!trivia clearcache` to clear list of used questions;\r\n• Use `!trivia autoclearcache true` to automate this process, if you're fully okay with same questions being repeat;");
 						return;
 					}
 				}
+
 				break;
 			}
 
 			//Set new question
-			triviaServerData.currentQuestion = validQuestions[MopBot.random.Next(validQuestions.Length)];
+			triviaServerData.currentQuestion = validQuestions[MopBot.Random.Next(validQuestions.Length)];
 			triviaServerData.currentQuestion.wasPosted = true;
 			currentQuestionRegex = null; //This will cause a new one to be made, when needed.
 
@@ -97,7 +93,7 @@ namespace MopBotTwo.Common.Systems.Trivia
 					}
 
 					mention = role.Mention;
-				}else{
+				} else {
 					triviaServerData.triviaRole = 0;
 				}
 			}
@@ -108,7 +104,9 @@ namespace MopBotTwo.Common.Systems.Trivia
 				.WithFooter("Type your answer right in this channel!");
 
 			if(triviaServerData.thumbnailUrls?.Length>0==true) {
-				try { embedBuilder.WithThumbnailUrl(triviaServerData.thumbnailUrls[MopBot.random.Next(triviaServerData.thumbnailUrls.Length)]); }
+				try {
+					embedBuilder.WithThumbnailUrl(triviaServerData.thumbnailUrls[MopBot.Random.Next(triviaServerData.thumbnailUrls.Length)]);
+				}
 				catch {}
 			}
 
@@ -120,6 +118,7 @@ namespace MopBotTwo.Common.Systems.Trivia
 
 			if(triviaServerData.lockTriviaChannel && currentUser.HasChannelPermission(channel,DiscordPermission.ManageChannel)) {
 				//Unlock the channel, since there's a question now.
+
 				await channel.ModifyPermissions(server.EveryoneRole,op => op.SendMessages==PermValue.Deny ? op.Modify(sendMessages:PermValue.Inherit) : op);
 			}
 		}
@@ -128,11 +127,14 @@ namespace MopBotTwo.Common.Systems.Trivia
 		{
 			var server = context.server;
 			var channel = context.socketTextChannel;
+
 			if(channel==null) {
 				return;
 			}
+
 			var triviaServerMemory = server.GetMemory().GetData<TriviaSystem,TriviaServerData>();
 			var qa = triviaServerMemory.currentQuestion;
+
 			if(qa==null || channel.Id!=triviaServerMemory.currentChannel) {
 				return;
 			}
@@ -141,6 +143,7 @@ namespace MopBotTwo.Common.Systems.Trivia
 
 			string text = context.content.ToLower().RemoveWhitespaces();
 			var match = regex.Match(context.content);
+
 			if(match.Success) {
 				triviaServerMemory.currentQuestion = null;
 
@@ -156,8 +159,10 @@ namespace MopBotTwo.Common.Systems.Trivia
 				await channel.SendMessageAsync(embed:embed);
 
 				var currentUser = server.CurrentUser;
+
 				if(triviaServerMemory.lockTriviaChannel && currentUser.HasChannelPermission(channel,DiscordPermission.ManageChannel)) {
 					//Lock the channel, since the question has been answered.
+
 					await channel.ModifyPermissions(currentUser,op => op.Modify(sendMessages:PermValue.Allow)); //Make sure we're still allowed to post
 					await channel.ModifyPermissions(server.EveryoneRole,op => op.Modify(sendMessages:PermValue.Deny)); //Forbid posting for everyone else
 				}
@@ -167,7 +172,7 @@ namespace MopBotTwo.Common.Systems.Trivia
 		}
 
 		public static Regex GetCurrentQuestionRegex(TriviaServerData data)
-			=> currentQuestionRegex ?? (currentQuestionRegex = new Regex(@$"(?:^|[^\w])({string.Join('|',data.currentQuestion.answers.Select(a => Regex.Escape(a)))})(?=[^\w]|$)",RegexOptions.Compiled|RegexOptions.IgnoreCase));
+			=> currentQuestionRegex ??= new Regex(@$"(?:^|[^\w])({string.Join('|',data.currentQuestion.answers.Select(a => Regex.Escape(a)))})(?=[^\w]|$)",RegexOptions.Compiled|RegexOptions.IgnoreCase);
 			
 		private static void ClearCache(TriviaServerData data)
 		{

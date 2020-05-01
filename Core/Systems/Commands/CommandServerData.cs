@@ -1,8 +1,8 @@
 ﻿using Discord.WebSocket;
-using MopBotTwo.Core.DataStructures;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.DataStructures;
+using MopBot.Core.Systems.Memory;
 
-namespace MopBotTwo.Core.Systems.Commands
+namespace MopBot.Core.Systems.Commands
 {
 	public class CommandServerData : ServerData
 	{

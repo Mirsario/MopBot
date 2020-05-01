@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MopBotTwo.Common.Systems.Trivia
+namespace MopBot.Common.Systems.Trivia
 {
 	[Serializable]
 	public class TriviaQuestion

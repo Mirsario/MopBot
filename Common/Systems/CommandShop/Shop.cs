@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 
-namespace MopBotTwo.Common.Systems.CommandShop
+namespace MopBot.Common.Systems.CommandShop
 {
 	[Serializable]
 	public class Shop

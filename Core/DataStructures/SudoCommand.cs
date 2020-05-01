@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using MopBotTwo.Core.Systems.Commands;
+using MopBot.Core.Systems.Commands;
 
-namespace MopBotTwo.Core.DataStructures
+namespace MopBot.Core.DataStructures
 {
 	[Serializable]
 	public class SudoCommand
@@ -23,6 +23,7 @@ namespace MopBotTwo.Core.DataStructures
 			}
 
 			var executeAs = context.server.GetUser(user);
+
 			if(executeAs==null) {
 				throw new BotError($"Sudo user has left the server; Command cannot be executed.");
 			}

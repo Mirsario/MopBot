@@ -1,10 +1,10 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using MopBotTwo.Extensions;
+using MopBot.Extensions;
 
 
-namespace MopBotTwo.Core.Systems.Memory
+namespace MopBot.Core.Systems.Memory
 {
 	public partial class MemoryBase<TPerSystemDataType>
 	{
@@ -34,6 +34,7 @@ namespace MopBotTwo.Core.Systems.Memory
 			}
 
 			var subMemoriesDict = jObj.Value<JObject>("subMemory");
+
 			if(subMemoriesDict!=null) {
 				foreach(var pair in subMemoriesDict) {
 					if(!subMemory.TryGetFirst(p => p.Key!=null && (p.Key.Name==pair.Key || p.Key.ToString()==pair.Key),out var existingDict)) {

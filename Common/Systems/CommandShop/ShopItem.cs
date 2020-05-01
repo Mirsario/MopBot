@@ -1,9 +1,9 @@
-﻿using MopBotTwo.Common.Systems.Currency;
-using MopBotTwo.Core.DataStructures;
+﻿using MopBot.Common.Systems.Currency;
+using MopBot.Core.DataStructures;
 using System;
 
 
-namespace MopBotTwo.Common.Systems.CommandShop
+namespace MopBot.Common.Systems.CommandShop
 {
 	[Serializable]
 	public class ShopItem

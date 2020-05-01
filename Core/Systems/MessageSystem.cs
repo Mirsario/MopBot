@@ -3,11 +3,10 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Discord;
 using Discord.WebSocket;
-using MopBotTwo.Core.Systems.Channels;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems.Channels;
+using MopBot.Core.Systems.Memory;
 
-
-namespace MopBotTwo.Core.Systems
+namespace MopBot.Core.Systems
 {
 	[SystemConfiguration(AlwaysEnabled = true,Description = "Internal system that forwards message events to other systems.")]
 	public class MessageSystem : BotSystem
@@ -21,7 +20,7 @@ namespace MopBotTwo.Core.Systems
 			if(!notifiedAboutStart && MopBot.client.Guilds.Count>0) {
 				foreach(var server in MopBot.client.Guilds) {
 					if(MemorySystem.memory[server].GetData<ChannelSystem,ChannelServerData>().GetChannelByRole(ChannelRole.Logs) is ITextChannel logsChannel) {
-						await logsChannel.SendMessageAsync($"MopBot started. {Utils.Choose("Howdy, pardner!","Heya!","Heyooo!","hi.","o hey, didn't se ya ther.","Soo, how are things?","quack.")}");
+						await logsChannel.SendMessageAsync($"MopBot started. {Utils.Choose("Greetings.","Howdy, pardner!","Heya!","Heyooo!","hi.","oh hey, didn't see ya there.","Soo, how are things?","quack.","I am here now.")}");
 					}
 				}
 
@@ -49,12 +48,9 @@ namespace MopBotTwo.Core.Systems
 			MessageExt newMessage = new MessageExt(message);
 
 			if(newMessage.server==null) {
+				Console.WriteLine($"Message Received - PMs -> {newMessage.user.Username}#{newMessage.user.Discriminator}: {newMessage.content}");
 				return;
 			}
-
-			Console.ForegroundColor = ConsoleColor.Green;
-			Console.WriteLine($"MessageReceived - '{newMessage.server.Name}' -> #{newMessage.messageChannel.Name} -> {newMessage.user.Username}#{newMessage.user.Discriminator}: {newMessage.content}");
-			Console.ResetColor();
 
 			await CallForEnabledSystems(newMessage.server,s => s.OnMessageReceived(newMessage));
 		}
@@ -84,13 +80,12 @@ namespace MopBotTwo.Core.Systems
 
 			var context = new MessageExt(message);
 
-			if(context.server!=null) {
-				Console.WriteLine($"MessageDeleted - '{context.server.Name}' -> #{context.messageChannel.Name} -> {context.user.Username}#{context.user.Discriminator}: {context.content}");
-
-				await CallForEnabledSystems(context.server,s => s.OnMessageDeleted(context));
-			} else {
-				Console.WriteLine($"MessageDeleted - PMs -> {context.user.Username}#{context.user.Discriminator}: {context.content}");
+			if(context.server==null) {
+				Console.WriteLine($"Message Deleted - PMs -> {context.user.Username}#{context.user.Discriminator}: {context.content}");
+				return;
 			}
+			
+			await CallForEnabledSystems(context.server,s => s.OnMessageDeleted(context));
 		}
 		public static async Task ReactionAdded(Cacheable<IUserMessage,ulong> cachedMessage,ISocketMessageChannel channel,SocketReaction reaction)
 		{
@@ -99,13 +94,12 @@ namespace MopBotTwo.Core.Systems
 			}
 
 			var userMessage = await cachedMessage.GetOrDownloadAsync();
+
 			if(userMessage==null) {
 				return;
 			}
 			
 			var newMessage = new MessageExt(userMessage);
-			
-			Console.WriteLine($"ReactionAdded - '{newMessage.server.Name}' -> #{newMessage.messageChannel.Name} -> {newMessage.user.Username}#{newMessage.user.Discriminator}: {reaction.Emote.Name}");
 			
 			await CallForEnabledSystems(newMessage.server,s => s.OnReactionAdded(newMessage,reaction));
 		}

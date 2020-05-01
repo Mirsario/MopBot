@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<Platforms>AnyCPU;x64</Platforms>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<LangVersion>preview</LangVersion>
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+		<LangVersion>preview</LangVersion>
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+	
+	<PropertyGroup>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	</PropertyGroup>
+	
+	<Import Project="$(SolutionDir)SolutionDefines.targets" Condition="exists('$(SolutionDir)SolutionDefines.targets')" />
+	
+	<ItemGroup>
+		<PackageReference Include="Discord.Net" Version="2.0.1" />
+		<PackageReference Include="Discord.Net.Analyzers" Version="2.0.1" />
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+	</ItemGroup>
+
+</Project>

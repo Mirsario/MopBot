@@ -2,9 +2,11 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using MopBotTwo.Utilities;
+using MopBot.Utilities;
 
-namespace MopBotTwo.Core.TypeReaders
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Core.TypeReaders
 {
 	public class IEmoteTypeReader : CustomTypeReader
 	{
@@ -12,11 +14,6 @@ namespace MopBotTwo.Core.TypeReaders
 
 		public override async Task<TypeReaderResult> ReadAsync(ICommandContext context,string input,IServiceProvider services)
 		{
-			//TODO: This causes a null reference exception somewhere else
-			/*if(input.ToLower()=="null") {
-				return TypeReaderResult.FromSuccess(null);
-			}*/
-
 			if(EmoteUtils.TryParse(input,out var result)) {
 				return TypeReaderResult.FromSuccess(result);
 			}

@@ -1,11 +1,13 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Extensions;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Extensions;
 
-namespace MopBotTwo.Core.Systems
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Core.Systems
 {
 	//TODO: Find a better name?
 

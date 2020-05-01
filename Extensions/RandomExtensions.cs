@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MopBotTwo.Extensions
+namespace MopBot.Extensions
 {
 	public static class RandomExtensions
 	{

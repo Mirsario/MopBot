@@ -7,12 +7,13 @@ using System.IO;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Common.Systems.Issues;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Common.Systems.Issues;
 
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
 
-namespace MopBotTwo.Common.Systems.Changelogs
+namespace MopBot.Common.Systems.Changelogs
 {
 	//TODO: Improve code quality, and reduce amount of code repeated.
 	public partial class ChangelogSystem
@@ -141,8 +142,8 @@ namespace MopBotTwo.Common.Systems.Changelogs
 					await data.UnpublishEntry(entry,server);
 
 					data.entries.Remove(entry);
-				}else{
-					(failedIDs ?? (failedIDs = new List<uint>())).Add(id);
+				} else {
+					(failedIDs ??= new List<uint>()).Add(id);
 				}
 			}
 		}
@@ -152,8 +153,9 @@ namespace MopBotTwo.Common.Systems.Changelogs
 		public async Task ClearEntries([Remainder]string confirmation)
 		{
 			var context = Context;
+
 			if(confirmation.ToLower()!="yes, do it.") {
-				await context.ReplyAsync("All changelog entries will be removed and you won't be able to use `!cl get` to compile them into text files.\nConfirm this action by typing `!cl clear Yes, do it.`");
+				await context.ReplyAsync("All changelog entries will be removed and you won't be able to use `!cl get` to compile them into text files.\r\nConfirm this action by typing `!cl clear Yes, do it.`");
 				return;
 			}
 
@@ -187,7 +189,7 @@ namespace MopBotTwo.Common.Systems.Changelogs
 			var builder = MopBot.GetEmbedBuilder(context)
 				.WithAuthor($"Requested by {user.GetDisplayName()}",user.GetAvatarUrl())
 				.WithTitle($"Entry #{entry.entryId}")
-				.WithDescription($"**Status:** {(data.entryTypes.TryGetValue(entry.type,out var entryType) ? $"{entryType.discordPrefix} - {entryType.name}" : $"UNKNOWN (`{entry.type}`)" )}```\n{entry.text}```");
+				.WithDescription($"**Status:** {(data.entryTypes.TryGetValue(entry.type,out var entryType) ? $"{entryType.discordPrefix} - {entryType.name}" : $"UNKNOWN (`{entry.type}`)" )}```\r\n{entry.text}```");
 			
 			await context.messageChannel.SendMessageAsync(embed:builder.Build());
 		}
@@ -208,7 +210,7 @@ namespace MopBotTwo.Common.Systems.Changelogs
 			foreach(var pair in data.entryTypes) {
 				var val = pair.Value;
 
-				text += $"{(addLineBreak ? "\n" : null)}`{pair.Key}` - {val.discordPrefix} - {val.name}";
+				text += $"{(addLineBreak ? "\r\n" : null)}`{pair.Key}` - {val.discordPrefix} - {val.name}";
 
 				addLineBreak = true;
 			}
@@ -353,7 +355,7 @@ namespace MopBotTwo.Common.Systems.Changelogs
 
 					if(!data.entries.TryGetFirst(info => info.entryId==entryId,out var entry)) {
 						data.entries.Add(entry = new ChangelogEntry(entryId,entryTypeId,entryText));
-					}else{
+					} else {
 						entry.type = entryTypeId;
 						entry.text = entryText;
 					}
@@ -361,7 +363,7 @@ namespace MopBotTwo.Common.Systems.Changelogs
 					if(authorId==thisUserId) {
 						entry.messageId = msg.Id;
 						entry.channelId = channelId;
-					}else{
+					} else {
 						await data.PublishEntry(entry,clChannel);
 					}
 				}

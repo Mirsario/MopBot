@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
 using Discord.WebSocket;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Permissions;
+using MopBot.Extensions;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Permissions;
 using Discord;
 
-namespace MopBotTwo.Common.Systems.Roles
+namespace MopBot.Common.Systems.Roles
 {
 	[Group("roles")]
 	[Alias("role")]
@@ -17,6 +17,7 @@ namespace MopBotTwo.Common.Systems.Roles
 		//TODO: Add discord permission checks before give/remove role calls, instead of just trycatching these calls
 
 		//User stuff
+
 		[Command("join")]
 		[RequirePermission(SpecialPermission.Owner,"roles.join")]
 		public async Task JoinRoleCommand([Remainder]SocketRole role)
@@ -34,6 +35,7 @@ namespace MopBotTwo.Common.Systems.Roles
 
 			await user.AddRoleAsync(role);
 		}
+
 		[Command("leave")]
 		[RequirePermission(SpecialPermission.Owner,"roles.leave")]
 		public async Task LeaveRoleCommand([Remainder]SocketRole role)
@@ -53,6 +55,7 @@ namespace MopBotTwo.Common.Systems.Roles
 		}
 
 		//Admin stuff
+
 		[Command("give")]
 		[RequirePermission(SpecialPermission.Owner,"roles.give")]
 		public async Task GiveRoleCommand(SocketGuildUser user,[Remainder]SocketRole role)
@@ -66,6 +69,7 @@ namespace MopBotTwo.Common.Systems.Roles
 
 			await user.AddRoleAsync(role);
 		}
+
 		[Command("take")]
 		[RequirePermission(SpecialPermission.Owner,"roles.take")]
 		public async Task TakeRoleCommand(SocketGuildUser user,[Remainder]SocketRole role)
@@ -79,12 +83,14 @@ namespace MopBotTwo.Common.Systems.Roles
 
 			await user.RemoveRoleAsync(role);
 		}
+
 		[Command("mentionrole")]
 		[Alias("pingrole","mention")]
 		[RequirePermission(SpecialPermission.Owner,"mentionroles")]
 		public async Task MentionRoleCommand(IRole role)
 		{
 			bool wasMentionable = role.IsMentionable;
+
 			if(!wasMentionable) {
 				await role.ModifyAsync(rp => rp.Mentionable = true);
 			}

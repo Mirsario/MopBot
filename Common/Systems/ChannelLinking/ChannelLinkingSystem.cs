@@ -4,14 +4,16 @@ using System.Text.RegularExpressions;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core.DataStructures;
-using MopBotTwo.Core;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core.DataStructures;
+using MopBot.Core;
 
-namespace MopBotTwo.Common.Systems.ChannelLinking
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Common.Systems.ChannelLinking
 {
 	//TODO: Rather old system. Needs a rewrite that'll use same code for reposting as quotes in MessageManagingSystem.
 
@@ -154,6 +156,7 @@ namespace MopBotTwo.Common.Systems.ChannelLinking
 		private async Task<SocketGuild> GetServerFromId(ulong serverId)
 		{
 			var server = await Context.Client.GetGuildAsync(serverId);
+
 			if(server==null) {
 				await Context.ReplyAsync("Unknown server.");
 				return null;

@@ -1,13 +1,14 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
-using MopBotTwo.Common.Systems.Currency;
-using MopBotTwo.Core.DataStructures;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Extensions;
+using MopBot.Common.Systems.Currency;
+using MopBot.Core.DataStructures;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Extensions;
 
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
 
-namespace MopBotTwo.Common.Systems.CommandShop
+namespace MopBot.Common.Systems.CommandShop
 {
 	public partial class CommandShopSystem
 	{
@@ -20,8 +21,8 @@ namespace MopBotTwo.Common.Systems.CommandShop
 			
 			var context = Context;
 			var cmdShopServerData = context.server.GetMemory().GetData<CommandShopSystem,CommandShopServerData>();
-
 			var shops = cmdShopServerData.Shops;
+
 			if(!shops.TryGetValue(shopId,out Shop shop)) {
 				shops[shopId] = shop = new Shop();
 			}
@@ -38,8 +39,8 @@ namespace MopBotTwo.Common.Systems.CommandShop
 
 			var context = Context;
 			var cmdShopServerData = context.server.GetMemory().GetData<CommandShopSystem,CommandShopServerData>();
-
 			var shops = cmdShopServerData.Shops;
+
 			if(!shops.TryGetValue(shopId,out Shop shop)) {
 				throw new BotError($"No such shop: `{shopId}`.");
 			}
@@ -55,11 +56,10 @@ namespace MopBotTwo.Common.Systems.CommandShop
 			MopBot.CheckForNullOrEmpty(itemName,nameof(itemName));
 			MopBot.CheckForNullOrEmpty(itemCommand,nameof(itemCommand));
 
-			var context = Context;
-			var serverMemory = context.server.GetMemory();
+			var serverMemory = Context.server.GetMemory();
 			var cmdShopServerData = serverMemory.GetData<CommandShopSystem,CommandShopServerData>();
-
 			var shops = cmdShopServerData.Shops;
+
 			if(!shops.TryGetValue(shopId,out Shop shop)) {
 				throw new BotError($"No such shop: `{shopId}`.");
 			}
@@ -74,10 +74,9 @@ namespace MopBotTwo.Common.Systems.CommandShop
 		[RequirePermission(SpecialPermission.Owner,"commandshop.manage")]
 		public async Task RemoveItemCommand(string shopId,int itemId)
 		{
-			var context = Context;
-			var cmdShopServerData = context.server.GetMemory().GetData<CommandShopSystem,CommandShopServerData>();
-
+			var cmdShopServerData = Context.server.GetMemory().GetData<CommandShopSystem,CommandShopServerData>();
 			var shops = cmdShopServerData.Shops;
+
 			if(!shops.TryGetValue(shopId,out Shop shop)) {
 				throw new BotError($"No such shop: `{shopId}`.");
 			}
@@ -96,14 +95,12 @@ namespace MopBotTwo.Common.Systems.CommandShop
 		public async Task BuyItemCommand(string shopId,int itemId)
 		{
 			var context = Context;
-			var userId = context.socketServerUser.Id;
 			var server = context.server;
 			var memory = server.GetMemory();
 			var cmdShopServerData = memory.GetData<CommandShopSystem,CommandShopServerData>();
-			//var currencyServerUserData = memory[context.user].GetData<CurrencySystem,CurrencyServerUserData>();
 			var currencies = memory.GetData<CurrencySystem,CurrencyServerData>().Currencies;
-
 			var shops = cmdShopServerData.Shops;
+
 			if(!shops.TryGetValue(shopId,out Shop shop)) {
 				throw new BotError($"No such shop: `{shopId}`.");
 			}
@@ -114,10 +111,12 @@ namespace MopBotTwo.Common.Systems.CommandShop
 				throw new BotError($"Invalid item id.");
 			}
 
+			var userId = context.socketServerUser.Id;
+
 			string error = null;
+			
 			//Any exceptions inside this delegate will remove the item from the shop. 
 			await shop.SafeItemAction(itemId,async item => {
-				//if(item.prices.TryGetFirst(p => currencyServerUserData[p.currency]<p.amount,out var price)) {
 				if(item.prices.TryGetFirst(p => currencies[p.currency].GetAmount(userId)<p.amount,out var p)) {
 					//error = $"Not enough {currencies[price.currency]}. You need **{price.amount}**, but you only have **{currencyServerUserData[price.currency]}**.";
 					var currency = currencies[p.currency];
@@ -138,13 +137,12 @@ namespace MopBotTwo.Common.Systems.CommandShop
 		[Command("show")] [Alias("list")]
 		public async Task ShowShopCommand(string shopId)
 		{
-			var context = Context;
-			var server = context.server;
+			var server = Context.server;
 			var memory = server.GetMemory();
 			var cmdShopServerData = memory.GetData<CommandShopSystem,CommandShopServerData>();
 			var currencyServerData = memory.GetData<CurrencySystem,CurrencyServerData>();
-
 			var shops = cmdShopServerData.Shops;
+
 			if(!shops.TryGetValue(shopId,out Shop shop)) {
 				throw new BotError($"No such shop: `{shopId}`.");
 			}
@@ -156,6 +154,7 @@ namespace MopBotTwo.Common.Systems.CommandShop
 				.WithFooter(@"Use ""!shop buy rewards <item number>"" to buy stuff!");
 			
 			var items = shop.Items;
+
 			if(items!=null) {
 				for(int i = 0;i<items.Length;i++) {
 					ShopItem item = items[i];
@@ -165,7 +164,7 @@ namespace MopBotTwo.Common.Systems.CommandShop
 				}
 			}
 
-			await context.ReplyAsync(embedBuilder.Build());
+			await Context.ReplyAsync(embedBuilder.Build());
 		}
 	}
 }

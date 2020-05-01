@@ -6,9 +6,8 @@ using System.Collections.Concurrent;
 
 #pragma warning disable IDE0044
 
-namespace MopBotTwo.Collections
+namespace MopBot.Collections
 {
-	//A very temporary solution
 	//TODO: Turn into ValueOrderedDictionary<TKey,TValue>
 	//TODO: Rewrite to get rid of internal lists & dictionaries.
 
@@ -23,10 +22,8 @@ namespace MopBotTwo.Collections
 		
 		private List<TKey> orderedKeys;
 		private ConcurrentDictionary<TKey,TValue> dictionary;
-		//private ConcurrentBag<TKey> keysToSort;
-		private object lockObject;
 
-		public object SyncRoot => lockObject;
+		public object SyncRoot { get; }
 		public int Count => orderedKeys.Count;
 
 		public bool IsFixedSize => false;
@@ -60,19 +57,20 @@ namespace MopBotTwo.Collections
 
 				dictionary[key] = value;
 
-				lock(lockObject) {
+				lock(SyncRoot) {
 					int currentIndex = -1;
 					int newIndex = -1;
 
 					for(int i = 0;i<Count;i++) {
 						var thisKey = orderedKeys[i];
+
 						if(currentIndex==-1 && Equals(thisKey,key)) {
 							currentIndex = i;
 
 							if(newIndex!=-1) {
 								break;
 							}
-						}else if(newIndex==-1 && dictionary[thisKey].CompareTo(value)<0) {
+						} else if(newIndex==-1 && dictionary[thisKey].CompareTo(value)<0) {
 							newIndex = i;
 
 							if(currentIndex!=-1) {
@@ -89,7 +87,7 @@ namespace MopBotTwo.Collections
 
 					if(newIndex==-1) {
 						orderedKeys.Add(key);
-					}else{
+					} else {
 						orderedKeys.Insert(newIndex>currentIndex ? newIndex-1 : newIndex,key);
 					}
 				}
@@ -100,13 +98,13 @@ namespace MopBotTwo.Collections
 		{
 			orderedKeys = new List<TKey>();
 			dictionary = new ConcurrentDictionary<TKey,TValue>();
-			lockObject = new object();
+			SyncRoot = new object();
 		}
 
 		public void Add(KeyValuePair<TKey,TValue> item) => Add(item.Key,item.Value);
 		public void Add(TKey key,TValue value)
 		{
-			lock(lockObject) {
+			lock(SyncRoot) {
 				if(!dictionary.TryAdd(key,value)) {
 					throw new ArgumentException($"Key '{key}' already exists.");
 				}
@@ -123,7 +121,7 @@ namespace MopBotTwo.Collections
 		}
 		public void AddRange(IEnumerable<KeyValuePair<TKey,TValue>> pairs)
 		{
-			lock(lockObject) {
+			lock(SyncRoot) {
 				foreach(var pair in pairs) {
 					var key = pair.Key;
 					dictionary.TryAdd(key,pair.Value);
@@ -134,7 +132,7 @@ namespace MopBotTwo.Collections
 		}
 		public void Clear()
 		{
-			lock(lockObject) {
+			lock(SyncRoot) {
 				dictionary.Clear();
 				orderedKeys.Clear();
 			}
@@ -145,7 +143,7 @@ namespace MopBotTwo.Collections
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 		public IEnumerator<KeyValuePair<TKey,TValue>> GetEnumerator()
 		{
-			lock(lockObject) {
+			lock(SyncRoot) {
 				for(int i = 0;i<Count;i++) {
 					var key = orderedKeys[i];
 					yield return new KeyValuePair<TKey,TValue>(key,dictionary[key]);

@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Collections.Generic;
 using Discord.WebSocket;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Memory;
 
 
-namespace MopBotTwo.Core.Systems.Channels
+namespace MopBot.Core.Systems.Channels
 {
 	public class ChannelServerData : ServerData
 	{
@@ -19,21 +19,31 @@ namespace MopBotTwo.Core.Systems.Channels
 
 		public void CheckChannels(SocketGuild server)
 		{
-			if(channelByRole==null) {
-				channelByRole = new Dictionary<ChannelRole,ulong>();
-				const string general = "general";
-				var channels = server.Channels;
-				if(!channels.TryGetFirst(c => c.Name==general,out SocketGuildChannel channel) && !channels.TryGetFirst(c => c.Name.Contains(general),out channel)) {
-					int maxUsers = 0;
-					foreach(var tempChannel in channels) {
-						maxUsers = Math.Max(maxUsers,tempChannel.Users.Count);
-					}
-					channel = channels.Where(c => c.Users.Count==maxUsers).OrderBy(c => c.Position).FirstOrDefault();
-				}
-				channelByRole[ChannelRole.Default] = channel.Id;
-				channelByRole[ChannelRole.Welcome] = channel.Id;
+			if(channelByRole!=null) {
+				return;
 			}
+
+			channelByRole = new Dictionary<ChannelRole,ulong>();
+
+			const string General = "general";
+
+			var channels = server.Channels;
+
+			if(!channels.TryGetFirst(c => c.Name==General,out SocketGuildChannel channel) && !channels.TryGetFirst(c => c.Name.Contains(General),out channel)) {
+				int maxUsers = 0;
+
+				foreach(var tempChannel in channels) {
+					maxUsers = Math.Max(maxUsers,tempChannel.Users.Count);
+				}
+
+				channel = channels.Where(c => c.Users.Count==maxUsers).OrderBy(c => c.Position).FirstOrDefault();
+			}
+
+			channelByRole[ChannelRole.Default] = channel.Id;
+			channelByRole[ChannelRole.Welcome] = channel.Id;
 		}
+		public SocketTextChannel GetChannelByRole(ChannelRole role) => channelByRole.TryGetValue(role,out ulong id) ? MopBot.client.GetChannel(id) as SocketTextChannel : null;
+		public bool TryGetChannelByRole(ChannelRole role,out SocketTextChannel channel) => (channel = GetChannelByRole(role))!=null;
 		public bool TryGetChannelByRoles(out SocketTextChannel channel,params ChannelRole[] roles)
 		{
 			for(int i = 0;i<roles.Length;i++) {
@@ -41,10 +51,10 @@ namespace MopBotTwo.Core.Systems.Channels
 					return true;
 				}
 			}
+
 			channel = null;
+
 			return false;
 		}
-		public bool TryGetChannelByRole(ChannelRole role,out SocketTextChannel channel) => (channel = GetChannelByRole(role))!=null;
-		public SocketTextChannel GetChannelByRole(ChannelRole role) => channelByRole.TryGetValue(role,out ulong id) ? MopBot.client.GetChannel(id) as SocketTextChannel : null;
 	}
 }

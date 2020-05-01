@@ -2,13 +2,15 @@
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core.Systems.Permissions;
+using MopBot.Extensions;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core.Systems.Permissions;
 using Discord;
 
-namespace MopBotTwo.Common.Systems.Currency
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Common.Systems.Currency
 {
 	[Group("currency")]
 	[Alias("currencies","money","cash","coins","points","score")]
@@ -29,9 +31,9 @@ namespace MopBotTwo.Common.Systems.Currency
 			var context = Context;
 			var userId = context.user.Id;
 			var currencyServerData = context.server.GetMemory().GetData<CurrencySystem,CurrencyServerData>();
-			//var currencyUserData = context.socketServerUser.GetMemory().GetData<CurrencySystem,CurrencyServerUserData>();
 
 			var currencies = currencyServerData.Currencies;
+
 			if(currencies.Count==0) {
 				throw new BotError("There are currently no currencies on this server.");
 			}
@@ -39,14 +41,13 @@ namespace MopBotTwo.Common.Systems.Currency
 			var builder = MopBot.GetEmbedBuilder(context)
 				.WithAuthor($"{context.user.GetDisplayName()}'s Coins & Points",context.user.GetAvatarUrl());
 
-			foreach(var nameIdValue in currencies) {
-				var id = nameIdValue.id;
-				var currency = nameIdValue.value;
+			foreach(var nameId in currencies) {
+				var currency = nameId.value;
 				ulong amount = currency.GetAmount(userId); //currencyUserData[id];
 
 				builder.AddField(
 					$"{currency.emote ?? "💰"} - **{amount} {StringUtils.ChangeForm(currency.displayName,amount==1)}**",
-					$"{currency.description ?? "No description"}\r\nId: `{nameIdValue.name}`"
+					$"{currency.description ?? "No description"}\r\nId: `{nameId.name}`"
 				);
 			}
 
@@ -62,6 +63,7 @@ namespace MopBotTwo.Common.Systems.Currency
 			var currencyServerData = server.GetMemory().GetData<CurrencySystem,CurrencyServerData>();
 
 			var currencies = currencyServerData.Currencies;
+
 			if(currencies.Count==0) {
 				throw new BotError("There are currently no currencies on this server.");
 			}
@@ -72,9 +74,11 @@ namespace MopBotTwo.Common.Systems.Currency
 			const string UnknownUser = "Unknown User";
 
 			var top = currency.UsersWealth.Take(NumShown).ToArray();
+
 			if(!top.TryGetFirst(out var first)) {
 				throw new BotError("There are no ranked users with that currency as of right now.");
 			}
+
 			var firstUser = server.GetUser(first.Key);
 
 			string GetLine(bool useBold,int number,ulong userId,ulong amount,SocketGuildUser user = null)
@@ -99,10 +103,9 @@ namespace MopBotTwo.Common.Systems.Currency
 		[RequirePermission(SpecialPermission.Owner,"currency.manage")]
 		public async Task SetupCurrencyCommand(string currencyId,string displayName,string description,IEmote emote)
 		{
-			var context = Context;
-			var currencyServerData = context.server.GetMemory().GetData<CurrencySystem,CurrencyServerData>();
-
+			var currencyServerData = Context.server.GetMemory().GetData<CurrencySystem,CurrencyServerData>();
 			var currencies = currencyServerData.Currencies;
+
 			if(!currencies.TryGetValue(currencyId,out Currency currency,out _)) {
 				currencies.Add(currencyId,currency = new Currency());
 			}
@@ -111,6 +114,7 @@ namespace MopBotTwo.Common.Systems.Currency
 			currency.description = description;
 			currency.emote = emote.ToString();
 		}
+
 		[Command("rename")]
 		[RequirePermission(SpecialPermission.Owner,"currency.manage")]
 		public async Task RenameCurrencyCommand(string currencyId,string newCurrencyId)
@@ -128,6 +132,7 @@ namespace MopBotTwo.Common.Systems.Currency
 			var context = Context;
 			CurrencyAmount.GiveToUser(CurrencyAmount.ParseMultiple(amountCurrencyPairs,context.server.GetMemory()),user);
 		}
+
 		[Command("take")]
 		[RequirePermission(SpecialPermission.Owner,"currency.admin")]
 		public async Task TakeCurrencyAdminCommand(SocketGuildUser user,[Remainder]string amountCurrencyPairs)

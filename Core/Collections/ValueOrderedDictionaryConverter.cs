@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace MopBotTwo.Collections
+namespace MopBot.Collections
 {
 	public class OrderedULongDictionaryConverter : JsonConverter
 	{
@@ -13,11 +13,15 @@ namespace MopBotTwo.Collections
 			object GetToken(JsonToken type)
 			{
 				var tokenType = reader.TokenType;
+
 				if(tokenType!=type) {
 					throw new JsonSerializationException($"Unexpected token: '{tokenType}'. Expected '{type}'.");
 				}
+
 				var result = reader.Value;
+				
 				reader.Read();
+				
 				return result;
 			}
 			
@@ -36,6 +40,7 @@ namespace MopBotTwo.Collections
 					var list = new List<KeyValuePair<ulong,ulong>>();
 
 					reader.Read();
+
 					while(reader.TokenType!=JsonToken.EndObject) {
 						list.Add(new KeyValuePair<ulong,ulong>(
 							ulong.Parse((string)GetToken(JsonToken.PropertyName)),
@@ -44,7 +49,9 @@ namespace MopBotTwo.Collections
 					}
 
 					var dict = new OrderedULongDictionary();
+
 					dict.AddRange(list);
+					
 					return dict;
 				}
 				default:
@@ -57,13 +64,12 @@ namespace MopBotTwo.Collections
 			var dict = (OrderedULongDictionary)value;
 			
 			writer.WriteStartObject();
+			
 			foreach(var pair in dict) {
 				writer.WritePropertyName(pair.Key.ToString());
 				writer.WriteValue(pair.Value);
-				//writer.WriteToken(JsonToken.PropertyName,pair.Key.ToString());
-				//writer.WriteToken(JsonToken.Integer,pair.Value);
-				//serializer.Serialize(writer,pair.Value);
 			}
+
 			writer.WriteEndObject();
 		}
 	}

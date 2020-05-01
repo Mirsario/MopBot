@@ -1,7 +1,7 @@
 ﻿using System;
 using Discord.Commands;
 
-namespace MopBotTwo.Core.TypeReaders
+namespace MopBot.Core.TypeReaders
 {
 	public abstract class CustomTypeReader : TypeReader
 	{

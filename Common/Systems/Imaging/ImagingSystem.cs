@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Discord.WebSocket;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems;
+using MopBot.Extensions;
+using MopBot.Core.Systems;
 
-namespace MopBotTwo.Common.Systems.Imaging
+namespace MopBot.Common.Systems.Imaging
 {
 	[Group("imaging")]
 	[Alias("imageg","img")]

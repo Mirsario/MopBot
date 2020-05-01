@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace MopBotTwo
+namespace MopBot
 {
 	//Used for important things, like configuring a list of developers, or global permament toggling for systems.
 

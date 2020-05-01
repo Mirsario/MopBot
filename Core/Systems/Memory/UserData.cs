@@ -1,7 +1,7 @@
 ﻿using Discord;
 using System;
 
-namespace MopBotTwo.Core.Systems.Memory
+namespace MopBot.Core.Systems.Memory
 {
 	[Serializable]
 	public class UserData : MemoryDataBase

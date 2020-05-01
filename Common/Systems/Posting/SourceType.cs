@@ -1,4 +1,4 @@
-﻿namespace MopBotTwo.Common.Systems.Posting
+﻿namespace MopBot.Common.Systems.Posting
 {
 	public enum SourceType
 	{

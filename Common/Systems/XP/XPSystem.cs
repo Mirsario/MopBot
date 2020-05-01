@@ -5,12 +5,14 @@ using System.Text.RegularExpressions;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core;
-using MopBotTwo.Utilities;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core;
+using MopBot.Utilities;
 
-namespace MopBotTwo.Common.Systems.XP
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Common.Systems.XP
 {
 	[Group("xp")] [Alias("exp","rank")]
 	[Summary("Command to check your XP, and a group for managing the system.")]
@@ -27,6 +29,7 @@ namespace MopBotTwo.Common.Systems.XP
 		public override async Task OnMessageReceived(MessageExt message)
 		{
 			var server = message.server;
+
 			if(server==null || message.isCommand || message.socketServerUser.IsBot) {
 				return;
 			}
@@ -102,25 +105,31 @@ namespace MopBotTwo.Common.Systems.XP
 					catch(Exception e) {
 						await MopBot.HandleException(e);
 					}
-				} else if(newLvl<prevLvl) { }
+				}
 
 				/*var mentionChannel = (ITextChannel)(serverMemory.GetData<ChannelSystem,ChannelServerData>().GetChannelByRole(ChannelRole.BotArea) ?? channel);
-				string text=		$"{user.Name()} has just reached level {newLvl}! :star:";
+				string text = $"{user.Name()} has just reached level {newLvl}! :star:";
 
 				var xpServerData = serverMemory.GetData<XPSystem,XPServerData>();
+
 				if(xpServerData.levelRewards.TryGetValue(newLvl,out ulong[] roleIds)) {
-					//var oldAccessLevel = user.GetAccessLevel();
-					//var oldCommandList = CommandService.commands.Where(h => oldAccessLevel>=h.minAccessLevel);
-					//var roles = roleIds.Select(id => server.GetRole(id));
-					//text+=					$"\nThe following roles are now available to them:```{string.Join("\n",roles.Select(role => role.Name))}```";
-					//await user.AddRolesAsync(roles);
-					//var newAccessLevel = user.GetAccessLevel(roleIds);
-					//var newCommandList = CommandService.commands.Where(h => newAccessLevel>=h.minAccessLevel);
-					//var newCommandsOnly = newCommandList.Where(h => !oldCommandList.Contains(h)).ToArray();
-					//if(newCommandsOnly.Length>0) {
-					//	text+=				$"\nThe following commands are now available to them:```{string.Join("\n",newCommandsOnly.Select(h => $"{string.Join("/",h.aliases)}-{h.description}"))}```";
-					//}
+					var oldAccessLevel = user.GetAccessLevel();
+					var oldCommandList = CommandService.commands.Where(h => oldAccessLevel>=h.minAccessLevel);
+					var roles = roleIds.Select(id => server.GetRole(id));
+
+					text += $"\r\nThe following roles are now available to them:```{string.Join("\r\n",roles.Select(role => role.Name))}```";
+
+					await user.AddRolesAsync(roles);
+
+					var newAccessLevel = user.GetAccessLevel(roleIds);
+					var newCommandList = CommandService.commands.Where(h => newAccessLevel>=h.minAccessLevel);
+					var newCommandsOnly = newCommandList.Where(h => !oldCommandList.Contains(h)).ToArray();
+
+					if(newCommandsOnly.Length>0) {
+						text += $"\r\nThe following commands are now available to them:```{string.Join("\r\n",newCommandsOnly.Select(h => $"{string.Join("/",h.aliases)}-{h.description}"))}```";
+					}
 				}
+
 				await mentionChannel.SendMessageAsync(text);*/
 			}
 		}

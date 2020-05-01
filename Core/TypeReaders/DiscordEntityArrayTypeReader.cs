@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord.Commands;
 
-namespace MopBotTwo.Core.TypeReaders
+namespace MopBot.Core.TypeReaders
 {
 	public abstract class DiscordEntityArrayTypeReader<T> : CustomTypeReader where T : class
 	{
@@ -36,6 +36,7 @@ namespace MopBotTwo.Core.TypeReaders
 					entity = await GetFromName(context,idOrNameStr);
 				} else {
 					var idMatch = NumberRegex.Match(idStr);
+
 					if(idMatch.Success && ulong.TryParse(idMatch.Groups[1].Value,out ulong id)) {
 						entity = await GetFromId(context,id);
 					}

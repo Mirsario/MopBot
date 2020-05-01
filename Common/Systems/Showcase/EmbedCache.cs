@@ -1,11 +1,11 @@
 ﻿using System;
 using Discord;
 using Discord.WebSocket;
-using MopBotTwo.Core.Systems.Commands;
-using Color = MopBotTwo.Core.DataStructures.Color;
-using MopBotTwo.Extensions;
+using MopBot.Core.Systems.Commands;
+using Color = MopBot.Core.DataStructures.Color;
+using MopBot.Extensions;
 
-namespace MopBotTwo.Common.Systems.Showcase
+namespace MopBot.Common.Systems.Showcase
 {
 	public class EmbedCache
 	{

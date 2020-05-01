@@ -1,10 +1,12 @@
 ﻿using System.Threading.Tasks;
 using Discord.Commands;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Core.Systems.Memory;
 
-namespace MopBotTwo.Common.Systems.CustomRoles
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Common.Systems.CustomRoles
 {
 	[RequirePermission(SpecialPermission.Owner,"customrole")]
 	[Group("customrole")] [Alias("colorrole")]

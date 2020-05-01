@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Discord.Commands;
 using Discord.WebSocket;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Core.Systems;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Core.Systems;
 
-namespace MopBotTwo.Common.Systems.Posting
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Common.Systems.Posting
 {
 	[Group("post")]
 	[Summary("Group for managing and making large multi-message posts.")]
@@ -41,11 +43,13 @@ namespace MopBotTwo.Common.Systems.Posting
 
 			for(int i = 0;i<postPieces.Count;i++) {
 				var piece = postPieces[i];
+
 				if(piece.GetType()!=typeof(TextPostPiece) || !(piece is TextPostPiece textPiece)) {
 					continue;
 				}
 
 				var match = regexTags.Match(textPiece.text);
+
 				if(!match.Success) {
 					continue;
 				}
@@ -56,14 +60,17 @@ namespace MopBotTwo.Common.Systems.Posting
 
 				int matchIndex = match.Index;
 				string type = match.Groups[1].Value.ToLower();
+
 				textPiece.text = textPiece.text.Remove(matchIndex,match.Value.Length);
 
 				string GetGroup(int index)
 				{
 					var group = match.Groups[index];
+
 					if(!group.Success) {
 						throw new BotError($"Failed to parse tag #{1+tagsParsed} ({type}): Missing group #{index}.");
 					}
+
 					return group.Value;
 				}
 

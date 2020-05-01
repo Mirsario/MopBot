@@ -3,9 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
-using MopBotTwo.Extensions;
+using MopBot.Extensions;
 
-namespace MopBotTwo.Core.Systems.Permissions
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Core.Systems.Permissions
 {
 	public class RequirePermissionAttribute : PreconditionAttribute
 	{

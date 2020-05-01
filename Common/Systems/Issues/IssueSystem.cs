@@ -1,14 +1,14 @@
 ﻿using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Common.Systems.Changelogs;
+using MopBot.Extensions;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Core.Systems.Memory;
+using MopBot.Common.Systems.Changelogs;
 using System.Collections.Generic;
 
-namespace MopBotTwo.Common.Systems.Issues
+namespace MopBot.Common.Systems.Issues
 {
 	[Group("issue")]
 	[Alias("issues","knownissues")]

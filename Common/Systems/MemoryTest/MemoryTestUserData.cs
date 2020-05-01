@@ -1,9 +1,9 @@
 ﻿using Discord;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Extensions;
+using MopBot.Core.Systems.Memory;
+using MopBot.Extensions;
 using System;
 
-namespace MopBotTwo.Common.Systems.MemoryTest
+namespace MopBot.Common.Systems.MemoryTest
 {
 	[Serializable]
 	public class MemoryTestUserData : UserData
@@ -12,7 +12,7 @@ namespace MopBotTwo.Common.Systems.MemoryTest
 
 		public override void Initialize(IUser user)
 		{
-			randomValue = MopBot.random.NextULong();
+			randomValue = MopBot.Random.NextULong();
 		}
 	}
 }

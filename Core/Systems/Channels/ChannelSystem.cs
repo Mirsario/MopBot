@@ -3,12 +3,13 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core.Systems.Permissions;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core.Systems.Permissions;
 
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
 
-namespace MopBotTwo.Core.Systems.Channels
+namespace MopBot.Core.Systems.Channels
 {
 	[Group("channels")]
 	[Alias("channel")]
@@ -51,7 +52,7 @@ namespace MopBotTwo.Core.Systems.Channels
 				return $"{role} - {name}";
 			}
 
-			await Context.ReplyAsync($"```{string.Join('\n',Utils.GetEnumValues<ChannelRole>().Select(Pair))}```");
+			await Context.ReplyAsync($"```{string.Join('\r\n',Utils.GetEnumValues<ChannelRole>().Select(Pair))}```");
 		}
 	}
 }

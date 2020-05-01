@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Commands;
+using MopBot.Extensions;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Commands;
 
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
 
-namespace MopBotTwo.Common.Systems.Configuration
+namespace MopBot.Common.Systems.Configuration
 {
 	public partial class ConfigurationSystem : BotSystem
 	{

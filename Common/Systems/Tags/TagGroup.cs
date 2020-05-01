@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MopBotTwo.Common.Systems.Tags
+namespace MopBot.Common.Systems.Tags
 {
 	[Serializable]
 	public class TagGroup

@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace MopBotTwo.Common.Systems.Changelogs
+namespace MopBot.Common.Systems.Changelogs
 {
 	[Serializable]
 	public class ChangelogEntry

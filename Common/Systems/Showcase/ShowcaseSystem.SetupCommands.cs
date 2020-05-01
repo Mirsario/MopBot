@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Permissions;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Permissions;
 
-namespace MopBotTwo.Common.Systems.Showcase
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+namespace MopBot.Common.Systems.Showcase
 {
 	public partial class ShowcaseSystem
 	{
@@ -66,7 +67,7 @@ namespace MopBotTwo.Common.Systems.Showcase
 		public async Task SetEmote(EmoteType type,IEmote emote)
 		{
 			var showcaseData = Context.server.GetMemory().GetData<ShowcaseSystem,ShowcaseServerData>();
-			var dict = showcaseData.emotes ?? (showcaseData.emotes = new Dictionary<EmoteType,string>());
+			var dict = showcaseData.emotes ??= new Dictionary<EmoteType,string>();
 
 			dict[type] = emote?.ToString();
 		}

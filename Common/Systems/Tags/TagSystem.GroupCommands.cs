@@ -1,14 +1,14 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core.Systems.Permissions;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core.Systems.Permissions;
 using Discord.WebSocket;
 
 #pragma warning disable 1998
 
-namespace MopBotTwo.Common.Systems.Tags
+namespace MopBot.Common.Systems.Tags
 {
 	public partial class TagSystem
 	{
@@ -112,8 +112,8 @@ namespace MopBotTwo.Common.Systems.Tags
 			}
 
 			ulong groupId = pair.Key;
-
 			bool currentValue = serverData.globalTagGroups.Contains(groupId);
+
 			if(currentValue==value) {
 				throw new BotError($@"Group `{groupName}` is already {(value ? "global" : "not global")} for this server.");
 			}
@@ -141,6 +141,7 @@ namespace MopBotTwo.Common.Systems.Tags
 			}
 
 			var group = idGroupPair.Value;
+
 			if(user.Id!=group.owner) {
 				throw new BotError($@"Can't add tags to group `{groupName}`, you're neither that group's owner, nor its maintainer.");
 			}

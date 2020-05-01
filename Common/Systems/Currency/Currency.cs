@@ -1,8 +1,8 @@
 ﻿using System;
 using Newtonsoft.Json;
-using MopBotTwo.Collections;
+using MopBot.Collections;
 
-namespace MopBotTwo.Common.Systems.Currency
+namespace MopBot.Common.Systems.Currency
 {
 	[Serializable]
 	public class Currency
@@ -12,7 +12,7 @@ namespace MopBotTwo.Common.Systems.Currency
 		public string emote;
 
 		[JsonProperty] private OrderedULongDictionary usersWealth; //Not storing in ServerUserData, since we need data sorted.
-		[JsonIgnore] public OrderedULongDictionary UsersWealth => usersWealth ?? (usersWealth = new OrderedULongDictionary());
+		[JsonIgnore] public OrderedULongDictionary UsersWealth => usersWealth ??= new OrderedULongDictionary();
 
 		public ulong GetAmount(ulong userId) => UsersWealth.TryGetValue(userId,out ulong amount) ? amount : 0;
 

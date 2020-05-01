@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems.Memory;
 
-namespace MopBotTwo.Common.Systems.ChannelLinking
+namespace MopBot.Common.Systems.ChannelLinking
 {
 	public class ChannelLinkingGlobalData : GlobalData
 	{

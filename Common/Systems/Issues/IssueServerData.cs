@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using Discord.WebSocket;
 using Newtonsoft.Json;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems.Memory;
 using System.Linq;
-using MopBotTwo.Core;
+using MopBot.Core;
 
-namespace MopBotTwo.Common.Systems.Issues
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Common.Systems.Issues
 {
 	public class IssueServerData : ServerData
 	{

@@ -1,8 +1,8 @@
-﻿using MopBotTwo.Core.DataStructures;
+﻿using MopBot.Core.DataStructures;
 using System;
 using System.Collections.Generic;
 
-namespace MopBotTwo.Common.Systems.ChannelLinking
+namespace MopBot.Common.Systems.ChannelLinking
 {
 	[Serializable]
 	public struct ChannelLink

@@ -3,4 +3,6 @@
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality","CS1998:This async method lacks 'await' operators and will run synchronously.",Justification = "<Pending>")]
+using System.Diagnostics.CodeAnalysis;
+
+[assembly: SuppressMessage("Code Quality","CS1998:This async method lacks 'await' operators and will run synchronously.",Justification = "<Pending>")]

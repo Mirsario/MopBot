@@ -1,10 +1,10 @@
 ﻿using System.Text.RegularExpressions;
 using Discord.Commands;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Memory;
 
 
-namespace MopBotTwo.Common.Systems.CommandShop
+namespace MopBot.Common.Systems.CommandShop
 {
 	[Group("shop")]
 	[Summary("Lets users 'buy' or order all kinds of things for virtual points.")]

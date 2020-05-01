@@ -2,7 +2,7 @@
 
 using System;
 
-namespace MopBotTwo.Core.Systems.Permissions
+namespace MopBot.Core.Systems.Permissions
 {
 	[Flags]
 	public enum SpecialPermission : byte

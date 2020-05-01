@@ -1,8 +1,8 @@
 ﻿using Discord.WebSocket;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Extensions;
+using MopBot.Core.Systems.Memory;
+using MopBot.Extensions;
 
-namespace MopBotTwo.Common.Systems.Logging
+namespace MopBot.Common.Systems.Logging
 {
 	class LoggingServerData : ServerData
 	{

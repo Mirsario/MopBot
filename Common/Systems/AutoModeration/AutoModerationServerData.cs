@@ -1,8 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems.Memory;
 
-namespace MopBotTwo.Common.Systems.AutoModeration
+namespace MopBot.Common.Systems.AutoModeration
 {
 	public class AutoModerationServerData : ServerData
 	{

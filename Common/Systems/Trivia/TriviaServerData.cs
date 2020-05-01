@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using Discord.WebSocket;
 using Newtonsoft.Json;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Common.Systems.Currency;
+using MopBot.Core.Systems.Memory;
+using MopBot.Common.Systems.Currency;
 
-namespace MopBotTwo.Common.Systems.Trivia
+namespace MopBot.Common.Systems.Trivia
 {
 	public class TriviaServerData : ServerData
 	{

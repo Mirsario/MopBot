@@ -9,13 +9,13 @@ using System.Net;
 using Discord;
 using Discord.Commands;
 using Newtonsoft.Json;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Permissions;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Permissions;
 
-namespace MopBotTwo.Core.Systems.Memory
+namespace MopBot.Core.Systems.Memory
 {
-	//TODO: Stop using JSON?
-	//TODO: Much of get & set commands should be made into utilility methods, since TriviaSystem.cs has similar code repeated.
+	//TODO: Use a database instead of JSON.
+	//TODO: Much of these get & set commands should be made into utilility methods, since TriviaSystem.cs has similar code repeated.
 
 	[Group("memory")]
 	[Summary("Group for controlling bot's memory and settings.")]
@@ -60,6 +60,7 @@ namespace MopBotTwo.Core.Systems.Memory
 
 			return true;
 		}
+
 		public async Task Save()
 		{
 			if(!canSave) {
@@ -68,12 +69,13 @@ namespace MopBotTwo.Core.Systems.Memory
 
 			if(File.Exists(MemoryFile)) {
 				Directory.CreateDirectory(BackupDirectory);
-				File.Copy(MemoryFile,Path.Combine(BackupDirectory,$"{DateTime.Now.ToString("yyyy-MM-dd-HH:mm:ss")}.json"),true);
+				File.Copy(MemoryFile,Path.Combine(BackupDirectory,$"{DateTime.Now:yyyy-MM-dd-HH:mm:ss}.json"),true);
 
 				//Delete some backups if there's too many
 				if(GlobalConfiguration.config.maxMemoryBackups>0) {
 					var directoryInfo = new DirectoryInfo(BackupDirectory);
 					var files = directoryInfo.GetFiles("*.json");
+
 					if(files!=null && files.Length>GlobalConfiguration.config.maxMemoryBackups) {
 						foreach(var file in files.OrderByDescending(f => f.LastWriteTime).TakeLast(files.Length-GlobalConfiguration.config.maxMemoryBackups)) {
 							File.Delete(file.FullName);
@@ -91,6 +93,7 @@ namespace MopBotTwo.Core.Systems.Memory
 			loadedMemory = false;
 			
 			var stopwatch = new Stopwatch();
+
 			stopwatch.Start();
 
 			await MopBot.TryCatchLogged("Loading memory...",async () => {
@@ -98,6 +101,7 @@ namespace MopBotTwo.Core.Systems.Memory
 			});
 			
 			stopwatch.Stop();
+
 			Console.WriteLine($"Took {stopwatch.ElapsedMilliseconds}ms.");
 
 			if(memory==null) {
@@ -106,10 +110,13 @@ namespace MopBotTwo.Core.Systems.Memory
 				if(Directory.Exists(BackupDirectory)) {
 					var directoryInfo = new DirectoryInfo(BackupDirectory);
 					var files = directoryInfo.GetFiles("*.json");
+
 					if(files!=null && files.Length>0) {
 						var sortedFiles = files.OrderByDescending(f => f.LastWriteTime).ToArray();
+
 						for(int i = 0;i<sortedFiles.Length;i++) {
 							var file = sortedFiles[i];
+
 							Console.Write($"Trying backup '{file.Name}'... ");
 
 							memory = await MemoryBase.Load<Memory>(file.FullName);
@@ -126,6 +133,7 @@ namespace MopBotTwo.Core.Systems.Memory
 
 				if(memory==null) {
 					Console.WriteLine("Out of backups! This is not good. Resetting memory...");
+
 					memory = new Memory();
 					memory.Initialize();
 				}
@@ -145,13 +153,16 @@ namespace MopBotTwo.Core.Systems.Memory
 				"Here's a portion of my current memory, specific to this server."
 			);
 		}
+
 		[Command("set")]
 		public async Task SetMemoryCommand(string url = null)
 		{
 			var server = Context.server;
+
 			if(server==null) {
 				return;
 			}
+
 			if(!Context.socketMessage.Attachments.TryGetFirst(a => a.Filename.EndsWith(".txt") || a.Filename.EndsWith(".json"),out Attachment file) && url==null) {
 				await Context.ReplyAsync("Expected a .json file attachment or a link to it.");
 				return;
@@ -207,15 +218,17 @@ namespace MopBotTwo.Core.Systems.Memory
 		{
 			return GetTextFileCommand(
 				sendInThisChannel,
-				MemorySystem.memory.ToString(Formatting.Indented),
+				memory.ToString(Formatting.Indented),
 				"TempMemoryCopy.json",
 				"Here's my whole current memory file."
 			);
 		}
+
 		[Command("setall")]
 		public async Task SetAllMemoryCommand(string url = null)
 		{
 			var server = Context.server;
+
 			if(server==null) {
 				return;
 			}
@@ -225,7 +238,6 @@ namespace MopBotTwo.Core.Systems.Memory
 				return;
 			}
 
-			const string filePath = TempMemoryFile;
 			string urlString = file?.Url ?? url;
 
 			if(!Uri.TryCreate(urlString,UriKind.Absolute,out Uri uri)) {
@@ -235,14 +247,14 @@ namespace MopBotTwo.Core.Systems.Memory
 
 			using(var client = new WebClient()) {
 				try {
-					client.DownloadFile(uri,filePath);
+					client.DownloadFile(uri,TempMemoryFile);
 				}
 				catch(Exception e) {
 					await Context.ReplyAsync("An exception has occured during file download.");
 					await MopBot.HandleException(e);
 
-					if(File.Exists(filePath)) {
-						File.Delete(filePath);
+					if(File.Exists(TempMemoryFile)) {
+						File.Delete(TempMemoryFile);
 					}
 
 					return;
@@ -252,20 +264,22 @@ namespace MopBotTwo.Core.Systems.Memory
 			var serverMemory = memory[server];
 
 			try {
-				memory = await MemoryBase.Load<Memory>(filePath,serverMemory.id,false) ?? throw new InvalidDataException();
+				memory = await MemoryBase.Load<Memory>(TempMemoryFile,serverMemory.id,false) ?? throw new InvalidDataException();
 				GC.Collect();
 			}
 			catch(Exception e) {
 				await Context.ReplyAsync("There was something wrong with the json file you provided.");
+				
 				if(!(e is InvalidDataException)) {
 					await MopBot.HandleException(e);
 				}
+
 				return;
 			}
 
 			forceSave = true;
 
-			File.Delete(filePath);
+			File.Delete(TempMemoryFile);
 
 			await Context.ReplyAsync("Done!");
 		}
@@ -276,6 +290,7 @@ namespace MopBotTwo.Core.Systems.Memory
 			await Save();
 			await Context.ReplyAsync(canSave ? "Memory has been successfully saved." : "Failed to save memory.");
 		}
+
 		[Command("reload")]
 		public async Task ReloadMemoryCommand()
 		{
@@ -287,15 +302,13 @@ namespace MopBotTwo.Core.Systems.Memory
 		{
 			var dmChannel = postHere ? null : await Context.socketUser.GetOrCreateDMChannelAsync();
 			IMessageChannel textChannel;
-
-			if(postHere) {
-				textChannel = Context.socketServerChannel as IMessageChannel;
-			} else if(dmChannel==null) {
+			
+			if(!postHere && dmChannel==null) {
 				await Context.ReplyAsync("Unable to send you a private message.");
 				return;
-			} else {
-				textChannel = dmChannel;
 			}
+
+			textChannel = postHere ? Context.socketServerChannel as IMessageChannel : dmChannel;
 
 			var bytes = Encoding.UTF8.GetBytes(text);
 

@@ -7,29 +7,29 @@ using System.Reflection;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Commands;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core.Systems.Channels;
-using MopBotTwo.Core.Systems.Status;
-using MopBotTwo.Core;
+using MopBot.Extensions;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Commands;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core.Systems.Channels;
+using MopBot.Core.Systems.Status;
+using MopBot.Core;
 using System.Runtime.ExceptionServices;
 
 #pragma warning disable CS0162
 
 //TODO: Needs major refactoring.
 
-namespace MopBotTwo
+namespace MopBot
 {
 	public class MopBot : SystemContainer
 	{
 		public const char DefaultCommandPrefix = '!';
 		
 		public static readonly StringComparer StrComparerIgnoreCase = StringComparer.InvariantCultureIgnoreCase;
+		public static readonly Random Random = new Random((int)DateTime.Now.Ticks);
 
 		public static MopBot instance;
-		public static Random random;
 		public static Type[] botTypes;
 		public static Assembly botAssembly;
 		public static DiscordSocketClient client;
@@ -39,7 +39,7 @@ namespace MopBotTwo
 		public static string tempFolder;
 		public static SocketTextChannel logChannel;
 		
-		static void Main(string[] args)
+		static void Main()
 		{
 			defaultConsoleColor = Console.ForegroundColor;
 			instance = new MopBot();
@@ -56,8 +56,6 @@ namespace MopBotTwo
 
 		public MopBot() : base()
 		{
-			random = new Random((int)DateTime.Now.Ticks);
-
 			AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 			AppDomain.CurrentDomain.FirstChanceException += OnFirstChanceException;
 		}
@@ -67,12 +65,14 @@ namespace MopBotTwo
 			GlobalConfiguration.Initialize();
 			
 			tempFolder = Path.GetFullPath("Temp")+Path.DirectorySeparatorChar;
+
 			Directory.CreateDirectory(tempFolder);
 			
 			optAlwaysRetry = RequestOptions.Default;
 			optAlwaysRetry.RetryMode = RetryMode.AlwaysRetry;
 
 			#region SystemInstancing
+
 			//regions r bad
 			//TODO: Add system priorities, replace this.
 
@@ -92,17 +92,20 @@ namespace MopBotTwo
 
 			for(int i = 0;i<systemTypes.Length;i++) {
 				var thisType = systemTypes[i];
+
 				if(!systems.Any(q => q.GetType()==thisType)) {
 					string name = thisType.Name;
 					var config = BotSystem.GetConfiguration(thisType);
 					
 					bool isEnabled;
+
 					if(config.AlwaysEnabled) {
 						isEnabled = true;
-					}else{
+					} else {
 						if(toggles==null || !toggles.TryGetValue(name,out isEnabled)) {
 							isEnabled = true;
 						}
+
 						newToggles[name] = isEnabled;
 					}
 
@@ -116,6 +119,7 @@ namespace MopBotTwo
 				GlobalConfiguration.config.systemToggles = newToggles;
 				GlobalConfiguration.Save();
 			}
+
 			#endregion
 
 			await InitializeSystems();
@@ -137,6 +141,7 @@ namespace MopBotTwo
 				}
 				catch(FatalException e) {
 					await HandleException(e);
+
 					return;
 				}
 				catch(Exception e) {
@@ -154,8 +159,9 @@ namespace MopBotTwo
 			}
 
 			string checkString = (e.Message+e.StackTrace).ToLowerInvariant();
+
 			if(checkString!=null && checkString.Contains("internal server error") || ((checkString.Contains("discord") || checkString.Contains("websocket")) && !checkString.Contains("mopbot"))) {
-				return; //Discord .NET loves trycatch
+				return;
 			}
 
 			await HandleException(e,"OnFirstChanceException - ");
@@ -169,6 +175,7 @@ namespace MopBotTwo
 			if(MemorySystem.canSave) {
 				Task.Run(async () => {
 					var task = (instance?.systems?.FirstOrDefault(s => s?.GetType()==typeof(MemorySystem)) as MemorySystem)?.Save();
+					
 					if(task!=null) {
 						await task;
 					}
@@ -178,7 +185,7 @@ namespace MopBotTwo
 			Console.WriteLine("Tried saving on quit.");
 		}
 
-		public static async Task OnClientInit(DiscordSocketClient client)
+		public static void OnClientInit(DiscordSocketClient client)
 		{
 			client.MessageReceived += MessageSystem.MessageReceived;
 			client.MessageUpdated += MessageSystem.MessageUpdated;
@@ -195,6 +202,7 @@ namespace MopBotTwo
 		{
 			if(GlobalConfiguration.config.logChannel.HasValue) {
 				ulong id = GlobalConfiguration.config.logChannel.Value;
+
 				logChannel = client.GetChannel(id) as SocketTextChannel;
 
 				if(logChannel==null) {
@@ -222,11 +230,11 @@ namespace MopBotTwo
 			try {
 				await func();
 				Console.ForegroundColor = ConsoleColor.Green;
-				Console.Write(" Success!\n");
+				Console.Write(" Success!\r\n");
 			}
 			catch(Exception e) {
 				Console.ForegroundColor = ConsoleColor.Red;
-				Console.Write(" ERROR: "+e.GetType().Name+"\n");
+				Console.Write(" ERROR: "+e.GetType().Name+"\r\n");
 
 				if(!dontHandle) {
 					await HandleException(e);
@@ -237,10 +245,10 @@ namespace MopBotTwo
 		}
 		public static async Task HandleException(Exception e,string prefix = null,bool mentionMasters = true,bool noDiscordPosts = false)
 		{
-			await HandleError($"{prefix}{e.GetType().Name}: {e.Message}\n```\n{e.StackTrace}```",mentionMasters,noDiscordPosts);
+			await HandleError($"{prefix}{e.GetType().Name}: {e.Message}\r\n```\r\n{e.StackTrace}```",mentionMasters,noDiscordPosts);
 
 			if(e.InnerException!=null) {
-				await HandleException(e.InnerException,prefix:"Previous exception's InnerException:\n");
+				await HandleException(e.InnerException,prefix:"Previous exception's InnerException:\r\n");
 			}
 		}
 		public static async Task HandleError(string errorText,bool mentionMasters = true,bool noDiscordPosts = false)
@@ -254,12 +262,13 @@ namespace MopBotTwo
 			if(!noDiscordPosts && logChannel!=null && client?.ConnectionState==ConnectionState.Connected) {
 				if(mentionMasters) {
 					var usersToPing = GlobalConfiguration.config.usersToPingForExceptions ?? GlobalConfiguration.config.masterUsers;
+
 					if(usersToPing!=null && usersToPing.Length>0) {
 						errorText = $"{string.Join(", ",usersToPing.Select(id => $"<@{id}>"))}\r\n{errorText}";
 					}
 				}
 
-				//TODO: Replace this halfassed crap?
+				//TODO: This is lazy
 				string[] texts = SplitIfNeeded(errorText,1900).ToArray();
 
 				for(int i = 0;i<texts.Length;i++) {
@@ -279,15 +288,19 @@ namespace MopBotTwo
 		}
 		public static T Construct<T>(Type[] paramTypes,object[] paramValues)
 		{
-			Type t = typeof(T);
-			ConstructorInfo ci = t.GetConstructor(BindingFlags.Instance|BindingFlags.NonPublic,null,paramTypes,null);
-			return (T)ci.Invoke(paramValues);
+			var constructorInfo = typeof(T).GetConstructor(BindingFlags.Instance|BindingFlags.NonPublic,null,paramTypes,null);
+
+			return (T)constructorInfo.Invoke(paramValues);
 		}
 		public static string GetTempFileName(string baseName,string ext)
 		{
 			string name;
-			do { name = tempFolder+Path.DirectorySeparatorChar+baseName+"_"+random.Next(1000)+ext; }
+
+			do {
+				name = Path.Combine(tempFolder,$"{baseName}_{Random.Next(1000)}{ext}");
+			}
 			while(File.Exists(name));
+
 			return name;
 		}
 		public static void CheckForNull(object obj,string argName)

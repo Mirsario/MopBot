@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Discord.WebSocket;
 
-namespace MopBotTwo.Common.Systems.Posting
+namespace MopBot.Common.Systems.Posting
 {
 	public class FilePostPiece : TextPostPiece
 	{

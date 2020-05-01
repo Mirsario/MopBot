@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 
-namespace MopBotTwo.Core.Systems.Memory
+namespace MopBot.Core.Systems.Memory
 {
 	public partial class MemoryBase<TPerSystemDataType>
 	{

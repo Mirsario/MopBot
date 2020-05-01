@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
 
-namespace MopBotTwo.Core.Systems
+namespace MopBot.Core.Systems
 {
 	[SystemConfiguration(AlwaysEnabled = true,Description = "Controls connection to discord.")]
 	public class DiscordConnectionSystem : BotSystem
@@ -27,10 +29,9 @@ namespace MopBotTwo.Core.Systems
 				MessageCacheSize = 1000
 			});
 
-			await MopBot.OnClientInit(client);
+			MopBot.OnClientInit(client);
 
 			await MopBot.TryCatchLogged("Attempting Login...",() => client.LoginAsync(TokenType.Bot,GlobalConfiguration.config.token.Trim()));
-			
 			await MopBot.TryCatchLogged("Attempting Connection...",() => client.StartAsync());
 		}
 		public override async Task<bool> Update()
@@ -39,36 +40,10 @@ namespace MopBotTwo.Core.Systems
 				if(started) {
 					Console.WriteLine("Trying to restart client...");
 
-					Console.Write("Disposing it... ");
-
-					try {
-						client.Dispose();
-
-						client = null;
-
-						Console.WriteLine("Success.");
-					}
-					catch(Exception e) {
-						Console.WriteLine("Fail.");
-
-						Console.WriteLine($"{e.GetType().Name}: {e.Message}");
-					}
-
-					started = false;
-					isFullyReady = false;
-
-					Console.Write("Reinitializing... ");
-
-					try {
-						await Initialize();
-
-						Console.WriteLine("Success.");
-					}
-					catch(Exception e) {
-						Console.WriteLine("Fail.");
-
-						Console.WriteLine($"{e.GetType().Name}: {e.Message}");
-					}
+					Process.Start(new ProcessStartInfo {
+						FileName = "",
+						UseShellExecute = true
+					});
 				}
 				
 				return false;
@@ -76,7 +51,7 @@ namespace MopBotTwo.Core.Systems
 
 			started = true;
 
-			void SmartWrite(string text)
+			void Write(string text)
 			{
 				if(lastConsoleWrite!=text) {
 					Console.WriteLine(text);
@@ -87,12 +62,13 @@ namespace MopBotTwo.Core.Systems
 
 			if(client.LoginState==LoginState.LoggedIn && !isFullyReady) {
 				if(client.Guilds.Count==0 || client.Guilds.Contains(null)) {
-					SmartWrite("Waiting for servers...");
+					Write("Waiting for servers...");
+
 					return false;
 				}
 
 				foreach(var server in client.Guilds) {
-					void TryWrite(string part) => SmartWrite($"Awaiting information about server '{server.Name}' / {server.Id} ({part})...");
+					void TryWrite(string part) => Write($"Awaiting information about server '{server.Name}' / {server.Id} ({part})...");
 
 					var channels = server.Channels;
 
@@ -109,13 +85,14 @@ namespace MopBotTwo.Core.Systems
 					}
 				}
 
-				SmartWrite("Ready!");
+				Write("Ready!");
 
 				isFullyReady = true;
 			}
 
 			if(isFullyReady) {
 				lastConsoleWrite = null;
+
 				return true;
 			}
 

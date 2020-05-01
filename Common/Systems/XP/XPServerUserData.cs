@@ -1,7 +1,7 @@
 ﻿using System;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems.Memory;
 
-namespace MopBotTwo.Common.Systems.XP
+namespace MopBot.Common.Systems.XP
 {
 	[Serializable]
 	public class XPServerUserData : ServerUserData

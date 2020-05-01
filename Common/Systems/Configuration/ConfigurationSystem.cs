@@ -2,13 +2,13 @@
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Memory;
 
 
-namespace MopBotTwo.Common.Systems.Configuration
+namespace MopBot.Common.Systems.Configuration
 {
 	[Group("config")]
 	[Alias("configuration")]
@@ -27,12 +27,8 @@ namespace MopBotTwo.Common.Systems.Configuration
 			var memory = server.GetMemory().GetData<ConfigurationSystem,ConfigurationServerData>();
 			string nickname = memory.forcedNickname;
 
-			//var utcNow = DateTime.UtcNow;
-			//if(utcNow.Month==4 && (utcNow.Day==1 || (utcNow.Day==2 && utcNow.Hour<7))) {
-			//	nickname = "Villager"; //hahayes
-			//}
-
 			var currentUser = server.GetUser(MopBot.client.CurrentUser.Id);
+
 			if(currentUser!=null && !string.Equals(currentUser.Nickname,nickname,StringComparison.InvariantCulture) && !(nickname=="MopBot" && currentUser.Nickname==null) && currentUser.HasDiscordPermission(p => p.ChangeNickname)) {
 				try {
 					await currentUser.ModifyAsync(u => u.Nickname = nickname);

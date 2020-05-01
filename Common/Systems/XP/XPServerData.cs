@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Discord.WebSocket;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems.Memory;
 
-namespace MopBotTwo.Common.Systems.XP
+namespace MopBot.Common.Systems.XP
 {
 	[Serializable]
 	public class XPServerData : ServerData

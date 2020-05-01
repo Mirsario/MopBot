@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace MopBotTwo.Core.Systems.Permissions
+namespace MopBot.Core.Systems.Permissions
 {
 	public class PermissionGroup : ICloneable
 	{

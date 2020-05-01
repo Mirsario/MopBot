@@ -2,11 +2,13 @@
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Permissions;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Permissions;
 
-namespace MopBotTwo.Common.Systems.Issues
+namespace MopBot.Common.Systems.Issues
 {
+	//TODO: Make issue-getting code less repetitive.
+
 	public partial class IssueSystem
 	{
 		[Command("setchannel")]
@@ -52,11 +54,7 @@ namespace MopBotTwo.Common.Systems.Issues
 		{
 			var data = Context.server.GetMemory().GetData<IssueSystem,IssueServerData>();
 			var channel = await data.GetIssueChannel(Context);
-
-			var issue = data.issues.FirstOrDefault(i => i.issueId==issueId);
-			if(issue==null) {
-				throw new BotError($"An issue with Id #{issueId} could not be found.");
-			}
+			var issue = data.issues.FirstOrDefault(i => i.issueId==issueId) ?? throw new BotError($"An issue with Id #{issueId} could not be found.");
 
 			issue.text = issueText;
 
@@ -69,18 +67,13 @@ namespace MopBotTwo.Common.Systems.Issues
 		public async Task ShowIssue(uint issueId)
 		{
 			var data = Context.server.GetMemory().GetData<IssueSystem,IssueServerData>();
-
-			var issue = data.issues.FirstOrDefault(i => i.issueId==issueId);
-
-			if(issue==null) {
-				throw new BotError($"An issue with Id #{issueId} could not be found.");
-			}
+			var issue = data.issues.FirstOrDefault(i => i.issueId==issueId) ?? throw new BotError($"An issue with Id #{issueId} could not be found.");
 
 			var user = Context.user;
 			var builder = MopBot.GetEmbedBuilder(Context)
 				.WithAuthor($"Requested by {user.GetDisplayName()}",user.GetAvatarUrl())
 				.WithTitle($"Issue #{issue.issueId}")
-				.WithDescription($"**Status:** {StatusText[issue.status]}```\n{issue.text}```");
+				.WithDescription($"**Status:** {StatusText[issue.status]}```\r\n{issue.text}```");
 
 			await Context.messageChannel.SendMessageAsync(embed: builder.Build());
 		}
@@ -92,11 +85,7 @@ namespace MopBotTwo.Common.Systems.Issues
 		{
 			var server = Context.server;
 			var data = server.GetMemory().GetData<IssueSystem,IssueServerData>();
-
-			var issue = data.issues.FirstOrDefault(i => i.issueId==issueId);
-			if(issue==null) {
-				throw new BotError($"An issue with Id #{issueId} could not be found.");
-			}
+			var issue = data.issues.FirstOrDefault(i => i.issueId==issueId) ?? throw new BotError($"An issue with Id #{issueId} could not be found.");
 
 			await data.UnpublishIssue(issue,server);
 

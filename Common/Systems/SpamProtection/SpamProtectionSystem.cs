@@ -2,12 +2,14 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core;
+using MopBot.Extensions;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core;
 
-namespace MopBotTwo.Common.Systems.SpamProtection
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Common.Systems.SpamProtection
 {
 	[SystemConfiguration(Description = "Unfinished. Detects when people flood the chat, but doesn't do anything about it yet, as there isn't a muting system.")]
 	public class SpamProtectionSystem : BotSystem
@@ -18,20 +20,20 @@ namespace MopBotTwo.Common.Systems.SpamProtection
 		{
 			userMessageDates = new ConcurrentDictionary<ulong,List<DateTime>>();
 		}
-
 		public override void RegisterDataTypes()
 		{
 			RegisterDataType<ServerMemory,SpamProtectionServerData>();
 		}
-
 		public override async Task OnMessageReceived(MessageExt message)
 		{
 			var user = message.socketServerUser;
+
 			if(user==null || user.IsBot) {
 				return;
 			}
 
 			var server = message.server;
+			
 			if(server==null) {
 				return;
 			}

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Discord.WebSocket;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems.Memory;
 
 
-namespace MopBotTwo.Core.Systems.Permissions
+namespace MopBot.Core.Systems.Permissions
 {
 	public class PermissionServerData : ServerData
 	{

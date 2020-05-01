@@ -1,6 +1,6 @@
-﻿using MopBotTwo.Core.Systems.Memory;
+﻿using MopBot.Core.Systems.Memory;
 
-namespace MopBotTwo.Common.Systems.CustomRoles
+namespace MopBot.Common.Systems.CustomRoles
 {
 	public class CustomRoleServerUserData : ServerUserData
 	{

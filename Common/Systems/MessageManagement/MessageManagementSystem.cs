@@ -5,10 +5,10 @@ using Discord;
 using Discord.Commands;
 using System.Text;
 using System.Text.RegularExpressions;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems;
+using MopBot.Extensions;
+using MopBot.Core.Systems;
 
-namespace MopBotTwo.Common.Systems.MessageManagement
+namespace MopBot.Common.Systems.MessageManagement
 {
 	[Group("msg")] [Alias("message")]
 	[Summary("Group for commands for quoting, copying and moving existing messages, as well as making the bot post new ones.")]
@@ -26,7 +26,7 @@ namespace MopBotTwo.Common.Systems.MessageManagement
 					messageGroups.Add(new List<IMessage> { message });
 
 					listIndex++;
-				}else{
+				} else {
 					messageGroups[listIndex].Add(message);
 				}
 
@@ -34,6 +34,7 @@ namespace MopBotTwo.Common.Systems.MessageManagement
 			}
 
 			var text = new StringBuilder();
+
 			for(int i = messageGroups.Count-1;i>=0;i--) {
 				var group = messageGroups[i];
 				//bool firstMessage = true;
@@ -54,8 +55,9 @@ namespace MopBotTwo.Common.Systems.MessageManagement
 					if(!hasImage) {
 						foreach(var attachment in message.Attachments) {
 							string url = attachment.Url;
+
 							if(url.EndsWithAny(".png",".jpg",".jpeg",".bmp",".gif")) {
-								builder.WithImageUrl(url);
+								builder.ImageUrl = url;
 								hasImage = true;
 							}
 						}
@@ -63,10 +65,13 @@ namespace MopBotTwo.Common.Systems.MessageManagement
 
 					if(!hasImage) {
 						var match = Regex.Match(content,@"(?:http|https|ftp)\:\/\/[^\s]+\.(?:png|jpg|jpeg|bmp|gif|gifv)");
+
 						if(match!=null && match.Success) {
 							string url = match.Value;
-							builder.WithImageUrl(url);
+							
+							builder.ImageUrl = url;
 							content = content.Replace(url,"");
+
 							hasImage = true;
 							forceSend = true;
 						}
@@ -79,10 +84,12 @@ namespace MopBotTwo.Common.Systems.MessageManagement
 							case EmbedType.Article:
 							case EmbedType.Link:
 								content = content.Replace(embed.Url,"");
-								builder.WithTitle(embed.Title);
-								builder.WithUrl(embed.Url);
-								builder.WithImageUrl(embed.Image?.Url);
-								builder.WithThumbnailUrl(embed.Thumbnail?.Url);
+								
+								builder.Title = embed.Title;
+								builder.Url = embed.Url;
+								builder.ImageUrl = embed.Image?.Url;
+								builder.ThumbnailUrl = embed.Thumbnail?.Url;
+
 								forceSend = true;
 								break;
 						}
@@ -91,9 +98,12 @@ namespace MopBotTwo.Common.Systems.MessageManagement
 					text.AppendLine(content);
 					
 					if(j==0 || forceSend) {
-						builder.WithDescription(text.ToString());
+						builder.Description = text.ToString();
+						
 						text.Clear();
+
 						await textChannel.SendMessageAsync(embed:builder.Build());
+						
 						forceSend = false;
 					}
 				}
@@ -109,10 +119,11 @@ namespace MopBotTwo.Common.Systems.MessageManagement
 			}
 
 			var fromChannel = Context.Channel;
-
 			var messageList = new List<IMessage>();
+
 			if(bottomMessageId!=0) {
-				numMessages -= 1;
+				numMessages--;
+
 				messageList.Add(await fromChannel.GetMessageAsync(bottomMessageId));
 			}
 

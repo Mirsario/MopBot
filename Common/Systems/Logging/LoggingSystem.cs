@@ -1,15 +1,15 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using MopBotTwo.Core;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Extensions;
+using MopBot.Core;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Memory;
+using MopBot.Extensions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MopBotTwo.Common.Systems.Logging
+namespace MopBot.Common.Systems.Logging
 {
 	[Group("logging")]
 	[Summary("Group for controlling LoggingSystem")]
@@ -143,6 +143,7 @@ namespace MopBotTwo.Common.Systems.Logging
 		private static async Task TrySendEmbed(SocketGuild server,IUser user,Func<EmbedBuilder,EmbedBuilder> embedFunc)
 		{
 			var serverData = server.GetMemory().GetData<LoggingSystem,LoggingServerData>();
+
 			if(!serverData.TryGetLoggingChannel(server,out var loggingChannel)) {
 				return;
 			}

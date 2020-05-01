@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Core.Systems.Memory;
 using System;
 using Discord;
 
-namespace MopBotTwo.Common.Systems.CustomRoles
+namespace MopBot.Common.Systems.CustomRoles
 {
 	//TODO: Old. To be re-reviewed.
 
@@ -76,6 +76,7 @@ namespace MopBotTwo.Common.Systems.CustomRoles
 		public async Task DetectCustomRolesCommand()
 		{
 			var server = Context.server;
+
 			if(server==null) {
 				return;
 			}
@@ -90,24 +91,34 @@ namespace MopBotTwo.Common.Systems.CustomRoles
 				}
 
 				var members = role.Members.ToArray();
+
+				if(members.Length==0) {
+					unused += $"{role.Name} is unused.\r\n";
+
+					continue;
+				}
+
 				if(members.Length==1) {
 					var user = members[0];
 					var customRoleUserData = serverMemory[user].GetData<CustomRoleSystem,CustomRoleServerUserData>();
+
 					if(customRoleUserData.colorRole!=null) {
 						continue;
 					}
 
 					if(user.Roles.OrderByDescending(r => r.Position).First().Id==role.Id) {
 						customRoleUserData.colorRole = role.Id;
-						string newText = $"Detected {user.GetDisplayName()}'s custom role to be ''{role.Name}''.\n";
+						
+						string newText = $"Detected {user.GetDisplayName()}'s custom role to be ''{role.Name}''.\r\n";
+
 						if(text.Length+newText.Length>=2000) {
 							await Context.ReplyAsync(text,false);
+							
 							text = "";
 						}
+
 						text += newText;
 					}
-				} else if(members.Length==0) {
-					unused += $"{role.Name} is unused.\n";
 				}
 			}
 

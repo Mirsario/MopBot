@@ -3,10 +3,12 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Discord.WebSocket;
 using Newtonsoft.Json;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core;
 
-namespace MopBotTwo.Common.Systems.Changelogs
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Common.Systems.Changelogs
 {
 	public class ChangelogServerData : ServerData
 	{
@@ -16,11 +18,13 @@ namespace MopBotTwo.Common.Systems.Changelogs
 		public string currentVersion;
 		public uint nextEntryId;
 		
-		[JsonIgnore] public uint NextEntryId {
+		[JsonIgnore]
+		public uint NextEntryId {
 			get {
 				if(entries!=null && entries.Any(i => i.entryId==nextEntryId)) {
 					nextEntryId = entries.Max(i => i.entryId)+1;
 				}
+
 				return nextEntryId;
 			}
 		}
@@ -40,9 +44,23 @@ namespace MopBotTwo.Common.Systems.Changelogs
 		public ChangelogEntry NewEntry(string type,string text)
 		{
 			var newEntry = new ChangelogEntry(NextEntryId,type,text);
+
 			nextEntryId++;
+
 			entries.Add(newEntry);
+
 			return newEntry;
+		}
+		public bool GetChangelogChannel(out SocketTextChannel channel)
+		{
+			if(changelogChannel==0) {
+				channel = null;
+				return false;
+			}
+
+			channel = (SocketTextChannel)MopBot.client.GetChannel(changelogChannel);
+
+			return channel!=null;
 		}
 
 		public async Task UnpublishEntry(ChangelogEntry entry,SocketGuild server)
@@ -52,8 +70,10 @@ namespace MopBotTwo.Common.Systems.Changelogs
 			}
 
 			var oldChannel = server.GetChannel(entry.channelId);
+
 			if(oldChannel!=null && oldChannel is SocketTextChannel oldTextChannel) {
 				var oldMessage = await oldTextChannel.GetMessageAsync(entry.messageId);
+
 				if(oldMessage!=null) {
 					await oldMessage.DeleteAsync();
 				}
@@ -68,25 +88,18 @@ namespace MopBotTwo.Common.Systems.Changelogs
 			}
 
 			var message = await channel.SendMessageAsync($"{entryType.discordPrefix} - #**{entry.entryId}** - **{entryType.name}:** {entry.text}",options:MopBot.optAlwaysRetry);
+			
 			entry.messageId = message.Id;
 			entry.channelId = channel.Id;
-		}
-		public bool GetChangelogChannel(out SocketTextChannel channel)
-		{
-			if(changelogChannel==0) {
-				channel = null;
-				return false;
-			}
-
-			channel = (SocketTextChannel)MopBot.client.GetChannel(changelogChannel);
-			return channel!=null;
 		}
 		public async Task<SocketTextChannel> TryGetChangelogChannel(MessageExt context,bool showError = true)
 		{
 			var result = changelogChannel!=0 ? (SocketTextChannel)MopBot.client.GetChannel(changelogChannel) : null;
+
 			if(result==null && showError) {
 				throw new BotError("Changelog channel has not been set. Set it with `!cl setchannel <channel>` first.");
 			}
+
 			return result;
 		}
 	}

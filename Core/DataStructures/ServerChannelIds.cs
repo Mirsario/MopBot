@@ -1,8 +1,8 @@
 ﻿using Discord.WebSocket;
-using MopBotTwo.Extensions;
+using MopBot.Extensions;
 using System;
 
-namespace MopBotTwo.Core.DataStructures
+namespace MopBot.Core.DataStructures
 {
 	[Serializable]
 	public struct ServerChannelIds

@@ -1,10 +1,12 @@
 ﻿using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Extensions;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Extensions;
 
-namespace MopBotTwo.Common.Systems.Welcoming
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Common.Systems.Welcoming
 {
 	[Group("welcoming")]
 	[Alias("welcome")]

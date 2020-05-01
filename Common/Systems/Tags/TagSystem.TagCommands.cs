@@ -1,12 +1,14 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core.Systems.Commands;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core.Systems.Commands;
 using Discord.WebSocket;
 
-namespace MopBotTwo.Common.Systems.Tags
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Common.Systems.Tags
 {
 	public partial class TagSystem
 	{

@@ -1,6 +1,6 @@
 ﻿using Discord;
 
-namespace MopBotTwo.Utilities
+namespace MopBot.Utilities
 {
 	public static class EmoteUtils
 	{

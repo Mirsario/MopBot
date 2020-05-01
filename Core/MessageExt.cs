@@ -5,11 +5,11 @@ using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
 using Discord.Rest;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Commands;
-using MopBotTwo.Core.Systems;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Commands;
+using MopBot.Core.Systems;
 
-namespace MopBotTwo.Core
+namespace MopBot.Core
 {
 	public class MessageExt : ICommandContext
 	{

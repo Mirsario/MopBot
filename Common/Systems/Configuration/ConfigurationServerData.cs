@@ -1,7 +1,7 @@
 ﻿using Discord.WebSocket;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems.Memory;
 
-namespace MopBotTwo.Common.Systems.Configuration
+namespace MopBot.Common.Systems.Configuration
 {
 	public class ConfigurationServerData : ServerData
 	{

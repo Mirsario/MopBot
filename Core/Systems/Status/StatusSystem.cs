@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Discord;
 
 
-namespace MopBotTwo.Core.Systems.Status
+namespace MopBot.Core.Systems.Status
 {
 	[SystemConfiguration(AlwaysEnabled = true,Description = "Manages bot's activity status, i.e. what it's 'playing'.")]
 	public class StatusSystem : BotSystem
@@ -30,18 +30,20 @@ namespace MopBotTwo.Core.Systems.Status
 			if(!noActivityChanging && (currentActivity.name==null || (now-lastActivityChange).TotalMinutes>=5)) {
 				int index,indexOf = activities.IndexOf(currentActivity);
 
-				while((index = MopBot.random.Next(activities.Count))==indexOf) { }
+				while((index = MopBot.Random.Next(activities.Count))==indexOf) { }
 
 				currentActivity = activities[index];
 				lastActivityChange = now;
 			}
 
 			var user = client.CurrentUser;
+
 			if(user==null) {
 				return true;
 			}
 
 			var activity = user.Activity;
+
 			if(activity?.Name!=currentActivity.name || activity?.Type!=currentActivity.type) {
 				await client.SetGameAsync(currentActivity.name,type: currentActivity.type);
 			}

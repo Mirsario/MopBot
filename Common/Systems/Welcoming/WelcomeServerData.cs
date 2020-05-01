@@ -1,8 +1,8 @@
 ﻿using Discord.WebSocket;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems.Memory;
 
 
-namespace MopBotTwo.Common.Systems.Welcoming
+namespace MopBot.Common.Systems.Welcoming
 {
 	public class WelcomeServerData : ServerData
 	{

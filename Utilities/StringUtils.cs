@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MopBotTwo
+namespace MopBot
 {
 	public static class StringUtils
 	{
@@ -13,6 +13,7 @@ namespace MopBotTwo
 		public static void RemoveQuotemarks(ref string str)
 		{
 			int length = str.Length;
+
 			if(length<2) {
 				return;
 			}
@@ -27,27 +28,32 @@ namespace MopBotTwo
 		{
 			int length = id.Length;
 			char[] newChars = null;
+
 			for(int i = 0;i<length;i++) {
 				char c = id[i];
+				
 				if(!char.IsLetterOrDigit(c)) {
 					throw new BotError($"Ids can only contain letters and digits, with no spaces.");
 				}
+				
 				if(char.IsUpper(c)) {
-					(newChars ?? (newChars = id.ToCharArray()))[i] = char.ToLower(c);
+					(newChars ??= id.ToCharArray())[i] = char.ToLower(c);
 				}
 			}
+
 			if(newChars!=null) {
 				id = new string(newChars);
 			}
 		}
-
 		public static string SubstringSafe(string str,int startIndex,int length)
 		{
 			int end = Math.Min(startIndex+length,str.Length);
 			string result = "";
+
 			for(int i = startIndex;i<end;i++) {
 				result += str[i];
 			}
+
 			return result;
 		}
 		public static string[] SplitMessageText(string allText)
@@ -73,6 +79,7 @@ namespace MopBotTwo
 
 				if(i>=TrySplitAt) {
 					string sub = SubstringSafe(allText,i,LineBreak.Length);
+
 					if(i>=ForceSplitAt || sub==LineBreak || sub==LineBreak2) {
 						if(codeBlock) {
 							allText = allText.Insert(i,TripleTilde);
@@ -99,6 +106,7 @@ namespace MopBotTwo
 						}
 
 						i--;
+
 						continue;
 					}
 				}
@@ -107,25 +115,26 @@ namespace MopBotTwo
 					i += TripleTilde.Length;
 					codeBlock = !codeBlock;
 					codeLine = false;
+
 					continue;
 				} else if(!codeBlock && allText[i]==Tilde[0]) {
 					codeLine = !codeLine;
 				}
 			}
+
 			return result.ToArray();
 		}
-
 		public static string EscapeDiscordText(string text,bool forCodeBlock = false)
 		{
 			if(forCodeBlock) {
 				return text.Replace("```",@"\`\`\`");
-			} else {
-				return text
-					.Replace("`",@"\`")
-					.Replace("*",@"\*")
-					.Replace("|",@"\|")
-					.Replace("~",@"\~");
 			}
+
+			return text
+				.Replace("`",@"\`")
+				.Replace("*",@"\*")
+				.Replace("|",@"\|")
+				.Replace("~",@"\~");
 		}
 	}
 }

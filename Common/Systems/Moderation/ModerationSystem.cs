@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Permissions;
+using MopBot.Extensions;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Permissions;
 
-namespace MopBotTwo.Common.Systems.Moderation
+namespace MopBot.Common.Systems.Moderation
 {
 	[Group("mod")]
 	[Summary("Group for simple moderation commands, like `kick`, `ban` and `clear`.")]

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace MopBotTwo.Utilities
+namespace MopBot.Utilities
 {
 	public static class WildcardUtils
 	{

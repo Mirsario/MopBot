@@ -2,12 +2,12 @@
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core.DataStructures;
-using MopBotTwo.Core.Systems;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core.DataStructures;
+using MopBot.Core.Systems;
 
-namespace MopBotTwo.Common.Systems.ChannelLinking
+namespace MopBot.Common.Systems.ChannelLinking
 {
 	//TODO: Rather old system. Needs a rewrite that'll use same code for reposting as quotes in MessageManagingSystem.
 
@@ -19,11 +19,13 @@ namespace MopBotTwo.Common.Systems.ChannelLinking
 		public async Task LinkChannelCommand(SocketTextChannel localChannel,ulong serverId,string remoteChannelName)
 		{
 			var remoteServer = await GetServerFromId(serverId);
+
 			if(remoteServer==null) {
 				return;
 			}
 
 			var remoteChannel = remoteServer.Channels.FirstOrDefault(c => c.Name==remoteChannelName);
+
 			if(remoteChannel==null) {
 				throw new BotError("Channel not found.");
 			}

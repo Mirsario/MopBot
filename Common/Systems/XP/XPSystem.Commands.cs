@@ -1,14 +1,14 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Extensions;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MopBotTwo.Common.Systems.XP
+namespace MopBot.Common.Systems.XP
 {
 	public partial class XPSystem
 	{
@@ -37,11 +37,13 @@ namespace MopBotTwo.Common.Systems.XP
 
 			uint rank = (uint)serverMemory.GetSubMemories<ServerUserMemory>().Keys
 				.SelectIgnoreNull(key => {
-					var u = MopBot.client.GetUser(key);
-					if(u==null) {
+					var botUser = MopBot.client.GetUser(key);
+
+					if(botUser==null) {
 						return null;
 					}
-					return new KeyValuePair<ulong,ServerUserMemory>?(new KeyValuePair<ulong,ServerUserMemory>(key,serverMemory[u]));
+
+					return new KeyValuePair<ulong,ServerUserMemory>?(new KeyValuePair<ulong,ServerUserMemory>(key,serverMemory[botUser]));
 				})
 				.OrderByDescending(pair => pair?.Value.GetData<XPSystem,XPServerUserData>().xp ?? 0)
 				.FirstIndex(pair => pair?.Key==user.Id)+1;
@@ -51,7 +53,7 @@ namespace MopBotTwo.Common.Systems.XP
 
 			var builder = MopBot.GetEmbedBuilder(Context)
 				.WithAuthor(user.Username,user.GetAvatarUrl())
-				.WithDescription($"**XP: **{xp-thisLevelXP}/{nextLevelXP-thisLevelXP} ({xp}/{nextLevelXP} Total)\n**Level: **{level}\n**Rank: **#{rank}");
+				.WithDescription($"**XP: **{xp-thisLevelXP}/{nextLevelXP-thisLevelXP} ({xp}/{nextLevelXP} Total)\r\n**Level: **{level}\r\n**Rank: **#{rank}");
 
 			await Context.socketTextChannel.SendMessageAsync("",embed: builder.Build());
 		}
@@ -81,7 +83,7 @@ namespace MopBotTwo.Common.Systems.XP
 
 			var builder = MopBot.GetEmbedBuilder(Context)
 				.WithAuthor($"#{i++} - {user.GetDisplayName()} - {xpUserData.xp} Total XP (Level {XPToLevel(xpUserData.xp)})",user.GetAvatarUrl())
-				.WithDescription(string.Join("\n",tuples
+				.WithDescription(string.Join("\r\n",tuples
 					.TakeLast(tuples.Length-1)
 					.Select(t => $"#{i++} - {t.user.GetDisplayName()} - {t.xpUserData.xp} Total XP (Level {XPToLevel(t.xpUserData.xp)})")
 				));

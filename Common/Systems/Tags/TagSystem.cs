@@ -3,17 +3,13 @@ using System.Linq;
 using System.Collections.Generic;
 using Discord;
 using Discord.Commands;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Memory;
 using Discord.WebSocket;
-using MopBotTwo.Extensions;
+using MopBot.Extensions;
 
-#pragma warning disable 1998
-
-namespace MopBotTwo.Common.Systems.Tags
+namespace MopBot.Common.Systems.Tags
 {
-	//TODO: Incomplete and buggy.
-
 	[Group("tag")] [Alias("tags")]
 	[Summary(@"Group for managing and using shortcuts called ""tags"".")]
 	[SystemConfiguration(EnabledByDefault = true,Description = "Lets people create and use cross-server tags (aka message shortcuts). Supports tag groups, tag/tag group subscription and globalization. Is cool.")]
@@ -72,7 +68,7 @@ namespace MopBotTwo.Common.Systems.Tags
 			if(tagsFound.Count!=1) {
 				const int MaxTextLength = 30;
 
-				throw new BotError($"{tagsFound.Count} tags have been found: \r\n```{string.Join('\n',tagsFound.Select(t => $"{t.tagId} - {t.tagInfo.text.TruncateWithDots(MaxTextLength)}"))}```");
+				throw new BotError($"{tagsFound.Count} tags have been found: \r\n```{string.Join('\r\n',tagsFound.Select(t => $"{t.tagId} - {t.tagInfo.text.TruncateWithDots(MaxTextLength)}"))}```");
 			}
 
 			return tagsFound[0];
@@ -111,7 +107,7 @@ namespace MopBotTwo.Common.Systems.Tags
 			}
 		}
 
-		public static bool ForeachTag(TagGlobalData globalData,List<ulong> tagIds,out (ulong id, Tag tag) tuple,TagEnumerationFunc func)
+		public static bool ForeachTag(TagGlobalData globalData,List<ulong> tagIds,out (ulong id,Tag tag) tuple,TagEnumerationFunc func)
 		{
 			if(globalData==null) {
 				globalData = MemorySystem.memory.GetData<TagSystem,TagGlobalData>();
@@ -120,26 +116,29 @@ namespace MopBotTwo.Common.Systems.Tags
 			for(int i = 0;i<tagIds.Count;i++) {
 				ulong id = tagIds[i];
 
-				if(globalData.tags.TryGetValue(id,out Tag tag)) {
-					(bool doReturn, bool removeTag) = func(id,tag);
-
-					if(removeTag) {
-						tagIds.RemoveAt(i--);
-					}
-
-					if(doReturn) {
-						tuple = (id, tag);
-						return true;
-					}
-				} else {
+				if(!globalData.tags.TryGetValue(id,out Tag tag)) {
 					tagIds.RemoveAt(i--);
+					continue;
+				}
+
+				(bool doReturn, bool removeTag) = func(id,tag);
+
+				if(removeTag) {
+					tagIds.RemoveAt(i--);
+				}
+
+				if(doReturn) {
+					tuple = (id, tag);
+
+					return true;
 				}
 			}
 
 			tuple = default;
+
 			return false;
 		}
-		public static bool ForeachTagInGroups(TagGlobalData globalData,List<ulong> groupIds,out (ulong id, Tag tag) tuple,TagEnumerationFunc func)
+		public static bool ForeachTagInGroups(TagGlobalData globalData,List<ulong> groupIds,out (ulong id,Tag tag) tuple,TagEnumerationFunc func)
 		{
 			if(globalData==null) {
 				globalData = MemorySystem.memory.GetData<TagSystem,TagGlobalData>();
@@ -147,16 +146,19 @@ namespace MopBotTwo.Common.Systems.Tags
 
 			for(int i = 0;i<groupIds.Count;i++) {
 				ulong groupId = groupIds[i];
-				if(globalData.tagGroups.TryGetValue(groupId,out TagGroup tagGroup)) {
-					if(ForeachTag(globalData,tagGroup.tagIDs,out tuple,func)) {
-						return true;
-					}
-				} else {
+
+				if(!globalData.tagGroups.TryGetValue(groupId,out TagGroup tagGroup)) {
 					groupIds.RemoveAt(i--);
+					continue;
+				}
+				
+				if(ForeachTag(globalData,tagGroup.tagIDs,out tuple,func)) {
+					return true;
 				}
 			}
 
 			tuple = default;
+
 			return false;
 		}
 	}

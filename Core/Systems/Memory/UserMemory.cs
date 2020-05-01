@@ -2,7 +2,7 @@
 
 using Discord;
 
-namespace MopBotTwo.Core.Systems.Memory
+namespace MopBot.Core.Systems.Memory
 {
 	public sealed class UserMemory : MemoryBase<UserData>
 	{

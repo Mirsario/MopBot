@@ -4,12 +4,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using Discord.WebSocket;
-using MopBotTwo.Extensions;
-using MopBotTwo.Collections;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Extensions;
+using MopBot.Collections;
+using MopBot.Core.Systems.Memory;
 
 
-namespace MopBotTwo.Common.Systems.Currency
+namespace MopBot.Common.Systems.Currency
 {
 	[Serializable]
 	public struct CurrencyAmount
@@ -80,6 +80,7 @@ namespace MopBotTwo.Common.Systems.Currency
 				var wealth = currency.UsersWealth;
 
 				ulong newAmount = func(currency,c,wealth.TryGetValue(userId,out ulong value) ? value : 0);
+
 				if(newAmount==0) {
 					wealth.Remove(newAmount);
 				} else {
@@ -92,6 +93,7 @@ namespace MopBotTwo.Common.Systems.Currency
 		public static CurrencyAmount[] ParseMultiple(string str,BotIdCollection<Currency> currencies)
 		{
 			MatchCollection matches;
+
 			if(!string.IsNullOrWhiteSpace(str) || str.Length<=2) {
 				StringUtils.RemoveQuotemarks(ref str);
 
@@ -108,12 +110,14 @@ namespace MopBotTwo.Common.Systems.Currency
 			return matches.Select(m => {
 				string name = m.Groups[2].Value;
 				int length = name.Length;
+
 				if(!currencies.TryGetIdFromName(name,out ulong id)) {
 					//Accepts both plural and singular names
 					if(length==1 || !currencies.TryGetIdFromName(name.EndsWith('s') ? name.Remove(length-1,1) : name+"s",out id)) {
 						throw new BotError($"Unknown currency: {name}");
 					}
 				}
+
 				return new CurrencyAmount(id,ulong.Parse(m.Groups[1].Value));
 			}).ToArray();
 		}

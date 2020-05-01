@@ -2,7 +2,7 @@
 using Discord.WebSocket;
 
 
-namespace MopBotTwo.Common.Systems.Showcase
+namespace MopBot.Common.Systems.Showcase
 {
 	[Serializable]
 	public class ShowcaseChannel : ChannelInfo

@@ -1,11 +1,13 @@
 ﻿using System.Threading.Tasks;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Memory;
 
-namespace MopBotTwo.Common.Systems.MemoryTest
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Common.Systems.MemoryTest
 {
 	[Group("memorytest")]
 	[RequirePermission(SpecialPermission.BotMaster)]
@@ -33,6 +35,7 @@ namespace MopBotTwo.Common.Systems.MemoryTest
 				$"**{nameof(MemoryTestServerUserData)}.{nameof(MemoryTestServerUserData.randomValue)}**: `{serverUserMemory.GetData<MemoryTestSystem,MemoryTestServerUserData>().randomValue}`\r\n"
 			);
 		}
+
 		[Command("reset")]
 		public async Task Reset()
 		{

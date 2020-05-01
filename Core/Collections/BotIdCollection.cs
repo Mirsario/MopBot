@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace MopBotTwo.Collections
+namespace MopBot.Collections
 {
 	public struct NameIdValue<T>
 	{
@@ -14,9 +14,9 @@ namespace MopBotTwo.Collections
 
 	//TODO: Stop using sub dictionaries.
 	//TODO: Add more interfaces?
-	//TODO: Come up with a  better name.
+	//TODO: Come up with a better name.
 	[Serializable]
-	public class BotIdCollection<T> : ICollection<NameIdValue<T>>//, ICollection
+	public class BotIdCollection<T> : ICollection<NameIdValue<T>>
 	{
 		[JsonProperty] private readonly Dictionary<string,ulong> NameToId = new Dictionary<string,ulong>(StringComparer.InvariantCultureIgnoreCase);
 		[JsonProperty] private readonly Dictionary<ulong,T> IdToValue = new Dictionary<ulong,T>();
@@ -52,6 +52,7 @@ namespace MopBotTwo.Collections
 			StringUtils.CheckAndLowerStringId(ref newName);
 
 			ulong id = GetIdFromName(name);
+
 			if(NameToId.ContainsKey(newName)) {
 				throw new BotError($"{typeof(T).Name} '{newName}' already exists.");
 			}
@@ -65,14 +66,21 @@ namespace MopBotTwo.Collections
 			if(NameToId.TryGetValue(name,out ulong id)) {
 				NameToId.Remove(name);
 				IdToValue.Remove(id);
+
 				return true;
 			}
+
 			return false;
 		}
-
+		public void Clear()
+		{
+			NameToId.Clear();
+			IdToValue.Clear();
+		}
+		//Ids
 		public bool TryGetIdFromName(string name,out ulong id) => NameToId.TryGetValue(name,out id);
 		public ulong GetIdFromName(string name) => NameToId.TryGetValue(name,out ulong id) ? id : throw new BotError($"Unknown `{typeof(T).Name}`: {name}");
-
+		//Values
 		public bool TryGetValue(ulong id,out T result) => IdToValue.TryGetValue(id,out result);
 		public bool TryGetValue(string nameId,out T result,out ulong id)
 		{
@@ -82,9 +90,12 @@ namespace MopBotTwo.Collections
 			result = default;
 			return false;
 		}
-
+		//Checks
+		public bool ContainsKey(ulong key) => IdToValue.ContainsKey(key);
+		public bool Contains(NameIdValue<T> item) => IdToValue.ContainsKey(item.id);
+		//Etc
 		public void CopyTo(Array array,int index) => throw new NotImplementedException();
-
+		public void CopyTo(NameIdValue<T>[] array,int arrayIndex) => throw new NotImplementedException();
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 		public IEnumerator<NameIdValue<T>> GetEnumerator()
 		{
@@ -100,15 +111,5 @@ namespace MopBotTwo.Collections
 				};
 			}
 		}
-
-		public void Clear()
-		{
-			NameToId.Clear();
-			IdToValue.Clear();
-		}
-
-		public bool ContainsKey(ulong key) => IdToValue.ContainsKey(key);
-		public bool Contains(NameIdValue<T> item) => IdToValue.ContainsKey(item.id);
-		public void CopyTo(NameIdValue<T>[] array,int arrayIndex) => throw new NotImplementedException();
 	}
 }

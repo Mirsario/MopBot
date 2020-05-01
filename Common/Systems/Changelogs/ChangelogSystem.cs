@@ -1,12 +1,12 @@
 ﻿using System.Text.RegularExpressions;
 using Discord.Commands;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Memory;
 using System.Threading.Tasks;
-using MopBotTwo.Extensions;
+using MopBot.Extensions;
 
-namespace MopBotTwo.Common.Systems.Changelogs
+namespace MopBot.Common.Systems.Changelogs
 {
 	[Group("changelog")] [Alias("changes","cl")]
 	[Summary("Helps managing project changelog channels")]

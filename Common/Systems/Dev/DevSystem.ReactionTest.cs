@@ -1,11 +1,11 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using MopBotTwo.Extensions;
+using MopBot.Extensions;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MopBotTwo.Common.Systems.Dev
+namespace MopBot.Common.Systems.Dev
 {
 	public partial class DevSystem
 	{

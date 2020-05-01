@@ -4,13 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
-using MopBotTwo.Core;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Extensions;
+using MopBot.Core;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Extensions;
 
-namespace MopBotTwo.Common.Systems.AutoModeration
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Common.Systems.AutoModeration
 {
 	[SystemConfiguration(Description = "Automatically does moderation through various message filtering in a configurable way.")]
 	[RequirePermission(SpecialPermission.Owner,"automod")]
@@ -46,7 +48,7 @@ namespace MopBotTwo.Common.Systems.AutoModeration
 						}
 
 						if(list.Count==0) {
-							(keysToRemove ?? (keysToRemove = new List<ulong>())).Add(pair.Key);
+							(keysToRemove ??= new List<ulong>()).Add(pair.Key);
 						}
 					}
 				}

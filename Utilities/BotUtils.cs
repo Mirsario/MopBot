@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
-using MopBotTwo.Extensions;
+using MopBot.Extensions;
 using Discord.WebSocket;
 using Discord.Rest;
 using System.Collections.Generic;
 
-namespace MopBotTwo
+namespace MopBot
 {
 	public static class BotUtils
 	{
@@ -55,6 +55,7 @@ namespace MopBotTwo
 		public static string NumberToEmotes(int number)
 		{
 			var sb = new StringBuilder();
+
 			foreach(char c in number.ToString()) {
 				switch(c) {
 					case '0': sb.Append(":zero:");	break;
@@ -69,6 +70,7 @@ namespace MopBotTwo
 					case '9': sb.Append(":nine:");	break;
 				}
 			}
+
 			return sb.ToString();
 		}
 		
@@ -78,13 +80,13 @@ namespace MopBotTwo
 				throw new BotError("Invalid url.");
 			}
 
-			using(var client = new WebClient()) {
-				try {
-					return await client.DownloadStringTaskAsync(realUrl);
-				}
-				catch(Exception e) {
-					throw new BotError(e);
-				}
+			using var client = new WebClient();
+
+			try {
+				return await client.DownloadStringTaskAsync(realUrl);
+			}
+			catch(Exception e) {
+				throw new BotError(e);
 			}
 		}
 		public static async Task DownloadFile(string url,string localPath,string[] validExtensions = null)
@@ -97,13 +99,13 @@ namespace MopBotTwo
 				throw new BotError($"Url has no extension, or it's forbidden. The following extensions are allowed: {string.Join(",",validExtensions.Select(ext => ext.ToString()))}.");
 			}
 
-			using(var client = new WebClient()) {
-				try {
-					await client.DownloadFileTaskAsync(realUrl,localPath);
-				}
-				catch(Exception e) {
-					throw new BotError(e);
-				}
+			using var client = new WebClient();
+
+			try {
+				await client.DownloadFileTaskAsync(realUrl,localPath);
+			}
+			catch(Exception e) {
+				throw new BotError(e);
 			}
 		}
 
@@ -129,7 +131,7 @@ namespace MopBotTwo
 			ulong result;
 
 			do {
-				result = MopBot.random.NextULong();
+				result = MopBot.Random.NextULong();
 			}
 			while(idExistsCheck(result));
 

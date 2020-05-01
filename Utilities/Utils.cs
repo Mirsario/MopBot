@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MopBotTwo
+namespace MopBot
 {
 	public static class Utils
 	{
@@ -15,7 +15,7 @@ namespace MopBotTwo
 			}
 			return value;
 		}
-		public static T Choose<T>(params T[] arr) => arr[MopBot.random.Next(arr.Length)];
+		public static T Choose<T>(params T[] arr) => arr[MopBot.Random.Next(arr.Length)];
 		
 		//Is there a better way? Am I dumb?
 		public static ulong SafeAdd(ulong valueA,ulong valueB)

@@ -1,6 +1,6 @@
 ﻿#pragma warning disable CS1998 //The async method lacks 'await' operator.
 
-namespace MopBotTwo.Common.Systems.Changelogs
+namespace MopBot.Common.Systems.Changelogs
 {
 	public enum ChangelogFormatType
 	{

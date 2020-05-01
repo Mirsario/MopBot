@@ -1,4 +1,4 @@
-﻿namespace MopBotTwo.Core.Systems.Memory
+﻿namespace MopBot.Core.Systems.Memory
 {
 	public class GlobalData : MemoryDataBase
 	{

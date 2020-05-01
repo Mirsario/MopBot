@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Permissions;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Permissions;
 
-namespace MopBotTwo.Common.Systems.MessageManagement
+namespace MopBot.Common.Systems.MessageManagement
 {
 	public partial class MessageManagementSystem
 	{
@@ -47,7 +47,7 @@ namespace MopBotTwo.Common.Systems.MessageManagement
 			}
 			catch(Exception e) {
 				await MopBot.HandleException(e);
-				await context.ReplyAsync($"Error deleting messages: ```{string.Join('\n',messageList.Select(m => m==null ? "NULL" : m.Id.ToString()))}```");
+				await context.ReplyAsync($"Error deleting messages: ```{string.Join('\r\n',messageList.Select(m => m==null ? "NULL" : m.Id.ToString()))}```");
 			}
 		}
 

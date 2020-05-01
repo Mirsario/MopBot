@@ -1,9 +1,11 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using Discord.Commands;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems.Memory;
 
-namespace MopBotTwo.Core.Systems.Permissions
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Core.Systems.Permissions
 {
 	[Group("permission")] [Alias("permissions","perms","perm")]
 	[Summary("Group for configuring permissions.")]
@@ -29,24 +31,5 @@ namespace MopBotTwo.Core.Systems.Permissions
 			
 			defaultGroups["superadmin"]["modifypermissions"] = true;
 		}
-
-		/*public static bool? GetRolePermission(SocketRole role,string permission,PermissionServerData serverData = null)
-		{
-			serverData ??= role.Guild.GetMemory().GetData<PermissionSystem,PermissionServerData>();
-
-			if(!serverData.roleGroups.TryGetValue(role.Id,out string groupName)) {
-				return null;
-			}
-
-			var group = serverData.permissionGroups[groupName];
-			if(group.permissions.TryGetValue(permission,out bool? newResult)) {
-				return newResult;
-			}
-
-			foreach(var pair in group.permissions) {
-				string str = pair.Key;
-				
-			}
-		}*/
 	}
 }

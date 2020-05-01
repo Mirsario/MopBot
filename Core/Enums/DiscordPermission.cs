@@ -1,4 +1,4 @@
-﻿namespace MopBotTwo
+﻿namespace MopBot
 {
 	public enum DiscordPermission
 	{

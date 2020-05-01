@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Discord.Commands;
-using MopBotTwo.Extensions;
+using MopBot.Extensions;
 
-namespace MopBotTwo.Common.Systems.AutoModeration
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Common.Systems.AutoModeration
 {
 	[Group("automoderation")]
 	[Alias("automod")]

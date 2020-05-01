@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Discord;
 using Discord.Commands;
-using MopBotTwo.Extensions;
+using MopBot.Extensions;
 
-namespace MopBotTwo.Core.Systems.Commands
+namespace MopBot.Core.Systems.Commands
 {
 	public partial class CommandSystem
 	{
@@ -98,11 +98,12 @@ namespace MopBotTwo.Core.Systems.Commands
 				}
 
 				string checkedString;
+
 				if(group==null) {
 					checkedString = groupA;
-				}else if(strComparer.Equals(group,groupA)) {
+				} else if(strComparer.Equals(group,groupA)) {
 					checkedString = groupB;
-				}else{
+				} else {
 					continue;
 				}
 

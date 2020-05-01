@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MopBotTwo.Core.Systems
+namespace MopBot.Core.Systems
 {
 	public class SystemConfiguration : Attribute
 	{

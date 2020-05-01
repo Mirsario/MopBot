@@ -1,6 +1,6 @@
 ﻿using Discord.WebSocket;
 
-namespace MopBotTwo.Extensions
+namespace MopBot.Extensions
 {
 	public static class DiscordExtensions
 	{

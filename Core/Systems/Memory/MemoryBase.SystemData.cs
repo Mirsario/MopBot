@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace MopBotTwo.Core.Systems.Memory
+namespace MopBot.Core.Systems.Memory
 {
 	public partial class MemoryBase<TPerSystemDataType>
 	{
@@ -28,6 +28,7 @@ namespace MopBotTwo.Core.Systems.Memory
 			var dataType = typeof(TDataType);
 
 			string provaiderName = typeof(TSystem).Name;
+
 			if(!MemorySystem.dataProvaiderInfo.TryGetValue((GetType(),provaiderName),out var tuple) || dataType!=tuple.dataType) {
 				throw new ArgumentException($@"Incorrect TDataType generic: ""{dataType}""");
 			}
@@ -43,6 +44,7 @@ namespace MopBotTwo.Core.Systems.Memory
 			var dataType = typeof(TDataType);
 
 			string provaiderName = typeof(TSystem).Name;
+
 			if(!MemorySystem.dataProvaiderInfo.TryGetValue((GetType(), provaiderName),out var tuple) || dataType!=tuple.dataType) {
 				throw new ArgumentException($@"Incorrect TDataType generic: ""{dataType}""");
 			}

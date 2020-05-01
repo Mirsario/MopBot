@@ -6,14 +6,14 @@ using System.Text.RegularExpressions;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using MopBotTwo.Extensions;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Channels;
-using MopBotTwo.Core;
+using MopBot.Extensions;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Channels;
+using MopBot.Core;
 
-namespace MopBotTwo.Common.Systems.Showcase
+namespace MopBot.Common.Systems.Showcase
 {
 	[Group("showcase")]
 	[Summary("Group for commands for managing the showcase system, which let's admins setup channels with reaction-based voting and spotlighting.")]
@@ -30,11 +30,13 @@ namespace MopBotTwo.Common.Systems.Showcase
 		{
 			var server = context.server;
 			var channel = context.socketTextChannel;
+
 			if(server==null || channel==null || context.user.IsBot) {
 				return;
 			}
 
 			var showcaseData = server.GetMemory().GetData<ShowcaseSystem,ShowcaseServerData>();
+
 			if(!showcaseData.ChannelIs<ShowcaseChannel>(context.socketTextChannel)) {
 				return;
 			}
@@ -53,16 +55,19 @@ namespace MopBotTwo.Common.Systems.Showcase
 		public override async Task OnReactionAdded(MessageExt message,SocketReaction reaction)
 		{
 			var server = message.server;
+
 			if(server==null || message.user.IsBot) {
 				return;
 			}
 
 			var showcaseData = server.GetMemory().GetData<ShowcaseSystem,ShowcaseServerData>();
+
 			if(message.Channel==null || !showcaseData.TryGetChannelInfo<ShowcaseChannel>(message.Channel,out var showcaseChannelInfo)) {
 				return;
 			}
 
 			var spotlightChannel = showcaseChannelInfo.GetSpotlightChannel(server);
+
 			if(showcaseChannelInfo.GetSpotlightChannel(server)==null) {
 				return;
 			}
@@ -101,7 +106,7 @@ namespace MopBotTwo.Common.Systems.Showcase
 			if(message is IUserMessage userMessage) {
 				await userMessage.GetReactionUsersAsync(emote,100).ForEachAsync(list => { count += list.Count; });
 			} else {
-				Console.WriteLine($"Unable to get amount of reactions. Message type is '{message?.GetType()?.Name ?? "null"}'.");
+				Console.WriteLine($"Unable to get the amount of reactions. Message type is '{message?.GetType()?.Name ?? "null"}'.");
 			}
 
 			return count;
@@ -118,6 +123,7 @@ namespace MopBotTwo.Common.Systems.Showcase
 			var msg = context.message;
 
 			string url = msg.Attachments.FirstOrDefault()?.Url ?? msg.Embeds.FirstOrDefault(e => e.Type==EmbedType.Image || e.Type==EmbedType.Gifv)?.Url;
+
 			if(url==null) {
 				throw new BotError("Couldn't get image url from that message.");
 			}
@@ -136,6 +142,7 @@ namespace MopBotTwo.Common.Systems.Showcase
 					ulong roleId = roles[i];
 
 					SocketRole role = server.GetRole(roleId);
+
 					if(role==null) {
 						roles.RemoveAt(i--);
 						continue;
@@ -147,7 +154,7 @@ namespace MopBotTwo.Common.Systems.Showcase
 								await socketServerUser.AddRoleAsync(role);
 
 								if(!silent) {
-									congratsText += $"\nYou were also given the `{role.Name}` role!";
+									congratsText += $"\r\nYou were also given the `{role.Name}` role!";
 								}
 							}
 							catch { }
@@ -210,34 +217,5 @@ namespace MopBotTwo.Common.Systems.Showcase
 				}
 			}
 		}
-
-		#region ManagingCommands
-
-		[Command("forcespotlight")]
-		[Alias("add","spotlight")]
-		[RequirePermission(SpecialPermission.Owner,"showcasesystem.manage")]
-		public async Task ForceSpotlight(SocketTextChannel showcaseChannel,ulong messageId,SocketTextChannel spotlightChannel,bool silent = false)
-		{
-			var msg = await showcaseChannel.GetMessageAsync(messageId);
-			if(msg==null) {
-				throw new BotError($"Unable to find message with such ID in channel `{showcaseChannel.Name}`.");
-			}
-			await SpotlightPost(new MessageExt(msg),spotlightChannel,silent);
-		}
-
-		/*[Command("removefromspotlight")] [Alias("remove")]
-		[RequirePermission(SpecialPermission.Owner,"showcasesystem.manage")]
-		public async Task RemoveFromSpotlight(SocketTextChannel spotlightChannel,ulong messageId)
-		{
-			var msg = await spotlightChannel.GetMessageAsync(messageId);
-			if(msg==null) {
-				throw new BotError($"Unable to find message with such ID in channel `{spotlightChannel.Name}`.");
-			}
-			var server = Context.server;
-			var serverMemory = server.GetMemory();
-			var showcaseData = serverMemory.GetData<ShowcaseSystem,ShowcaseServerData>();
-		}*/
-
-		#endregion
 	}
 }

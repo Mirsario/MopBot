@@ -10,11 +10,13 @@ using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
 using Newtonsoft.Json;
-using MopBotTwo.Extensions;
-using MopBotTwo.Common.Systems.Currency;
-using MopBotTwo.Core.Systems.Permissions;
+using MopBot.Extensions;
+using MopBot.Common.Systems.Currency;
+using MopBot.Core.Systems.Permissions;
 
-namespace MopBotTwo.Common.Systems.Trivia
+#pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
+namespace MopBot.Common.Systems.Trivia
 {
 	public partial class TriviaSystem
 	{
@@ -24,6 +26,7 @@ namespace MopBotTwo.Common.Systems.Trivia
 		{
 			Context.server.GetMemory().GetData<TriviaSystem,TriviaServerData>().lastTriviaPost = default;
 		}
+
 		[Command("clearcache")]
 		[RequirePermission(SpecialPermission.Owner,"triviasystem.manage")]
 		public async Task ClearCacheCommand()
@@ -32,6 +35,7 @@ namespace MopBotTwo.Common.Systems.Trivia
 		}
 
 		#region QuestionCommands
+
 		//TODO: There's some very similar uploading & downloading code in MemorySystem.cs, should really make such code shared.
 		[Command("getquestions")]
 		[RequirePermission(SpecialPermission.Owner,"triviasystem.manage")]
@@ -43,14 +47,16 @@ namespace MopBotTwo.Common.Systems.Trivia
 			var memory = server.GetMemory();
 			var triviaServerMemory = memory.GetData<TriviaSystem,TriviaServerData>();
 			var questions = triviaServerMemory.questions;
+
 			if(questions==null || questions.Count==0) {
 				throw new BotError("There are currently no questions in the database.");
 			}
 
 			IMessageChannel textChannel;
+			
 			if(args?.ToLower()!="here") {
 				textChannel = await user.GetOrCreateDMChannelAsync() ?? throw new BotError("I'm unable to send you a private message. Use `!trivia getquestions here` to post the data right in this channel (everyone will be able to see answers to them!)");
-			}else{
+			} else {
 				textChannel = Context.Channel;
 			}
 
@@ -65,16 +71,18 @@ namespace MopBotTwo.Common.Systems.Trivia
 
 			var json = JsonConvert.SerializeObject(dictionary,Formatting.Indented);
 
-			using(MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(json))) {
-				await textChannel.SendFileAsync(stream,"TriviaQuestions.json","Here's all the questions as a JSON file.");
-			}
+			using MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+
+			await textChannel.SendFileAsync(stream,"TriviaQuestions.json","Here's all the questions as a JSON file.");
 		}
+
 		[Command("setquestions")]
 		[RequirePermission(SpecialPermission.Owner,"triviasystem.manage")]
 		[Summary("Replaces current questions with (string question -> string[] answers) dictionary from a JSON file.")]
 		public async Task SetQuestionsCommand(string url = null)
 		{
 			var server = Context.server;
+
 			if(!Context.socketMessage.Attachments.TryGetFirst(a => a.Filename.EndsWith(".txt") || a.Filename.EndsWith(".json"),out Attachment file) && url==null) {
 				await Context.ReplyAsync("Expected a .json file attachment or a link to it.");
 				return;
@@ -96,6 +104,7 @@ namespace MopBotTwo.Common.Systems.Trivia
 					if(File.Exists(filePath)) {
 						File.Delete(filePath);
 					}
+
 					throw new BotError($"`{e.GetType().Name}` exception has occured during file download.");
 				}
 			}
@@ -105,6 +114,7 @@ namespace MopBotTwo.Common.Systems.Trivia
 			File.Delete(filePath);
 
 			Dictionary<string,string[]> dict;
+
 			try {
 				dict = JsonConvert.DeserializeObject<Dictionary<string,string[]>>(json);
 			}
@@ -117,17 +127,21 @@ namespace MopBotTwo.Common.Systems.Trivia
 			}
 
 			var triviaServerData = server.GetMemory().GetData<TriviaSystem,TriviaServerData>();
-			var questions = triviaServerData.questions ?? (triviaServerData.questions = new List<TriviaQuestion>());
+			var questions = triviaServerData.questions ??= new List<TriviaQuestion>();
 
 			foreach(var pair in dict) {
 				var key = pair.Key;
+				
 				if(string.IsNullOrWhiteSpace(key)) {
 					throw new BotError("Failed to parse the JSON file: Some question is null.");
 				}
+				
 				var value = pair.Value;
+				
 				if(value==null || value.Length==0) {
 					throw new BotError($"Failed to parse the JSON file: Question `{key}`'s answers are missing or are null.");
 				}
+
 				questions.Add(new TriviaQuestion(key,value));
 			}
 		}
@@ -139,7 +153,7 @@ namespace MopBotTwo.Common.Systems.Trivia
 		{
 			var server = Context.server;
 			var triviaServerData = server.GetMemory().GetData<TriviaSystem,TriviaServerData>();
-			var questions = triviaServerData.questions ?? (triviaServerData.questions = new List<TriviaQuestion>());
+			var questions = triviaServerData.questions ??= new List<TriviaQuestion>();
 
 			lock(questions) {
 				var qaMatches = regexQuestionAndAnswers.Matches(questionAndAnswers);
@@ -151,10 +165,11 @@ namespace MopBotTwo.Common.Systems.Trivia
 				}
 			}
 		}
+
 		#endregion
 
 		#region ConfigCommands
-		//TODO: (!!!) Need proper configuration helper thing, to replace "setinterval" and "setchannel" commands with one...
+		//TODO: (!!!) Need a proper configuration helper thing, to replace "setinterval" and "setchannel" commands with one...
 
 		[Command("setchannels")] [Alias("setchannel")]
 		[RequirePermission(SpecialPermission.Owner,"triviasystem.manage")]
@@ -162,13 +177,14 @@ namespace MopBotTwo.Common.Systems.Trivia
 		{
 			Context.server.GetMemory().GetData<TriviaSystem,TriviaServerData>().triviaChannels = channels.Select(c => c.Id).ToList();
 		}
+		
 		[Command("setrole")]
 		[RequirePermission(SpecialPermission.Owner,"triviasystem.manage")]
 		public async Task SetRoleCommand(SocketRole role)
 		{
-			var context = Context;
-			context.server.GetMemory().GetData<TriviaSystem,TriviaServerData>().triviaRole = role?.Id ?? 0;
+			Context.server.GetMemory().GetData<TriviaSystem,TriviaServerData>().triviaRole = role?.Id ?? 0;
 		}
+		
 		[Command("setinterval")] [Alias("setpostinterval")]
 		[RequirePermission(SpecialPermission.Owner,"triviasystem.manage")]
 		public async Task SetIntervalCommand(ulong intervalInSeconds)
@@ -180,6 +196,7 @@ namespace MopBotTwo.Common.Systems.Trivia
 			var context = Context;
 			context.server.GetMemory().GetData<TriviaSystem,TriviaServerData>().postIntervalInSeconds = intervalInSeconds;
 		}
+		
 		[Command("setthumbnails")] [Alias("setimages")]
 		[RequirePermission(SpecialPermission.Owner,"triviasystem.manage")]
 		public async Task SetThumbnailUrlsCommand(params string[] urls)
@@ -188,35 +205,41 @@ namespace MopBotTwo.Common.Systems.Trivia
 
 			for(int i = 0;i<urls.Length;i++) {
 				string url = urls[i];
+				
 				if(!Uri.TryCreate(url,UriKind.Absolute,out var realUrl)) {
 					throw new BotError($"Url #{i+1} is invalid");
 				}
+
 				newUrls.Add(realUrl.ToString());
 			}
 			
-			var context = Context;
-			context.server.GetMemory().GetData<TriviaSystem,TriviaServerData>().thumbnailUrls = newUrls.ToArray();
+			Context.server.GetMemory().GetData<TriviaSystem,TriviaServerData>().thumbnailUrls = newUrls.ToArray();
 		}
+		
 		[Command("setlockchannel")]
 		[RequirePermission(SpecialPermission.Owner,"triviasystem.manage")]
 		public async Task SetLockChannelCommand(bool doLockChannel)
 		{
 			Context.server.GetMemory().GetData<TriviaSystem,TriviaServerData>().lockTriviaChannel = doLockChannel;
 		}
+		
 		[Command("setautoclearcache")] [Alias("autoclearcache")]
 		[RequirePermission(SpecialPermission.Owner,"triviasystem.manage")]
 		public async Task SetAutoClearCacheCommand(bool doClearCacheAutomatically)
 		{
 			Context.server.GetMemory().GetData<TriviaSystem,TriviaServerData>().autoClearCache = doClearCacheAutomatically;
 		}
+
 		[Command("setcurrencyrewards")] [Alias("setrewards")]
 		[RequirePermission(SpecialPermission.Owner,"triviasystem.manage")]
 		public async Task SetCurrencyRewardsCommand([Remainder]string currencyAmountPairs = null)
 		{
 			var context = Context;
 			var serverMemory = context.server.GetMemory();
+			
 			serverMemory.GetData<TriviaSystem,TriviaServerData>().currencyRewards = string.IsNullOrWhiteSpace(currencyAmountPairs) ? null : CurrencyAmount.ParseMultiple(currencyAmountPairs,serverMemory);
 		}
+
 		#endregion
 	}
 }

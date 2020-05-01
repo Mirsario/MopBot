@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems.Memory;
 
 #pragma warning disable 1998
 
-namespace MopBotTwo.Common.Systems.Tags
+namespace MopBot.Common.Systems.Tags
 {
 	public class TagGlobalData : GlobalData
 	{

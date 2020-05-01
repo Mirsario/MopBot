@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace MopBotTwo.Common.Systems.Showcase
+namespace MopBot.Common.Systems.Showcase
 {
 	[Serializable]
 	public class SpotlightChannel : ChannelInfo

@@ -1,8 +1,8 @@
 ﻿using Discord.WebSocket;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems.Memory;
 
 
-namespace MopBotTwo.Common.Systems.SpamProtection
+namespace MopBot.Common.Systems.SpamProtection
 {
 	public class SpamProtectionServerData : ServerData
 	{

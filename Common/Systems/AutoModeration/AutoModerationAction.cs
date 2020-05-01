@@ -1,4 +1,4 @@
-﻿namespace MopBotTwo.Common.Systems.AutoModeration
+﻿namespace MopBot.Common.Systems.AutoModeration
 {
 	public enum ModerationPunishment
 	{

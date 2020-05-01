@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MopBotTwo
+namespace MopBot
 {
 	public class BotError : Exception
 	{

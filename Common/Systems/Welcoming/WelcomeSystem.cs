@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Discord.WebSocket;
-using MopBotTwo.Core.Systems;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Extensions;
+using MopBot.Core.Systems;
+using MopBot.Core.Systems.Memory;
+using MopBot.Extensions;
 
-namespace MopBotTwo.Common.Systems.Welcoming
+namespace MopBot.Common.Systems.Welcoming
 {
 	[SystemConfiguration(Description = "Welcomes users onto the server with customizable messages.")]
 	public partial class WelcomeSystem : BotSystem

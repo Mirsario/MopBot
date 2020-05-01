@@ -1,4 +1,4 @@
-﻿namespace MopBotTwo.Core.Systems.Permissions
+﻿namespace MopBot.Core.Systems.Permissions
 {
 	public abstract class Permission
 	{

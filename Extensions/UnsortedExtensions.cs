@@ -12,12 +12,12 @@ using System.Collections.Immutable;
 using System.Reflection;
 using System.Threading.Tasks;
 using DColor = Discord.Color;
-using MopBotTwo.Core.Systems.Memory;
-using MopBotTwo.Core.Systems.Permissions;
-using MopBotTwo.Core.Systems.Channels;
-using MopBotTwo.Core;
+using MopBot.Core.Systems.Memory;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Core.Systems.Channels;
+using MopBot.Core;
 
-namespace MopBotTwo.Extensions
+namespace MopBot.Extensions
 {
 	public enum PredefinedEmote
 	{
@@ -33,9 +33,11 @@ namespace MopBotTwo.Extensions
 		public static SocketUserMessage ToSocketUserMessage(this RestUserMessage restMessage,SocketTextChannel channel)
 		{
 			SocketUserMessage msgNew = MopBot.Construct<SocketUserMessage>(new Type[] { typeof(DiscordSocketClient),typeof(ulong),typeof(ISocketMessageChannel),typeof(SocketUser),typeof(MessageSource) },new object[] { MopBot.client,restMessage.Id,channel,restMessage.Author,restMessage.Source });
+			
 			typeof(SocketMessage).GetField("<Content>k__BackingField",anyFlags).SetValue(msgNew,restMessage.Content);
 			typeof(SocketUserMessage).GetField("_embeds",anyFlags).SetValue(msgNew,(ImmutableArray<Embed>)restMessage.Embeds);
 			typeof(SocketUserMessage).GetField("_attachments",anyFlags).SetValue(msgNew,(ImmutableArray<Attachment>)restMessage.Attachments);
+
 			return msgNew;
 		}
 		public static async Task<SocketGuildUser[]> GetReactionUsersAsync(this SocketMessage message,SocketGuild server,IEmote emote,RequestOptions options = null)
@@ -69,12 +71,13 @@ namespace MopBotTwo.Extensions
 			}
 			catch(HttpException exception) {
 				if(MemorySystem.memory[server].GetData<ChannelSystem,ChannelServerData>().TryGetChannelByRoles(out var tempChannel,ChannelRole.Logs,ChannelRole.BotArea,ChannelRole.Default) && tempChannel is IMessageChannel logChannel) {
-					await logChannel.SendMessageAsync($"Unable to add reactions in <#{message.Channel.Id}>, an HttpException has occured:\n{exception.Message}");
+					await logChannel.SendMessageAsync($"Unable to add reactions in <#{message.Channel.Id}>, an HttpException has occured:\r\n{exception.Message}");
 				}
 			}
 			catch(Exception exception) {
 				await MopBot.HandleException(exception);
 			}
+
 			return null;
 		}
 
@@ -82,24 +85,30 @@ namespace MopBotTwo.Extensions
 		{
 			if(field==null) {
 				field = func();
+
 				return true;
 			}
+
 			return false;
 		}
 		public static bool AddIfMissing<TKey,TValue>(this IDictionary<TKey,TValue> dict,TKey key,Func<TValue> func)
 		{
 			if(!dict.ContainsKey(key)) {
 				dict.Add(key,func());
+
 				return true;
 			}
+
 			return false;
 		}
 		public static bool AddIfMissingOrNull<TKey,TValue>(this IDictionary<TKey,TValue> dict,TKey key,Func<TValue> func)
 		{
 			if(!dict.ContainsKey(key) || dict[key]==null) {
 				dict.Add(key,func());
+
 				return true;
 			}
+
 			return false;
 		}
 
@@ -110,15 +119,19 @@ namespace MopBotTwo.Extensions
 			var defaultColor = new DColor(240,240,240);
 			uint defaultRawValue = defaultColor.RawValue;
 			var color = defaultColor;
+
 			if(!(user is SocketGuildUser serverUser)) {
 				return color;
 			}
+
 			foreach(var role in serverUser.Roles.OrderBy(role => role.Position)) {
 				var roleColor = role.Color;
+
 				if(roleColor.RawValue!=defaultRawValue) {
 					color = roleColor;
 				}
 			}
+
 			return color;
 		}
 
@@ -151,17 +164,20 @@ namespace MopBotTwo.Extensions
 			
 			foreach(var role in user.Roles.OrderBy(r => r.Position)) {
 				var rolePerms = role.Permissions;
+
 				if(rolePerms.TryGetValueFromEnum(permission,out bool roleResult)) {
 					result = roleResult;
 				}
 
 				var roleOverwrite = channel.GetPermissionOverwrite(role);
+
 				if(roleOverwrite.HasValue && roleOverwrite.Value.TryGetValueFromEnum(permission,out bool? roleOverwriteResult) && roleOverwriteResult.HasValue) {
 					result = roleOverwriteResult.Value;
 				}
 			}
 
 			var userOverwrite = channel.GetPermissionOverwrite(user);
+
 			if(userOverwrite.HasValue && userOverwrite.Value.TryGetValueFromEnum(permission,out bool? userOverwriteResult) && userOverwriteResult.HasValue) {
 				result = userOverwriteResult.Value;
 			}
@@ -309,9 +325,11 @@ namespace MopBotTwo.Extensions
 		public static bool PermissionsMet(this IEnumerable<PreconditionAttribute> preconditions,ICommandContext context,CommandInfo command = null)
 		{
 			var permReqs = preconditions.SelectIgnoreNull(p => p as RequirePermissionAttribute);
+
 			if(permReqs==null || permReqs.Count()==0) {
 				return true;
 			}
+
 			return permReqs.All(p => p.CheckSynced(context,command))!=false;
 		}
 		public static bool AllMet(this IEnumerable<PreconditionAttribute> preconditions,ICommandContext context,CommandInfo command) => preconditions.AllMet(context,command,MopBot.serviceProvaider);
@@ -322,9 +340,11 @@ namespace MopBotTwo.Extensions
 		public static bool CheckSynced(this PreconditionAttribute precondition,ICommandContext context,CommandInfo command,IServiceProvider provider)
 		{
 			var task = precondition.CheckPermissionsAsync(context,command,provider);
+
 			if(!task.IsCompleted) {
 				task.RunSynchronously();
 			}
+
 			return task.Result.IsSuccess;
 		}
 		public static bool AllMet(this IEnumerable<PreconditionAttribute> preconditions,ICommandContext context,CommandInfo command,IServiceProvider provider)
@@ -345,6 +365,7 @@ namespace MopBotTwo.Extensions
 		{
 			var perms = channel.GetPermissionOverwrite(role) ?? OverwritePermissions.InheritAll;
 			var newPerms = func(perms);
+
 			if(perms.AllowValue!=newPerms.AllowValue || perms.DenyValue!=newPerms.DenyValue) {
 				await channel.AddPermissionOverwriteAsync(role,newPerms);
 			}
@@ -353,6 +374,7 @@ namespace MopBotTwo.Extensions
 		{
 			var perms = channel.GetPermissionOverwrite(user) ?? OverwritePermissions.InheritAll;
 			var newPerms = func(perms);
+
 			if(perms.AllowValue!=newPerms.AllowValue || perms.DenyValue!=newPerms.DenyValue) {
 				await channel.AddPermissionOverwriteAsync(user,newPerms);
 			}
@@ -396,17 +418,21 @@ namespace MopBotTwo.Extensions
 			if(str==word || str.StartsWith(word) && !char.IsLetterOrDigit(str[word.Length])) {
 				return true;
 			}
+
 			if(str.IndexOf(" "+word,out int index)) {
 				index += 1+word.Length;
+
 				if(index>=str.Length || !char.IsLetterOrDigit(str[index])) {
 					return true;
 				}
 			}
+
 			return false;
 		}
 		public static bool IndexOf(this string str,string text,out int index)
 		{
 			index = str.IndexOf(text);
+
 			return index!=-1;
 		}
 		public static bool Contains(this string str,char character)
@@ -416,6 +442,7 @@ namespace MopBotTwo.Extensions
 					return true;
 				}
 			}
+
 			return false;
 		}
 		public static string Capitalize(this string input)

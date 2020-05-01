@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace MopBotTwo.Common.Systems.Issues
+namespace MopBot.Common.Systems.Issues
 {
 	[Serializable]
 	public class IssueInfo

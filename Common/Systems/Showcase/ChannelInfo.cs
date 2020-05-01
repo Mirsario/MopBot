@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 
-namespace MopBotTwo.Common.Systems.Showcase
+namespace MopBot.Common.Systems.Showcase
 {
 	public abstract class ChannelInfo
 	{

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using Discord.WebSocket;
-using MopBotTwo.Core.Systems.Memory;
+using MopBot.Core.Systems.Memory;
 
 #pragma warning disable 1998
 
-namespace MopBotTwo.Common.Systems.Tags
+namespace MopBot.Common.Systems.Tags
 {
 	public class TagServerData : ServerData
 	{

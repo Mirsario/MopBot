@@ -1,4 +1,4 @@
-﻿namespace MopBotTwo.Common.Systems.Showcase
+﻿namespace MopBot.Common.Systems.Showcase
 {
 	public enum EmoteType
 	{
