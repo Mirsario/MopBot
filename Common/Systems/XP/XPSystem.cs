@@ -26,7 +26,7 @@ namespace MopBot.Common.Systems.XP
 		}
 
 		public override async Task Initialize() { }
-		public override async Task OnMessageReceived(MessageExt message)
+		public override async Task OnMessageReceived(MessageContext message)
 		{
 			var server = message.server;
 
@@ -45,7 +45,7 @@ namespace MopBot.Common.Systems.XP
 
 			await GiveXP(user,xp);
 		}
-		public override async Task OnMessageDeleted(MessageExt message)
+		public override async Task OnMessageDeleted(MessageContext message)
 		{
 			if(message==null ||  message.isCommand || message.server==null || message.socketServerUser==null || message.socketServerUser.IsBot) {
 				return;
@@ -56,7 +56,7 @@ namespace MopBot.Common.Systems.XP
 			await TakeXP(message.socketServerUser,xp);
 		}
 
-		public static ulong GetMessageXP(MessageExt message)
+		public static ulong GetMessageXP(MessageContext message)
 		{
 			ulong xp = (ulong)Math.Min(1,Math.Max(10,Regex.Matches(message.content,@"\w+").Count/5));
 			string text = message.content.ToLower() ?? "";

@@ -45,7 +45,7 @@ namespace MopBot.Core.Systems
 				return;
 			}
 
-			MessageExt newMessage = new MessageExt(message);
+			MessageContext newMessage = new MessageContext(message);
 
 			if(newMessage.server==null) {
 				Console.WriteLine($"Message Received - PMs -> {newMessage.user.Username}#{newMessage.user.Discriminator}: {newMessage.content}");
@@ -60,7 +60,7 @@ namespace MopBot.Core.Systems
 				return;
 			}
 
-			var context = new MessageExt(currentMessage);
+			var context = new MessageContext(currentMessage);
 
 			if(context.server!=null) {
 				await CallForEnabledSystems(context.server,s => s.OnMessageUpdated(context,cachedMessage.Value));
@@ -78,7 +78,7 @@ namespace MopBot.Core.Systems
 				return;
 			}
 
-			var context = new MessageExt(message);
+			var context = new MessageContext(message);
 
 			if(context.server==null) {
 				Console.WriteLine($"Message Deleted - PMs -> {context.user.Username}#{context.user.Discriminator}: {context.content}");
@@ -99,7 +99,7 @@ namespace MopBot.Core.Systems
 				return;
 			}
 			
-			var newMessage = new MessageExt(userMessage);
+			var newMessage = new MessageContext(userMessage);
 			
 			await CallForEnabledSystems(newMessage.server,s => s.OnReactionAdded(newMessage,reaction));
 		}

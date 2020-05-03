@@ -24,7 +24,7 @@ namespace MopBot.Common.Systems.SpamProtection
 		{
 			RegisterDataType<ServerMemory,SpamProtectionServerData>();
 		}
-		public override async Task OnMessageReceived(MessageExt message)
+		public override async Task OnMessageReceived(MessageContext message)
 		{
 			var user = message.socketServerUser;
 

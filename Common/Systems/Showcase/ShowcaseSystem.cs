@@ -26,7 +26,7 @@ namespace MopBot.Common.Systems.Showcase
 			RegisterDataType<ServerMemory,ShowcaseServerData>();
 		}
 
-		public override async Task OnMessageReceived(MessageExt context)
+		public override async Task OnMessageReceived(MessageContext context)
 		{
 			var server = context.server;
 			var channel = context.socketTextChannel;
@@ -52,7 +52,7 @@ namespace MopBot.Common.Systems.Showcase
 			}
 			catch {}
 		}
-		public override async Task OnReactionAdded(MessageExt message,SocketReaction reaction)
+		public override async Task OnReactionAdded(MessageContext message,SocketReaction reaction)
 		{
 			var server = message.server;
 
@@ -112,7 +112,7 @@ namespace MopBot.Common.Systems.Showcase
 			return count;
 		}
 
-		public static async Task SpotlightPost(MessageExt context,SocketTextChannel spotlightChannel,bool silent = false,(int upvotes,int downvotes)? votes = null)
+		public static async Task SpotlightPost(MessageContext context,SocketTextChannel spotlightChannel,bool silent = false,(int upvotes,int downvotes)? votes = null)
 		{
 			var server = context.server;
 			var sourceTextChannel = context.socketTextChannel;

@@ -32,7 +32,7 @@ namespace MopBot.Common.Systems.ChannelLinking
 		{
 			PermissionSystem.defaultGroups["superadmin"]["managechannellinking"] = true;
 		}
-		public override async Task OnMessageReceived(MessageExt message)
+		public override async Task OnMessageReceived(MessageContext message)
 		{
 			var localServerData = message.server.GetMemory().GetData<ChannelLinkingSystem,ChannelLinkingServerData>();
 			var channelLinks = localServerData.channelLinks;

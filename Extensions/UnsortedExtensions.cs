@@ -315,7 +315,7 @@ namespace MopBot.Extensions
 
 		public static async Task<IUserMessage> ReplyAsync(this ICommandContext context,Embed embed,bool mention = true,ISocketMessageChannel channelOverride = null) => await (channelOverride ?? context.Channel).SendMessageAsync(mention ? context.User.Mention+" " : null,embed:embed);
 		public static async Task<IUserMessage> ReplyAsync(this ICommandContext context,string text,EmbedBuilder embedBuilder,bool mention = true,ISocketMessageChannel channelOverride = null) => await (channelOverride ?? context.Channel).SendMessageAsync((mention ? context.User.Mention+" " : null)+text,embed:embedBuilder.Build());
-		public static async Task<IUserMessage> ReplyAsync(this MessageExt context,string text,bool mention = true,ISocketMessageChannel channelOverride = null)
+		public static async Task<IUserMessage> ReplyAsync(this MessageContext context,string text,bool mention = true,ISocketMessageChannel channelOverride = null)
 			=> await (channelOverride ?? context.Channel).SendMessageAsync((mention ? context.User.Mention+" " : null)+text);
 
 		public static ServerMemory GetMemory(this SocketGuild server) => MemorySystem.memory[server];

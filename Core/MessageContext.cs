@@ -11,24 +11,25 @@ using MopBot.Core.Systems;
 
 namespace MopBot.Core
 {
-	public class MessageExt : ICommandContext
+	public class MessageContext : ICommandContext
 	{
 		//TODO: how did this mess happen?
 
 		public IMessage message;
 		public SocketMessage socketMessage;
 		public RestUserMessage restMessage;
-
+		//User
 		public IUser user;
 		public SocketUser socketUser;
 		public SocketGuildUser socketServerUser;
-
+		//Message
 		public ISocketMessageChannel socketMessageChannel;
 		public SocketGuildChannel socketServerChannel;
 		public SocketTextChannel socketTextChannel;
 		public IMessageChannel messageChannel;
-
+		//Server
 		public SocketGuild server;
+		//Etc
 		public string content;
 		public bool isCommand;
 		public bool messageDeleted;
@@ -39,7 +40,7 @@ namespace MopBot.Core
 		public IUser User => user;
 		public IUserMessage Message => (IUserMessage)message;
 
-		public MessageExt(IMessage msg)
+		public MessageContext(IMessage msg)
 		{
 			switch(msg) {
 				case RestUserMessage rMsg:
@@ -55,19 +56,21 @@ namespace MopBot.Core
 					throw new ArgumentException($"Not support message type: {msg.GetType().Name}");
 			}
 		}
-		public MessageExt(SocketMessage message) => Setup(message);
-		public MessageExt(RestUserMessage message) => Setup(message);
-		public MessageExt(IMessage message,SocketGuild server,SocketGuildUser user,string content = null,bool? isCommand = null,SocketTextChannel channel = null)
+		public MessageContext(SocketMessage message) => Setup(message);
+		public MessageContext(RestUserMessage message) => Setup(message);
+		public MessageContext(IMessage message,SocketGuild server,SocketGuildUser user,string content = null,bool? isCommand = null,SocketTextChannel channel = null)
 		{
 			this.message = message;
 			this.server = server;
 			this.user = user;
+			this.content = content ?? "";
+			
 			messageChannel = channel;
 			socketTextChannel = channel;
-			this.content = content ?? "";
+			
 			Setup();
+
 			this.isCommand = isCommand ?? this.content.StartsWith(server?.GetMemory()?.GetData<CommandSystem,CommandServerData>()?.commandPrefix ?? MopBot.DefaultCommandPrefix);
-			//Unfinished
 		}
 
 		private void Setup()

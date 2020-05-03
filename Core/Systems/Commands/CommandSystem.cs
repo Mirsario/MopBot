@@ -57,7 +57,7 @@ namespace MopBot.Core.Systems.Commands
 				}
 			}
 		}
-		public override async Task OnMessageReceived(MessageExt message)
+		public override async Task OnMessageReceived(MessageContext message)
 		{
 			await ExecuteCommand(message);
 		}
@@ -77,7 +77,7 @@ namespace MopBot.Core.Systems.Commands
 				}
 			}
 		}
-		public static async Task ExecuteCommand(MessageExt context,bool skipRegex = false)
+		public static async Task ExecuteCommand(MessageContext context,bool skipRegex = false)
 		{
 			var server = context.server;
 
@@ -206,7 +206,7 @@ namespace MopBot.Core.Systems.Commands
 				}
 			}
 
-			if(!fail && context is MessageExt c && c.message!=null && !MessageSystem.MessageIgnored(c.message.Id) && c.socketTextChannel!=null && await c.socketTextChannel.GetMessageAsync(c.message.Id)!=null) {
+			if(!fail && context is MessageContext c && c.message!=null && !MessageSystem.MessageIgnored(c.message.Id) && c.socketTextChannel!=null && await c.socketTextChannel.GetMessageAsync(c.message.Id)!=null) {
 				await context.Success();
 			}
 		}
@@ -214,7 +214,7 @@ namespace MopBot.Core.Systems.Commands
 		{
 			var result = new List<(string[] aliases,string description,bool isGroup)>();
 			var shownCommands = new List<string>();
-			var context = new MessageExt(null,server,user);
+			var context = new MessageContext(null,server,user);
 
 			foreach(var m in commandService.Modules) {
 				string noDescription = fillNullDescription ? "No description provided." : null;

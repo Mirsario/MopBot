@@ -67,7 +67,7 @@ namespace MopBot.Common.Systems.Issues
 			issue.messageId = message.Id;
 			issue.channelId = channel.Id;
 		}
-		public async Task<SocketTextChannel> GetIssueChannel(MessageExt context,bool throwError = true)
+		public async Task<SocketTextChannel> GetIssueChannel(MessageContext context,bool throwError = true)
 		{
 			var result = issueChannel!=0 ? (SocketTextChannel)MopBot.client.GetChannel(issueChannel) : null;
 

@@ -123,7 +123,7 @@ namespace MopBot.Common.Systems.Trivia
 			}
 		}
 
-		public override async Task OnMessageReceived(MessageExt context)
+		public override async Task OnMessageReceived(MessageContext context)
 		{
 			var server = context.server;
 			var channel = context.socketTextChannel;

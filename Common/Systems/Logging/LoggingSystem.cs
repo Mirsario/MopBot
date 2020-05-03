@@ -112,7 +112,7 @@ namespace MopBot.Common.Systems.Logging
 				}
 			}
 		}
-		public override async Task OnMessageUpdated(MessageExt context,IMessage oldMessage)
+		public override async Task OnMessageUpdated(MessageContext context,IMessage oldMessage)
 		{
 			if(context.User.IsBot || MessageSystem.MessageIgnored(oldMessage.Id)) {
 				return;
@@ -126,10 +126,10 @@ namespace MopBot.Common.Systems.Logging
 
 			await TrySendEmbed(context,embed => embed
 				.WithTitle($"Message updated in #{context.Channel.Name}")
-				.WithDescription($"**Before:** {oldMessage.Content}\r\n**‎‎After:**  ឵ {newMessage.Content}\r\n[[Jump to message]]({newMessage.GetJumpUrl()})") //TODO: This uses blank characters, which should be put into an util method.
+				.WithDescription($"**Before:** {oldMessage.Content}\r\n**‎‎After:**  ឵ {newMessage.Content}\r\n[[Jump to message]]({newMessage.GetJumpUrl()})") //TODO: This uses blank characters that should be put into an util method.
 			);
 		}
-		public override async Task OnMessageDeleted(MessageExt context)
+		public override async Task OnMessageDeleted(MessageContext context)
 		{
 			if(!context.User.IsBot && !MessageSystem.MessageIgnored(context.Message.Id)) {
 				await TrySendEmbed(context,embed => embed
@@ -139,7 +139,7 @@ namespace MopBot.Common.Systems.Logging
 			}
 		}
 
-		private static Task TrySendEmbed(MessageExt context,Func<EmbedBuilder,EmbedBuilder> embedFunc) => TrySendEmbed(context.server,context.user,embedFunc);
+		private static Task TrySendEmbed(MessageContext context,Func<EmbedBuilder,EmbedBuilder> embedFunc) => TrySendEmbed(context.server,context.user,embedFunc);
 		private static async Task TrySendEmbed(SocketGuild server,IUser user,Func<EmbedBuilder,EmbedBuilder> embedFunc)
 		{
 			var serverData = server.GetMemory().GetData<LoggingSystem,LoggingServerData>();

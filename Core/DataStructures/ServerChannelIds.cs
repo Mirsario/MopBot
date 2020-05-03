@@ -10,7 +10,7 @@ namespace MopBot.Core.DataStructures
 		public ulong serverId;
 		public ulong channelId;
 
-		public ServerChannelIds(MessageExt context) : this(context.server.Id,context.Channel.Id) {}
+		public ServerChannelIds(MessageContext context) : this(context.server.Id,context.Channel.Id) {}
 		public ServerChannelIds(ulong serverId,ulong channelId)
 		{
 			this.serverId = serverId;

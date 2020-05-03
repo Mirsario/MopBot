@@ -92,7 +92,7 @@ namespace MopBot.Common.Systems.Changelogs
 			entry.messageId = message.Id;
 			entry.channelId = channel.Id;
 		}
-		public async Task<SocketTextChannel> TryGetChangelogChannel(MessageExt context,bool showError = true)
+		public async Task<SocketTextChannel> TryGetChangelogChannel(MessageContext context,bool showError = true)
 		{
 			var result = changelogChannel!=0 ? (SocketTextChannel)MopBot.client.GetChannel(changelogChannel) : null;
 

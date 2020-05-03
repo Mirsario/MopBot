@@ -212,7 +212,7 @@ namespace MopBot
 			}
 		}
 
-		public static EmbedBuilder GetEmbedBuilder(MessageExt context) => GetEmbedBuilder(context.server);
+		public static EmbedBuilder GetEmbedBuilder(MessageContext context) => GetEmbedBuilder(context.server);
 		public static EmbedBuilder GetEmbedBuilder(SocketGuild server) => new EmbedBuilder().WithColor(MemorySystem.memory[server].GetData<CommandSystem,CommandServerData>().embedColor.Value);
 		public static async Task TryCatch(Func<Task> func)
 		{

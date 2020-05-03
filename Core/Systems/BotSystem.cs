@@ -10,7 +10,7 @@ using Discord;
 
 namespace MopBot.Core.Systems
 {
-	public abstract class BotSystem : ModuleBase<MessageExt>
+	public abstract class BotSystem : ModuleBase<MessageContext>
 	{
 		public static List<BotSystem> allSystems = new List<BotSystem>();
 		public static Dictionary<Type,BotSystem> typeToSystem = new Dictionary<Type,BotSystem>();
@@ -38,10 +38,10 @@ namespace MopBot.Core.Systems
 		public virtual async Task OnUserJoined(SocketGuildUser user) {}
 		public virtual async Task OnUserLeft(SocketGuildUser user) { }
 		public virtual async Task OnUserUpdated(SocketGuildUser oldUser,SocketGuildUser newUser) { }
-		public virtual async Task OnMessageReceived(MessageExt context) {}
-		public virtual async Task OnMessageDeleted(MessageExt context) {}
-		public virtual async Task OnMessageUpdated(MessageExt context,IMessage oldMessage) {}
-		public virtual async Task OnReactionAdded(MessageExt context,SocketReaction reaction) {}
+		public virtual async Task OnMessageReceived(MessageContext context) {}
+		public virtual async Task OnMessageDeleted(MessageContext context) {}
+		public virtual async Task OnMessageUpdated(MessageContext context,IMessage oldMessage) {}
+		public virtual async Task OnReactionAdded(MessageContext context,SocketReaction reaction) {}
 
 		public T GetMemory<T>(SocketGuild server) where T : ServerData => MemorySystem.memory[server].GetData<T>(GetType());
 

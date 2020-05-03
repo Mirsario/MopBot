@@ -22,7 +22,7 @@ namespace MopBot.Common.Systems.AutoModeration
 		{
 			RegisterDataType<ServerMemory,AutoModerationServerData>();
 		}
-		public override async Task OnMessageReceived(MessageExt context)
+		public override async Task OnMessageReceived(MessageContext context)
 		{
 			await CheckMessagePings(context);
 		}
@@ -63,9 +63,9 @@ namespace MopBot.Common.Systems.AutoModeration
 			return true;
 		}
 
-		private async Task ExecuteAction(MessageExt context,ModerationPunishment action,string reason,SocketGuildUser user = null)
+		private async Task ExecuteAction(MessageContext context,ModerationPunishment action,string reason,SocketGuildUser user = null)
 		{
-			user ??= context.socketServerUser ?? throw new ArgumentNullException($"Both {nameof(user)} and {nameof(context)}.{nameof(MessageExt.socketServerUser)} are null.");
+			user ??= context.socketServerUser ?? throw new ArgumentNullException($"Both {nameof(user)} and {nameof(context)}.{nameof(MessageContext.socketServerUser)} are null.");
 
 			var embedBuilder = MopBot.GetEmbedBuilder(user.Guild)
 				.WithAuthor(user)
@@ -110,7 +110,7 @@ namespace MopBot.Common.Systems.AutoModeration
 
 			await context.socketTextChannel.SendMessageAsync(data.announcementPrefix,embed:embedBuilder.Build());
 		}
-		private async Task CheckMessagePings(MessageExt context)
+		private async Task CheckMessagePings(MessageContext context)
 		{
 			if(context.socketServerUser.Id==context.server.OwnerId || context.socketServerUser.HasAnyPermissions("automod.immune","automod.pingban.immune")) {
 				return;

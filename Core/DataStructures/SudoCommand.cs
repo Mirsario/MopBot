@@ -16,7 +16,7 @@ namespace MopBot.Core.DataStructures
 			this.user = user;
 		}
 
-		public async Task Execute(MessageExt context,Func<StringComparison,string,string> commandFilter = null)
+		public async Task Execute(MessageContext context,Func<StringComparison,string,string> commandFilter = null)
 		{
 			if(user==0 && !string.IsNullOrWhiteSpace(command)) {
 				return;
@@ -40,7 +40,7 @@ namespace MopBot.Core.DataStructures
 			}
 
 			try {
-				await CommandSystem.ExecuteCommand(new MessageExt(context.message,context.server,executeAs,filteredCommand,true,context.socketTextChannel),true);
+				await CommandSystem.ExecuteCommand(new MessageContext(context.message,context.server,executeAs,filteredCommand,true,context.socketTextChannel),true);
 			}
 			catch(Exception e) {
 				throw new BotError(e);

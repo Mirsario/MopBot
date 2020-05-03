@@ -51,7 +51,7 @@ namespace MopBot.Common.Systems.Dev
 		
 		[Command("sudo")]
 		public async Task SudoCommand(SocketGuildUser user,SocketTextChannel channel,[Remainder]string command)
-			=> await CommandSystem.ExecuteCommand(new MessageExt(Context.message,Context.server,user,command,true,channel),true);
+			=> await CommandSystem.ExecuteCommand(new MessageContext(Context.message,Context.server,user,command,true,channel),true);
 
 		[Command("errortest")]
 		public async Task ErrorTest() => throw new Exception("An error has occured, as you requested!");
