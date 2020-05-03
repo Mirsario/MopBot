@@ -28,7 +28,7 @@ namespace MopBot.Collections
 			switch(reader.TokenType) {
 				case JsonToken.Null:
 					return null;
-				case JsonToken.StartArray:
+				case JsonToken.StartArray: {
 					reader.Read();
 
 					if(reader.TokenType==JsonToken.EndArray) {
@@ -36,6 +36,7 @@ namespace MopBot.Collections
 					}
 
 					throw new JsonSerializationException("Non-empty JSON array does not make a valid Dictionary!");
+				}
 				case JsonToken.StartObject: {
 					var list = new List<KeyValuePair<ulong,ulong>>();
 

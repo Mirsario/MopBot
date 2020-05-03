@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace MopBot.Core.Systems.Memory
 {
 	public partial class MemoryBase<TPerSystemDataType>

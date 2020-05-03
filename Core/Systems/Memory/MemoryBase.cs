@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-
 namespace MopBot.Core.Systems.Memory
 {
 	[Serializable]

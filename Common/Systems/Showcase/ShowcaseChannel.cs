@@ -1,7 +1,6 @@
 ﻿using System;
 using Discord.WebSocket;
 
-
 namespace MopBot.Common.Systems.Showcase
 {
 	[Serializable]

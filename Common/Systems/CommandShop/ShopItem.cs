@@ -2,7 +2,6 @@
 using MopBot.Core.DataStructures;
 using System;
 
-
 namespace MopBot.Common.Systems.CommandShop
 {
 	[Serializable]

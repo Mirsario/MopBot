@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-
 namespace MopBot.Common.Systems.Showcase
 {
 	[Serializable]

@@ -1,6 +1,5 @@
 ﻿using Discord;
 
-
 namespace MopBot.Core.Systems.Status
 {
 	public struct Activity

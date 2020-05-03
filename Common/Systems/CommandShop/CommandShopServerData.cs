@@ -4,7 +4,6 @@ using Discord.WebSocket;
 using Newtonsoft.Json;
 using MopBot.Core.Systems.Memory;
 
-
 namespace MopBot.Common.Systems.CommandShop
 {
 	public class CommandShopServerData : ServerData

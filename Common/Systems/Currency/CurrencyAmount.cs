@@ -8,7 +8,6 @@ using MopBot.Extensions;
 using MopBot.Collections;
 using MopBot.Core.Systems.Memory;
 
-
 namespace MopBot.Common.Systems.Currency
 {
 	[Serializable]

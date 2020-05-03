@@ -3,7 +3,6 @@ using Discord.Commands;
 using MopBot.Core.Systems;
 using MopBot.Core.Systems.Memory;
 
-
 namespace MopBot.Common.Systems.CommandShop
 {
 	[Group("shop")]

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Discord;
 
-
 namespace MopBot.Core.Systems.Status
 {
 	[SystemConfiguration(AlwaysEnabled = true,Description = "Manages bot's activity status, i.e. what it's 'playing'.")]

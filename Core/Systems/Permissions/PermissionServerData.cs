@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using Discord.WebSocket;
 using MopBot.Core.Systems.Memory;
 
-
 namespace MopBot.Core.Systems.Permissions
 {
 	public class PermissionServerData : ServerData

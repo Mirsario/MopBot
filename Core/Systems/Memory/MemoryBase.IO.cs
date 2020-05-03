@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using MopBot.Extensions;
 
-
 namespace MopBot.Core.Systems.Memory
 {
 	public partial class MemoryBase<TPerSystemDataType>

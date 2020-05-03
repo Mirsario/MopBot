@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-
 namespace MopBot.Common.Systems.CommandShop
 {
 	[Serializable]

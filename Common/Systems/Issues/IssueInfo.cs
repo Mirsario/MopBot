@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace MopBot.Common.Systems.Issues
 {
 	[Serializable]

@@ -5,7 +5,6 @@ using Discord.WebSocket;
 using MopBot.Extensions;
 using MopBot.Core.Systems.Memory;
 
-
 namespace MopBot.Core.Systems.Channels
 {
 	public class ChannelServerData : ServerData

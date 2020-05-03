@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-
 namespace MopBot.Core.Systems.Permissions
 {
 	public class PermissionGroup : ICloneable

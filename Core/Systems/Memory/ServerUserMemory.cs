@@ -1,6 +1,5 @@
 ﻿#pragma warning disable CS1998 //The async method lacks 'await' operator.
 
-
 namespace MopBot.Core.Systems.Memory
 {
 	public sealed class ServerUserMemory : MemoryBase<ServerUserData>

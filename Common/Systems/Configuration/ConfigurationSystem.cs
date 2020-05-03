@@ -7,7 +7,6 @@ using MopBot.Core.Systems.Permissions;
 using MopBot.Core.Systems;
 using MopBot.Core.Systems.Memory;
 
-
 namespace MopBot.Common.Systems.Configuration
 {
 	[Group("config")]
