@@ -7,9 +7,6 @@ using Newtonsoft.Json.Linq;
 
 namespace MopBot.Core.Systems.Memory
 {
-	[Serializable]
-	public abstract class MemoryDataBase { }
-
 	public abstract class MemoryBase
 	{
 		[JsonIgnore] public ulong id;
@@ -71,6 +68,7 @@ namespace MopBot.Core.Systems.Memory
 			catch {}
 		}
 	}
+
 	public abstract partial class MemoryBase<TPerSystemDataType> : MemoryBase
 	{
 		public Dictionary<string,TPerSystemDataType> systemData = new Dictionary<string,TPerSystemDataType>();

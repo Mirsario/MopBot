@@ -3,7 +3,6 @@ using Discord.WebSocket;
 using MopBot.Core.Systems.Memory;
 using MopBot.Core.Systems.Permissions;
 using MopBot.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

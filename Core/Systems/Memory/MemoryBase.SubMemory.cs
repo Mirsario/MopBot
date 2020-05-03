@@ -12,7 +12,6 @@ namespace MopBot.Core.Systems.Memory
 
 			subMemory.Add(typeof(T),new Dictionary<ulong,MemoryBase>());
 		}
-
 		public T GetSubMemory<T>(ulong id) where T : MemoryBase
 		{
 			var type = typeof(T);
@@ -37,7 +36,7 @@ namespace MopBot.Core.Systems.Memory
 				dict[id] = value;
 			}
 		}
-
-		public Dictionary<ulong,T> GetSubMemories<T>() where T : MemoryBase => subMemory[typeof(T)].Keys.Select(key => (key,GetSubMemory<T>(key))).ToDictionary(t => t.key,t => t.Item2);
+		public Dictionary<ulong,T> GetSubMemories<T>() where T : MemoryBase
+			=> subMemory[typeof(T)].Keys.Select(key => (key,GetSubMemory<T>(key))).ToDictionary(t => t.key,t => t.Item2);
 	}
 }
