@@ -38,6 +38,7 @@ namespace MopBot.Core.Systems.Permissions
 				if(server.OwnerId==user.Id) {
 					thisValue |= SpecialPermission.Owner;
 				}
+
 				if(user.IsBotMaster()) {
 					thisValue |= SpecialPermission.BotMaster;
 				}

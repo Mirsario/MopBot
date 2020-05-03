@@ -87,6 +87,7 @@ namespace MopBot.Common.Systems.CommandShop
 				if(shop.Items==null || itemId<0 || itemId>=shop.Items.Length) {
 					throw new BotError($"Invalid item id.");
 				}
+
 				shop.Items = shop.Items.Length<=1 ? null : shop.Items.ExceptIndex(itemId).ToArray();
 			}
 		}

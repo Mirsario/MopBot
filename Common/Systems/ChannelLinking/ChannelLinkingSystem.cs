@@ -79,14 +79,7 @@ namespace MopBot.Common.Systems.ChannelLinking
 						builder.WithImageUrl(test.Url);
 						break;
 					case EmbedType.Video:
-						//builder.Description = builder.Description.Replace(test.Url,"");
 						builder.ThumbnailUrl = test.Thumbnail?.Url;
-						break;
-					case EmbedType.Tweet:
-					case EmbedType.Article:
-					case EmbedType.Link:
-						//builder.Description = builder.Description.Replace(test.Url,"");
-						//builder.WithUrl(test.Url);
 						break;
 				}
 			}
@@ -111,6 +104,7 @@ namespace MopBot.Common.Systems.ChannelLinking
 
 				if(!MopBot.client.TryGetServer(channelInfo.serverId,out var server) || !server.TryGetTextChannel(channelInfo.channelId,out var channel)) {
 					channelLink.connectedChannels.RemoveAt(i--);
+
 					continue;
 				}
 
@@ -159,11 +153,13 @@ namespace MopBot.Common.Systems.ChannelLinking
 
 			if(server==null) {
 				await Context.ReplyAsync("Unknown server.");
+
 				return null;
 			}
 
 			if(await server.GetCurrentUserAsync()==null) {
 				await Context.ReplyAsync("I am not present in that server.");
+
 				return null;
 			}
 

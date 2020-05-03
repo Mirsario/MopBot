@@ -341,6 +341,7 @@ namespace MopBot.Common.Systems.Changelogs
 
 					if(!uint.TryParse(RemoveFormatting(groups[2].Value),out uint entryId)) {
 						numOtherFails++;
+
 						continue;
 					}
 

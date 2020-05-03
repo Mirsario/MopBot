@@ -57,6 +57,7 @@ namespace MopBot.Common.Systems.SpamProtection
 
 					if(totalSince>=serverData.spamDetectionTime) {
 						list.RemoveAt(i--);
+
 						continue;
 					}
 

@@ -60,12 +60,15 @@ namespace MopBot.Core.Systems.Status
 			if(activityType!=null) {
 				currentActivity.type = activityType.Value;
 			}
+
 			if(activityName!=null) {
 				currentActivity.name = activityName;
 			}
+
 			if(status!=null) {
 				currentStatus = status.Value;
 			}
+
 			if(noActivityChanging!=null) {
 				StatusSystem.noActivityChanging = noActivityChanging.Value;
 			}

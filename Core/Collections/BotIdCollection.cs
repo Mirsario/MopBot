@@ -87,7 +87,9 @@ namespace MopBot.Collections
 			if(NameToId.TryGetValue(nameId,out id)) {
 				return IdToValue.TryGetValue(id,out result);
 			}
+
 			result = default;
+
 			return false;
 		}
 		//Checks

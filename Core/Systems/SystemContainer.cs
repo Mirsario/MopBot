@@ -24,6 +24,7 @@ namespace MopBot.Core.Systems
 			for(int i = 0;i<systems.Count;i++) {
 				await systems[i].PreInitialize();
 			}
+
 			for(int i = 0;i<systems.Count;i++) {
 				await systems[i].Initialize();
 			}

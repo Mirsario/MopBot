@@ -227,74 +227,82 @@ namespace MopBot.Extensions
 
 		public static bool TryGetValueFromEnum(this GuildPermissions perms,DiscordPermission permission,out bool value)
 		{
-			switch(permission) {
-				case DiscordPermission.Administrator:		value = perms.Administrator;		return true;
-				case DiscordPermission.ManageServer:		value = perms.ManageGuild;			return true;
-				case DiscordPermission.ManageMessages:		value = perms.ManageMessages;		return true;
-				case DiscordPermission.ManageChannel:		value = perms.ManageChannels;		return true;
-				case DiscordPermission.ManageEmojis:		value = perms.ManageEmojis;			return true;
-				case DiscordPermission.ManageNicknames:		value = perms.ManageNicknames;		return true;
-				case DiscordPermission.ManageRoles:			value = perms.ManageRoles;			return true;
-				case DiscordPermission.ManageWebhooks:		value = perms.ManageWebhooks;		return true;
+			bool result = true;
 
-				case DiscordPermission.EmbedLinks:			value = perms.EmbedLinks;			return true;
-				case DiscordPermission.AttachFiles:			value = perms.AttachFiles;			return true;
-				case DiscordPermission.ReadMessageHistory:	value = perms.ReadMessageHistory;	return true;
-				case DiscordPermission.UseExternalEmojis:	value = perms.UseExternalEmojis;	return true;
-				case DiscordPermission.Connect:				value = perms.Connect;				return true;
-				case DiscordPermission.Speak:				value = perms.Speak;				return true;
-				case DiscordPermission.UseVAD:				value = perms.UseVAD;				return true;
-				case DiscordPermission.ChangeNickname:		value = perms.ChangeNickname;		return true;
-				case DiscordPermission.CreateInstantInvite:	value = perms.CreateInstantInvite;	return true;
-				case DiscordPermission.AddReactions:		value = perms.AddReactions;			return true;
-				case DiscordPermission.ViewAuditLog:		value = perms.ViewAuditLog;			return true;
+			value = permission switch
+			{
+				DiscordPermission.Administrator => perms.Administrator,
+				DiscordPermission.ManageServer => perms.ManageGuild,
+				DiscordPermission.ManageMessages => perms.ManageMessages,
+				DiscordPermission.ManageChannel => perms.ManageChannels,
+				DiscordPermission.ManageEmojis => perms.ManageEmojis,
+				DiscordPermission.ManageNicknames => perms.ManageNicknames,
+				DiscordPermission.ManageRoles => perms.ManageRoles,
+				DiscordPermission.ManageWebhooks => perms.ManageWebhooks,
 
-				case DiscordPermission.ViewChannel:			value = perms.ViewChannel;			return true;
-				case DiscordPermission.SendMessages:		value = perms.SendMessages;			return true;
-				case DiscordPermission.SendTTSMessages:		value = perms.SendTTSMessages;		return true;
-				case DiscordPermission.MentionEveryone:		value = perms.MentionEveryone;		return true;
+				DiscordPermission.EmbedLinks => perms.EmbedLinks,
+				DiscordPermission.AttachFiles => perms.AttachFiles,
+				DiscordPermission.ReadMessageHistory => perms.ReadMessageHistory,
+				DiscordPermission.UseExternalEmojis => perms.UseExternalEmojis,
+				DiscordPermission.Connect => perms.Connect,
+				DiscordPermission.Speak => perms.Speak,
+				DiscordPermission.UseVAD => perms.UseVAD,
+				DiscordPermission.ChangeNickname => perms.ChangeNickname,
+				DiscordPermission.CreateInstantInvite => perms.CreateInstantInvite,
+				DiscordPermission.AddReactions => perms.AddReactions,
+				DiscordPermission.ViewAuditLog => perms.ViewAuditLog,
 
-				case DiscordPermission.DeafenMembers:		value = perms.DeafenMembers;		return true;
-				case DiscordPermission.MoveMembers:			value = perms.MoveMembers;			return true;
-				case DiscordPermission.MuteMembers:			value = perms.MuteMembers;			return true;
-				case DiscordPermission.KickMembers:			value = perms.KickMembers;			return true;
-				case DiscordPermission.BanMembers:			value = perms.BanMembers;			return true;
-			}
+				DiscordPermission.ViewChannel => perms.ViewChannel,
+				DiscordPermission.SendMessages => perms.SendMessages,
+				DiscordPermission.SendTTSMessages => perms.SendTTSMessages,
+				DiscordPermission.MentionEveryone => perms.MentionEveryone,
 
-			value = false;
+				DiscordPermission.DeafenMembers => perms.DeafenMembers,
+				DiscordPermission.MoveMembers => perms.MoveMembers,
+				DiscordPermission.MuteMembers => perms.MuteMembers,
+				DiscordPermission.KickMembers => perms.KickMembers,
+				DiscordPermission.BanMembers => perms.BanMembers,
 
-			return false;
+				_ => result = false
+			};
+
+			return result;
 		}
 		public static bool TryGetValueFromEnum(this OverwritePermissions perms,DiscordPermission permission,out bool? value)
 		{
-			bool? ToNBool(PermValue val) => val==PermValue.Allow ? true : (val==PermValue.Deny ? false : (bool?)null);
-			
-			switch(permission) {
-				case DiscordPermission.EmbedLinks:			value = ToNBool(perms.EmbedLinks);			return true;
-				case DiscordPermission.AttachFiles:			value = ToNBool(perms.AttachFiles);			return true;
-				case DiscordPermission.ReadMessageHistory:	value = ToNBool(perms.ReadMessageHistory);	return true;
-				case DiscordPermission.MentionEveryone:		value = ToNBool(perms.MentionEveryone);		return true;
-				case DiscordPermission.UseExternalEmojis:	value = ToNBool(perms.UseExternalEmojis);	return true;
-				case DiscordPermission.Connect:				value = ToNBool(perms.Connect);				return true;
-				case DiscordPermission.ViewChannel:			value = ToNBool(perms.ViewChannel);			return true;
-				case DiscordPermission.Speak:				value = ToNBool(perms.Speak);				return true;
-				case DiscordPermission.MuteMembers:			value = ToNBool(perms.MuteMembers);			return true;
-				case DiscordPermission.DeafenMembers:		value = ToNBool(perms.DeafenMembers);		return true;
-				case DiscordPermission.MoveMembers:			value = ToNBool(perms.MoveMembers);			return true;
-				case DiscordPermission.UseVAD:				value = ToNBool(perms.UseVAD);				return true;
-				case DiscordPermission.ManageMessages:		value = ToNBool(perms.ManageMessages);		return true;
-				case DiscordPermission.SendTTSMessages:		value = ToNBool(perms.SendTTSMessages);		return true;
-				case DiscordPermission.ManageWebhooks:		value = ToNBool(perms.ManageWebhooks);		return true;
-				case DiscordPermission.ManageRoles:			value = ToNBool(perms.ManageRoles);			return true;
-				case DiscordPermission.AddReactions:		value = ToNBool(perms.AddReactions);		return true;
-				case DiscordPermission.ManageChannel:		value = ToNBool(perms.ManageChannel);		return true;
-				case DiscordPermission.CreateInstantInvite:	value = ToNBool(perms.CreateInstantInvite);	return true;
-				case DiscordPermission.SendMessages:		value = ToNBool(perms.SendMessages);		return true;
+			static bool? GetNBool(PermValue val) => val==PermValue.Allow ? true : (val==PermValue.Deny ? false : (bool?)null);
+
+			bool result = true;
+
+			value = permission switch {
+				DiscordPermission.EmbedLinks => GetNBool(perms.EmbedLinks),
+				DiscordPermission.AttachFiles => GetNBool(perms.AttachFiles),
+				DiscordPermission.ReadMessageHistory => GetNBool(perms.ReadMessageHistory),
+				DiscordPermission.MentionEveryone => GetNBool(perms.MentionEveryone),
+				DiscordPermission.UseExternalEmojis => GetNBool(perms.UseExternalEmojis),
+				DiscordPermission.Connect => GetNBool(perms.Connect),
+				DiscordPermission.ViewChannel => GetNBool(perms.ViewChannel),
+				DiscordPermission.Speak => GetNBool(perms.Speak),
+				DiscordPermission.MuteMembers => GetNBool(perms.MuteMembers),
+				DiscordPermission.DeafenMembers => GetNBool(perms.DeafenMembers),
+				DiscordPermission.MoveMembers => GetNBool(perms.MoveMembers),
+				DiscordPermission.UseVAD => GetNBool(perms.UseVAD),
+				DiscordPermission.ManageMessages => GetNBool(perms.ManageMessages),
+				DiscordPermission.SendTTSMessages => GetNBool(perms.SendTTSMessages),
+				DiscordPermission.ManageWebhooks => GetNBool(perms.ManageWebhooks),
+				DiscordPermission.ManageRoles => GetNBool(perms.ManageRoles),
+				DiscordPermission.AddReactions => GetNBool(perms.AddReactions),
+				DiscordPermission.ManageChannel => GetNBool(perms.ManageChannel),
+				DiscordPermission.CreateInstantInvite => GetNBool(perms.CreateInstantInvite),
+				DiscordPermission.SendMessages => GetNBool(perms.SendMessages),
+				_ => result = false
+			};
+
+			if(!result) {
+				value = null;
 			}
 
-			value = null;
-
-			return false;
+			return result;
 		}
 		
 		public static Task Success(this ICommandContext context)
@@ -305,11 +313,13 @@ namespace MopBot.Extensions
 		public static async Task AddPredefinedReaction(this ICommandContext context,PredefinedEmote emote)
 		{
 			string emoji;
+
 			switch(emote) {
 				case PredefinedEmote.Success: emoji = "✅"; break;
 				case PredefinedEmote.Failure: emoji = "❌"; break;
 				default: return;
 			}
+
 			await context.Message.AddReactionAsync(new Emoji(emoji));
 		}
 
@@ -358,6 +368,7 @@ namespace MopBot.Extensions
 					return false;
 				}
 			}
+
 			return true;
 		}
 
@@ -396,6 +407,7 @@ namespace MopBot.Extensions
 					return true;
 				}
 			}
+
 			return false;
 		}
 
@@ -404,9 +416,11 @@ namespace MopBot.Extensions
 			if(string.IsNullOrEmpty(value) || value.Length<=maxLength) {
 				return value;
 			}
+
 			if(maxLength>3) {
 				return value.Substring(0,maxLength-3)+"...";
 			}
+
 			return value.Substring(0,maxLength);
 		}
 
@@ -469,6 +483,7 @@ namespace MopBot.Extensions
 					case '\n':
 					case '\v':
 						sb.Remove(pos,1);
+
 						continue;
 				}
 

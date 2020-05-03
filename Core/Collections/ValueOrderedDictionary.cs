@@ -124,9 +124,11 @@ namespace MopBot.Collections
 			lock(SyncRoot) {
 				foreach(var pair in pairs) {
 					var key = pair.Key;
+
 					dictionary.TryAdd(key,pair.Value);
 					orderedKeys.Add(key);
 				}
+
 				orderedKeys = orderedKeys.OrderByDescending(k => dictionary[k]).ToList();
 			}
 		}
@@ -159,8 +161,10 @@ namespace MopBot.Collections
 		{
 			if(dictionary.TryRemove(key,out _)) {
 				orderedKeys.Remove(key);
+
 				return true;
 			}
+
 			return false;
 		}
 		public bool TryGetValue(TKey key,out TValue value) => dictionary.TryGetValue(key,out value);

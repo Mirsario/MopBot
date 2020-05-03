@@ -92,6 +92,7 @@ namespace MopBot
 						}
 
 						result.Add(allText.Substring(0,i));
+
 						allText = allText.Substring(i);
 						i = 0;
 

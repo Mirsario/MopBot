@@ -118,6 +118,7 @@ namespace MopBot.Common.Systems.Tags
 
 				if(!globalData.tags.TryGetValue(id,out Tag tag)) {
 					tagIds.RemoveAt(i--);
+
 					continue;
 				}
 
@@ -149,6 +150,7 @@ namespace MopBot.Common.Systems.Tags
 
 				if(!globalData.tagGroups.TryGetValue(groupId,out TagGroup tagGroup)) {
 					groupIds.RemoveAt(i--);
+
 					continue;
 				}
 				

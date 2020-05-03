@@ -39,6 +39,7 @@ namespace MopBot.Common.Systems.Currency
 		{
 			if(currencyAmounts==null) {
 				givenString = null;
+
 				return false;
 			}
 
@@ -53,6 +54,7 @@ namespace MopBot.Common.Systems.Currency
 				} else {
 					sb.Append(", ");
 				}
+
 				sb.Append(currency.ToString(c.amount));
 
 				return func(currency,c,value);
@@ -61,6 +63,7 @@ namespace MopBot.Common.Systems.Currency
 			if(list.Count!=currencyAmounts.Length) {
 				currencyAmounts = list.ToArray();
 			}
+
 			givenString = sb?.ToString();
 
 			return currencyAmounts.Length>0;

@@ -99,6 +99,7 @@ namespace MopBot.Common.Systems.AutoModeration
 
 						embedBuilder.Title = "User auto-banned";
 					}
+
 					break;
 			}
 

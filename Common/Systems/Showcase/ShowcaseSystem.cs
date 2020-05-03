@@ -46,6 +46,7 @@ namespace MopBot.Common.Systems.Showcase
 				if(showcaseData.TryGetEmote(EmoteType.Upvote,out var upvoteEmote)) {
 					await context.Message.AddReactionAsync(upvoteEmote);
 				}
+
 				if(showcaseData.TryGetEmote(EmoteType.Downvote,out var downvoteEmote)) {
 					await context.Message.AddReactionAsync(downvoteEmote);
 				}
@@ -145,6 +146,7 @@ namespace MopBot.Common.Systems.Showcase
 
 					if(role==null) {
 						roles.RemoveAt(i--);
+
 						continue;
 					}
 

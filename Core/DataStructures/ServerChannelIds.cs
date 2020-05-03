@@ -22,6 +22,7 @@ namespace MopBot.Core.DataStructures
 		{
 			if(!MopBot.client.TryGetServer(serverId,out var server)) {
 				channel = null;
+
 				return false;
 			}
 
@@ -31,6 +32,7 @@ namespace MopBot.Core.DataStructures
 		{
 			if(!MopBot.client.TryGetServer(serverId,out var server)) {
 				textChannel = null;
+
 				return false;
 			}
 

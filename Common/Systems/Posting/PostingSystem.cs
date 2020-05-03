@@ -105,6 +105,7 @@ namespace MopBot.Common.Systems.Posting
 						if(newPiece!=null) {
 							postPieces[i] = newPiece;
 						}
+
 						continue;
 					}
 

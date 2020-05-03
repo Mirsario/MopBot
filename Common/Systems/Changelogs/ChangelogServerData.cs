@@ -55,6 +55,7 @@ namespace MopBot.Common.Systems.Changelogs
 		{
 			if(changelogChannel==0) {
 				channel = null;
+
 				return false;
 			}
 

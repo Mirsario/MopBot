@@ -63,6 +63,7 @@ namespace MopBot.Common.Systems.Trivia
 				if(validQuestions.Length==0) {
 					if(triviaServerData.autoClearCache && triviaServerData.questions.Count>0) {
 						ClearCache(triviaServerData);
+						
 						continue;
 					} else {
 						await channel.SendMessageAsync($"{server.Owner.Mention} We're out of trivia questions!\r\n\r\nAdd new questions, or..\r\n• Use `!trivia clearcache` to clear list of used questions;\r\n• Use `!trivia autoclearcache true` to automate this process, if you're fully okay with same questions being repeat;");
