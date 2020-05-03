@@ -201,7 +201,7 @@ namespace MopBot.Common.Systems.Showcase
 				.WithAuthor($"By {socketServerUser?.GetDisplayName() ?? context.user.Username}:",context.user.GetAvatarUrl())
 				.WithDescription(content)
 				.WithImageUrl(url)
-				.WithFooter($"Final Score - {numUpvotes/(float)(numUpvotes+numDownvotes)*100f:0.00}%",BotUtils.GetEmojiImageUrl("⭐"));
+				.WithFooter($"Final Score - {numUpvotes/(float)(numUpvotes+numDownvotes)*100f:0.00}%","https://i.imgur.com/Wh8s8Gp.png"); //TODO: This url is a png of discord's star emoji. Find a proper way to get the image off discord's servers? Their image urls seem to change over time.
 
 			await spotlightChannel.SendMessageAsync(embed: builder.Build());
 

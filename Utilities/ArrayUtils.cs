@@ -56,7 +56,6 @@ namespace MopBot
 
 			array = newArray;
 		}
-
 		public static bool TryGetFirst<T>(T[] array,Predicate<T> predicate,out T result)
 		{
 			for(int i = 0;i<array.Length;i++) {
