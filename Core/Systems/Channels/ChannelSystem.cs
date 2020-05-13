@@ -52,7 +52,7 @@ namespace MopBot.Core.Systems.Channels
 				return $"{role} - {name}";
 			}
 
-			await Context.ReplyAsync($"```{string.Join('\r\n',Utils.GetEnumValues<ChannelRole>().Select(Pair))}```");
+			await Context.ReplyAsync($"```{string.Join("\r\n",Utils.GetEnumValues<ChannelRole>().Select(Pair))}```");
 		}
 	}
 }

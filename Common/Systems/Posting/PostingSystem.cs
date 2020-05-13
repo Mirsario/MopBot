@@ -5,6 +5,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using MopBot.Core.Systems.Permissions;
 using MopBot.Core.Systems;
+using MopBot.Utilities;
 
 #pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
 
@@ -28,7 +29,7 @@ namespace MopBot.Common.Systems.Posting
 		public static async Task<PostPiece[]> ParseToPost(SourceType sourceType,string source)
 		{
 			var text = sourceType switch {
-				SourceType.Link => await BotUtils.DownloadString(source),
+				SourceType.Link => await WebUtils.DownloadString(source),
 				_ => source,
 			};
 
@@ -85,7 +86,7 @@ namespace MopBot.Common.Systems.Posting
 						string url = GetGroup(2);
 						string filename = BotUtils.GetValidFileName($"TempFile_{url}");
 
-						await BotUtils.DownloadFile(GetGroup(2),filename);
+						await WebUtils.DownloadFile(GetGroup(2),filename);
 
 						newPiece = new FilePostPiece(filename,true);
 

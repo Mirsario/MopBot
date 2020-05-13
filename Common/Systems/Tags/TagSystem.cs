@@ -68,7 +68,7 @@ namespace MopBot.Common.Systems.Tags
 			if(tagsFound.Count!=1) {
 				const int MaxTextLength = 30;
 
-				throw new BotError($"{tagsFound.Count} tags have been found: \r\n```{string.Join('\r\n',tagsFound.Select(t => $"{t.tagId} - {t.tagInfo.text.TruncateWithDots(MaxTextLength)}"))}```");
+				throw new BotError($"{tagsFound.Count} tags have been found: \r\n```{string.Join("\r\n",tagsFound.Select(t => $"{t.tagId} - {t.tagInfo.text.TruncateWithDots(MaxTextLength)}"))}```");
 			}
 
 			return tagsFound[0];

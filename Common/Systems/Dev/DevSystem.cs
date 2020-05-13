@@ -57,13 +57,13 @@ namespace MopBot.Common.Systems.Dev
 		public async Task ErrorTest() => throw new Exception("An error has occured, as you requested!");
 
 		[Command("listservers")]
-		public async Task ListServers() => await Context.ReplyAsync($"Currently running for the following servers: ```\r\n{string.Join('\r\n',MopBot.client.Guilds.Select(g => $"{g.Name} - {g.Id}"))}```");
+		public async Task ListServers() => await Context.ReplyAsync($"Currently running for the following servers: ```\r\n{string.Join("\r\n",MopBot.client.Guilds.Select(g => $"{g.Name} - {g.Id}"))}```");
 		
 		[Command("listchannels")]
-		public async Task ListChannels() => await Context.ReplyAsync($"The following channels exist on this server: ```\r\n{string.Join('\r\n',Context.server.Channels.Select(c => $"{c.Name} - {c.Id}"))}```");
+		public async Task ListChannels() => await Context.ReplyAsync($"The following channels exist on this server: ```\r\n{string.Join("\r\n",Context.server.Channels.Select(c => $"{c.Name} - {c.Id}"))}```");
 		
 		[Command("listroles")]
-		public async Task ListRoles() => await Context.ReplyAsync($"The following roles exist on this server: ```\r\n{string.Join('\r\n',Context.server.Roles.Select(r => $"{r.Name} - {r.Id}"))}```");
+		public async Task ListRoles() => await Context.ReplyAsync($"The following roles exist on this server: ```\r\n{string.Join("\r\n",Context.server.Roles.Select(r => $"{r.Name} - {r.Id}"))}```");
 
 		[Command("bash")]
 		public async Task BashCommand([Remainder]string command)
