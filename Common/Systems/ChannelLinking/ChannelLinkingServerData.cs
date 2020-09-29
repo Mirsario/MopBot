@@ -5,6 +5,6 @@ namespace MopBot.Common.Systems.ChannelLinking
 {
 	public class ChannelLinkingServerData : ServerData
 	{
-		public Dictionary<ulong,ulong> channelLinks = new Dictionary<ulong,ulong>(); // [ Channel ID -> Link ID ] Dictionary
+		public Dictionary<ulong, ulong> channelLinks = new Dictionary<ulong, ulong>(); // [ Channel ID -> Link ID ] Dictionary
 	}
 }

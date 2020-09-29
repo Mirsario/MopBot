@@ -14,7 +14,7 @@ namespace MopBot.Core.Systems.Permissions
 		public SpecialPermission? specialPermission;
 		public string[] requireAny;
 
-		public RequirePermissionAttribute(SpecialPermission specialPermission,params string[] requireAny)
+		public RequirePermissionAttribute(SpecialPermission specialPermission, params string[] requireAny)
 		{
 			this.specialPermission = specialPermission;
 			this.requireAny = requireAny;
@@ -24,7 +24,7 @@ namespace MopBot.Core.Systems.Permissions
 			this.requireAny = requireAny;
 		}
 
-		public override async Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context,CommandInfo command,IServiceProvider services)
+		public override async Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
 		{
 			//CommandInfo can be null!
 
@@ -35,7 +35,7 @@ namespace MopBot.Core.Systems.Permissions
 			if(specialPermission.HasValue) {
 				SpecialPermission thisValue = 0;
 
-				if(server.OwnerId==user.Id) {
+				if(server.OwnerId == user.Id) {
 					thisValue |= SpecialPermission.Owner;
 				}
 
@@ -43,19 +43,19 @@ namespace MopBot.Core.Systems.Permissions
 					thisValue |= SpecialPermission.BotMaster;
 				}
 
-				if(((byte)thisValue & (byte)specialPermission.Value)>0) {
+				if(((byte)thisValue & (byte)specialPermission.Value) > 0) {
 					return PreconditionResult.FromSuccess();
 				}
 			}
 
-			if(requireAny!=null && requireAny.Length>0) {
+			if(requireAny != null && requireAny.Length > 0) {
 				if(user.HasAnyPermissions(requireAny)) {
 					return PreconditionResult.FromSuccess();
 				}
 
 				return PreconditionResult.FromError(
-					requireAny.Length>1
-						? $"Missing one of the following permissions:\r\n{string.Join("\r\n",requireAny.Select(s => "`"+s+"`"))}"
+					requireAny.Length > 1
+						? $"Missing one of the following permissions:\r\n{string.Join("\r\n", requireAny.Select(s => "`" + s + "`"))}"
 						: $"Missing permission: `{requireAny[0]}`."
 				);
 			}

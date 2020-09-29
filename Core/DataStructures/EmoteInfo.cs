@@ -7,7 +7,7 @@ namespace MopBot.Core.DataStructures
 		public readonly Emote Emote;
 		public readonly Emoji Emoji;
 
-		public bool IsCustom => Emote!=null;
+		public bool IsCustom => Emote != null;
 
 		public EmoteInfo(Emote emote)
 		{

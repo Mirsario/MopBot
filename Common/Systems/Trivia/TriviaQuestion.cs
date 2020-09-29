@@ -9,7 +9,7 @@ namespace MopBot.Common.Systems.Trivia
 		public string[] answers;
 		public bool wasPosted;
 
-		public TriviaQuestion(string question,string[] answers)
+		public TriviaQuestion(string question, string[] answers)
 		{
 			this.question = question;
 			this.answers = answers;

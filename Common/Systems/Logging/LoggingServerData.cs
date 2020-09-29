@@ -10,6 +10,6 @@ namespace MopBot.Common.Systems.Logging
 
 		public override void Initialize(SocketGuild server) { }
 
-		public bool TryGetLoggingChannel(SocketGuild server,out SocketTextChannel result) => server.TryGetTextChannel(loggingChannel,out result);
+		public bool TryGetLoggingChannel(SocketGuild server, out SocketTextChannel result) => server.TryGetTextChannel(loggingChannel, out result);
 	}
 }

@@ -12,13 +12,13 @@ namespace MopBot
 
 		public static T Choose<T>(params T[] arr)
 			=> arr[MopBot.Random.Next(arr.Length)];
-		
-		public static ulong SafeAdd(ulong valueA,ulong valueB)
-		{
-			unchecked { 
-				ulong newValue = valueA+valueB;
 
-				return newValue<valueA ? ulong.MaxValue : newValue;
+		public static ulong SafeAdd(ulong valueA, ulong valueB)
+		{
+			unchecked {
+				ulong newValue = valueA + valueB;
+
+				return newValue < valueA ? ulong.MaxValue : newValue;
 			}
 		}
 	}

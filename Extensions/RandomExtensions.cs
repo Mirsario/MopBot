@@ -11,26 +11,26 @@ namespace MopBot.Extensions
 		{
 			random.NextBytes(RandomBuffer16);
 
-			return BitConverter.ToInt16(RandomBuffer16,0);
+			return BitConverter.ToInt16(RandomBuffer16, 0);
 		}
 		public static ushort NextUShort(this Random random)
 		{
 			random.NextBytes(RandomBuffer16);
 
-			return BitConverter.ToUInt16(RandomBuffer16,0);
+			return BitConverter.ToUInt16(RandomBuffer16, 0);
 		}
 
 		public static long NextLong(this Random random)
 		{
 			random.NextBytes(RandomBuffer64);
 
-			return BitConverter.ToInt64(RandomBuffer64,0);
+			return BitConverter.ToInt64(RandomBuffer64, 0);
 		}
 		public static ulong NextULong(this Random random)
 		{
 			random.NextBytes(RandomBuffer64);
 
-			return BitConverter.ToUInt64(RandomBuffer64,0);
+			return BitConverter.ToUInt64(RandomBuffer64, 0);
 		}
 	}
 }

@@ -6,11 +6,11 @@ namespace MopBot.Core.Systems.Memory
 	{
 		public ServerMemory this[IGuild server] {
 			get => GetSubMemory<ServerMemory>(server.Id);
-			set => SetSubMemory(server.Id,value);
+			set => SetSubMemory(server.Id, value);
 		}
 		public UserMemory this[IUser user] {
 			get => GetSubMemory<UserMemory>(user.Id);
-			set => SetSubMemory(user.Id,value);
+			set => SetSubMemory(user.Id, value);
 		}
 
 		public override void Initialize()

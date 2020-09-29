@@ -25,7 +25,7 @@ namespace MopBot
 	public class MopBot : SystemContainer
 	{
 		public const char DefaultCommandPrefix = '!';
-		
+
 		public static readonly StringComparer StrComparerIgnoreCase = StringComparer.InvariantCultureIgnoreCase;
 		public static readonly Random Random = new Random((int)DateTime.Now.Ticks);
 
@@ -38,7 +38,7 @@ namespace MopBot
 		public static ConsoleColor defaultConsoleColor;
 		public static string tempFolder;
 		public static SocketTextChannel logChannel;
-		
+
 		static void Main()
 		{
 			defaultConsoleColor = Console.ForegroundColor;
@@ -63,11 +63,11 @@ namespace MopBot
 		public async Task Run()
 		{
 			GlobalConfiguration.Initialize();
-			
-			tempFolder = Path.GetFullPath("Temp")+Path.DirectorySeparatorChar;
+
+			tempFolder = Path.GetFullPath("Temp") + Path.DirectorySeparatorChar;
 
 			Directory.CreateDirectory(tempFolder);
-			
+
 			optAlwaysRetry = RequestOptions.Default;
 			optAlwaysRetry.RetryMode = RetryMode.AlwaysRetry;
 
@@ -88,21 +88,21 @@ namespace MopBot
 			Type[] systemTypes = botTypes.Where(t => !t.IsAbstract && t.IsDerivedFrom(typeof(BotSystem))).ToArray();
 
 			var toggles = GlobalConfiguration.config.systemToggles;
-			var newToggles = new Dictionary<string,bool>();
+			var newToggles = new Dictionary<string, bool>();
 
-			for(int i = 0;i<systemTypes.Length;i++) {
+			for(int i = 0; i < systemTypes.Length; i++) {
 				var thisType = systemTypes[i];
 
-				if(!systems.Any(q => q.GetType()==thisType)) {
+				if(!systems.Any(q => q.GetType() == thisType)) {
 					string name = thisType.Name;
 					var config = BotSystem.GetConfiguration(thisType);
-					
+
 					bool isEnabled;
 
 					if(config.AlwaysEnabled) {
 						isEnabled = true;
 					} else {
-						if(toggles==null || !toggles.TryGetValue(name,out isEnabled)) {
+						if(toggles == null || !toggles.TryGetValue(name, out isEnabled)) {
 							isEnabled = true;
 						}
 
@@ -115,7 +115,7 @@ namespace MopBot
 				}
 			}
 
-			if(toggles==null || newToggles.Count!=toggles.Count || newToggles.Any(t => !toggles.ContainsKey(t.Key))) {
+			if(toggles == null || newToggles.Count != toggles.Count || newToggles.Any(t => !toggles.ContainsKey(t.Key))) {
 				GlobalConfiguration.config.systemToggles = newToggles;
 				GlobalConfiguration.Save();
 			}
@@ -132,7 +132,7 @@ namespace MopBot
 				.AddSingleton(CommandSystem.commandService)
 				.BuildServiceProvider();
 
-			await CommandSystem.commandService.AddModulesAsync(Assembly.GetEntryAssembly(),serviceProvaider);
+			await CommandSystem.commandService.AddModulesAsync(Assembly.GetEntryAssembly(), serviceProvaider);
 
 			while(true) {
 				try {
@@ -150,7 +150,7 @@ namespace MopBot
 			}
 		}
 
-		private static async void OnFirstChanceException(object sender,FirstChanceExceptionEventArgs args)
+		private static async void OnFirstChanceException(object sender, FirstChanceExceptionEventArgs args)
 		{
 			var e = args.Exception;
 
@@ -158,25 +158,25 @@ namespace MopBot
 				return;
 			}
 
-			string checkString = (e.Message+e.StackTrace).ToLowerInvariant();
+			string checkString = (e.Message + e.StackTrace).ToLowerInvariant();
 
-			if(checkString!=null && checkString.Contains("internal server error") || ((checkString.Contains("discord") || checkString.Contains("websocket")) && !checkString.Contains("mopbot"))) {
+			if(checkString != null && checkString.Contains("internal server error") || ((checkString.Contains("discord") || checkString.Contains("websocket")) && !checkString.Contains("mopbot"))) {
 				return;
 			}
 
-			await HandleException(e,"OnFirstChanceException - ");
+			await HandleException(e, "OnFirstChanceException - ");
 		}
-		private static void OnProcessExit(object sender,EventArgs e)
+		private static void OnProcessExit(object sender, EventArgs e)
 		{
 			if(!StatusSystem.noActivityChanging) {
-				StatusSystem.ForceStatus(ActivityType.Playing,"Offline",UserStatus.AFK,true);
+				StatusSystem.ForceStatus(ActivityType.Playing, "Offline", UserStatus.AFK, true);
 			}
 
 			if(MemorySystem.canSave) {
 				Task.Run(async () => {
-					var task = (instance?.systems?.FirstOrDefault(s => s?.GetType()==typeof(MemorySystem)) as MemorySystem)?.Save();
-					
-					if(task!=null) {
+					var task = (instance?.systems?.FirstOrDefault(s => s?.GetType() == typeof(MemorySystem)) as MemorySystem)?.Save();
+
+					if(task != null) {
 						await task;
 					}
 				}).Wait();
@@ -191,11 +191,11 @@ namespace MopBot
 			client.MessageUpdated += MessageSystem.MessageUpdated;
 			client.MessageDeleted += MessageSystem.MessageDeleted;
 			client.ReactionAdded += MessageSystem.ReactionAdded;
-			client.UserJoined += async user => await BotSystem.CallForEnabledSystems(user.Guild,s => s.OnUserJoined(user));
-			client.UserLeft += async user => await BotSystem.CallForEnabledSystems(user.Guild,s => s.OnUserLeft(user));
+			client.UserJoined += async user => await BotSystem.CallForEnabledSystems(user.Guild, s => s.OnUserJoined(user));
+			client.UserLeft += async user => await BotSystem.CallForEnabledSystems(user.Guild, s => s.OnUserLeft(user));
 
-			client.GuildMemberUpdated += async (oldUser,newUser) => {
-				await BotSystem.CallForEnabledSystems(newUser.Guild,s => s.OnUserUpdated(oldUser,newUser));
+			client.GuildMemberUpdated += async (oldUser, newUser) => {
+				await BotSystem.CallForEnabledSystems(newUser.Guild, s => s.OnUserUpdated(oldUser, newUser));
 			};
 		}
 		public static async Task OnReady()
@@ -205,7 +205,7 @@ namespace MopBot
 
 				logChannel = client.GetChannel(id) as SocketTextChannel;
 
-				if(logChannel==null) {
+				if(logChannel == null) {
 					//Not exception-worthy.
 					await HandleError($"(!!!) Could not find channel with id '{id}'. Is the bot not in that server anymore, or has it been configured wrong?");
 				}
@@ -213,7 +213,7 @@ namespace MopBot
 		}
 
 		public static EmbedBuilder GetEmbedBuilder(MessageContext context) => GetEmbedBuilder(context.server);
-		public static EmbedBuilder GetEmbedBuilder(SocketGuild server) => new EmbedBuilder().WithColor(MemorySystem.memory[server].GetData<CommandSystem,CommandServerData>().embedColor.Value);
+		public static EmbedBuilder GetEmbedBuilder(SocketGuild server) => new EmbedBuilder().WithColor(MemorySystem.memory[server].GetData<CommandSystem, CommandServerData>().embedColor.Value);
 		public static async Task TryCatch(Func<Task> func)
 		{
 			try {
@@ -223,7 +223,7 @@ namespace MopBot
 				await HandleException(e);
 			}
 		}
-		public static async Task TryCatchLogged(string actionText,Func<Task> func,bool dontHandle = false)
+		public static async Task TryCatchLogged(string actionText, Func<Task> func, bool dontHandle = false)
 		{
 			Console.Write(actionText);
 
@@ -234,7 +234,7 @@ namespace MopBot
 			}
 			catch(Exception e) {
 				Console.ForegroundColor = ConsoleColor.Red;
-				Console.Write(" ERROR: "+e.GetType().Name+"\r\n");
+				Console.Write(" ERROR: " + e.GetType().Name + "\r\n");
 
 				if(!dontHandle) {
 					await HandleException(e);
@@ -243,42 +243,42 @@ namespace MopBot
 
 			Console.ForegroundColor = defaultConsoleColor;
 		}
-		public static async Task HandleException(Exception e,string prefix = null,bool mentionMasters = true,bool noDiscordPosts = false)
+		public static async Task HandleException(Exception e, string prefix = null, bool mentionMasters = true, bool noDiscordPosts = false)
 		{
-			await HandleError($"{prefix}{e.GetType().Name}: {e.Message}\r\n```\r\n{e.StackTrace}```",mentionMasters,noDiscordPosts);
+			await HandleError($"{prefix}{e.GetType().Name}: {e.Message}\r\n```\r\n{e.StackTrace}```", mentionMasters, noDiscordPosts);
 
-			if(e.InnerException!=null) {
-				await HandleException(e.InnerException,prefix:"Previous exception's InnerException:\r\n");
+			if(e.InnerException != null) {
+				await HandleException(e.InnerException, prefix: "Previous exception's InnerException:\r\n");
 			}
 		}
-		public static async Task HandleError(string errorText,bool mentionMasters = true,bool noDiscordPosts = false)
+		public static async Task HandleError(string errorText, bool mentionMasters = true, bool noDiscordPosts = false)
 		{
 			string logText = $"Exception from `{DateTime.UtcNow}` (UTC):\r\n##### Exception Start #####\r\n{errorText}\r\n##### Exception End #####";
 
 			Console.WriteLine(logText);
 
-			File.AppendAllText("BotErrors.log",logText);
+			File.AppendAllText("BotErrors.log", logText);
 
-			if(!noDiscordPosts && logChannel!=null && client?.ConnectionState==ConnectionState.Connected) {
+			if(!noDiscordPosts && logChannel != null && client?.ConnectionState == ConnectionState.Connected) {
 				if(mentionMasters) {
 					var usersToPing = GlobalConfiguration.config.usersToPingForExceptions ?? GlobalConfiguration.config.masterUsers;
 
-					if(usersToPing!=null && usersToPing.Length>0) {
-						errorText = $"{string.Join(", ",usersToPing.Select(id => $"<@{id}>"))}\r\n{errorText}";
+					if(usersToPing != null && usersToPing.Length > 0) {
+						errorText = $"{string.Join(", ", usersToPing.Select(id => $"<@{id}>"))}\r\n{errorText}";
 					}
 				}
 
 				//TODO: This is lazy
-				string[] texts = SplitIfNeeded(errorText,1900).ToArray();
+				string[] texts = SplitIfNeeded(errorText, 1900).ToArray();
 
-				for(int i = 0;i<texts.Length;i++) {
+				for(int i = 0; i < texts.Length; i++) {
 					var tempText = texts[i];
 
-					if(i>0) {
-						tempText = "```"+tempText;
+					if(i > 0) {
+						tempText = "```" + tempText;
 					}
 
-					if(i<texts.Length-1) {
+					if(i < texts.Length - 1) {
 						tempText += "```";
 					}
 
@@ -286,40 +286,40 @@ namespace MopBot
 				}
 			}
 		}
-		public static T Construct<T>(Type[] paramTypes,object[] paramValues)
+		public static T Construct<T>(Type[] paramTypes, object[] paramValues)
 		{
-			var constructorInfo = typeof(T).GetConstructor(BindingFlags.Instance|BindingFlags.NonPublic,null,paramTypes,null);
+			var constructorInfo = typeof(T).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, paramTypes, null);
 
 			return (T)constructorInfo.Invoke(paramValues);
 		}
-		public static string GetTempFileName(string baseName,string ext)
+		public static string GetTempFileName(string baseName, string ext)
 		{
 			string name;
 
 			do {
-				name = Path.Combine(tempFolder,$"{baseName}_{Random.Next(1000)}{ext}");
+				name = Path.Combine(tempFolder, $"{baseName}_{Random.Next(1000)}{ext}");
 			}
 			while(File.Exists(name));
 
 			return name;
 		}
-		public static void CheckForNull(object obj,string argName)
+		public static void CheckForNull(object obj, string argName)
 		{
-			if(obj==null) {
+			if(obj == null) {
 				throw new BotError($"Argument `{argName}` cannot be null.");
 			}
 		}
-		public static void CheckForNullOrEmpty(string str,string argName)
+		public static void CheckForNullOrEmpty(string str, string argName)
 		{
 			if(string.IsNullOrWhiteSpace(str)) {
 				throw new BotError($"Argument `{argName}` cannot be null or empty.");
 			}
 		}
 
-		private static IEnumerable<string> SplitIfNeeded(string str,int maxChunkSize)
+		private static IEnumerable<string> SplitIfNeeded(string str, int maxChunkSize)
 		{
-			for(int i = 0;i<str.Length;i += maxChunkSize) {
-				yield return str.Substring(i,Math.Min(maxChunkSize,str.Length-i));
+			for(int i = 0; i < str.Length; i += maxChunkSize) {
+				yield return str.Substring(i, Math.Min(maxChunkSize, str.Length - i));
 			}
 		}
 	}

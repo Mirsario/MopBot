@@ -14,7 +14,7 @@ namespace MopBot.Core.Systems.Commands
 		{
 			commandPrefix = '!';
 			showUnknownCommandMessage = true;
-			embedColor = new Color(168,125,101);
+			embedColor = new Color(168, 125, 101);
 		}
 	}
 }

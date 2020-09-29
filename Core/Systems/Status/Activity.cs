@@ -7,7 +7,7 @@ namespace MopBot.Core.Systems.Status
 		public ActivityType type;
 		public string name;
 
-		public Activity(ActivityType type,string name)
+		public Activity(ActivityType type, string name)
 		{
 			this.type = type;
 			this.name = name;

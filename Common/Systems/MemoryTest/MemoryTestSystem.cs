@@ -16,9 +16,9 @@ namespace MopBot.Common.Systems.MemoryTest
 	{
 		public override void RegisterDataTypes()
 		{
-			RegisterDataType<UserMemory,MemoryTestUserData>();
-			RegisterDataType<ServerMemory,MemoryTestServerData>();
-			RegisterDataType<ServerUserMemory,MemoryTestServerUserData>();
+			RegisterDataType<UserMemory, MemoryTestUserData>();
+			RegisterDataType<ServerMemory, MemoryTestServerData>();
+			RegisterDataType<ServerUserMemory, MemoryTestServerUserData>();
 		}
 
 		[Command]
@@ -30,9 +30,9 @@ namespace MopBot.Common.Systems.MemoryTest
 			var serverUserMemory = serverMemory[Context.User];
 
 			await Context.ReplyAsync(
-				$"**{nameof(MemoryTestUserData)}.{nameof(MemoryTestUserData.randomValue)}**: `{userMemory.GetData<MemoryTestSystem,MemoryTestUserData>().randomValue}`\r\n"+
-				$"**{nameof(MemoryTestServerData)}.{nameof(MemoryTestServerData.randomValue)}**: `{serverMemory.GetData<MemoryTestSystem,MemoryTestServerData>().randomValue}`\r\n"+
-				$"**{nameof(MemoryTestServerUserData)}.{nameof(MemoryTestServerUserData.randomValue)}**: `{serverUserMemory.GetData<MemoryTestSystem,MemoryTestServerUserData>().randomValue}`\r\n"
+				$"**{nameof(MemoryTestUserData)}.{nameof(MemoryTestUserData.randomValue)}**: `{userMemory.GetData<MemoryTestSystem, MemoryTestUserData>().randomValue}`\r\n" +
+				$"**{nameof(MemoryTestServerData)}.{nameof(MemoryTestServerData.randomValue)}**: `{serverMemory.GetData<MemoryTestSystem, MemoryTestServerData>().randomValue}`\r\n" +
+				$"**{nameof(MemoryTestServerUserData)}.{nameof(MemoryTestServerUserData.randomValue)}**: `{serverUserMemory.GetData<MemoryTestSystem, MemoryTestServerUserData>().randomValue}`\r\n"
 			);
 		}
 
@@ -44,9 +44,9 @@ namespace MopBot.Common.Systems.MemoryTest
 			var serverMemory = memory[Context.Guild];
 			var serverUserMemory = serverMemory[Context.User];
 
-			userMemory.ResetData<MemoryTestSystem,MemoryTestUserData>();
-			serverMemory.ResetData<MemoryTestSystem,MemoryTestServerData>();
-			serverUserMemory.ResetData<MemoryTestSystem,MemoryTestServerUserData>();
+			userMemory.ResetData<MemoryTestSystem, MemoryTestUserData>();
+			serverMemory.ResetData<MemoryTestSystem, MemoryTestServerData>();
+			serverUserMemory.ResetData<MemoryTestSystem, MemoryTestServerUserData>();
 		}
 	}
 }

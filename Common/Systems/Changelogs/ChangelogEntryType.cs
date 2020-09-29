@@ -8,7 +8,7 @@ namespace MopBot.Common.Systems.Changelogs
 		public string name;
 		public string discordPrefix;
 
-		public ChangelogEntryType(string name,string discordPrefix)
+		public ChangelogEntryType(string name, string discordPrefix)
 		{
 			this.name = name;
 			this.discordPrefix = discordPrefix;

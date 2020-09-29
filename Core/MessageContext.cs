@@ -58,19 +58,19 @@ namespace MopBot.Core
 		}
 		public MessageContext(SocketMessage message) => Setup(message);
 		public MessageContext(RestUserMessage message) => Setup(message);
-		public MessageContext(IMessage message,SocketGuild server,SocketGuildUser user,string content = null,bool? isCommand = null,SocketTextChannel channel = null)
+		public MessageContext(IMessage message, SocketGuild server, SocketGuildUser user, string content = null, bool? isCommand = null, SocketTextChannel channel = null)
 		{
 			this.message = message;
 			this.server = server;
 			this.user = user;
 			this.content = content ?? "";
-			
+
 			messageChannel = channel;
 			socketTextChannel = channel;
-			
+
 			Setup();
 
-			this.isCommand = isCommand ?? this.content.StartsWith(server?.GetMemory()?.GetData<CommandSystem,CommandServerData>()?.commandPrefix ?? MopBot.DefaultCommandPrefix);
+			this.isCommand = isCommand ?? this.content.StartsWith(server?.GetMemory()?.GetData<CommandSystem, CommandServerData>()?.commandPrefix ?? MopBot.DefaultCommandPrefix);
 		}
 
 		private void Setup()
@@ -93,7 +93,7 @@ namespace MopBot.Core
 			server = socketServerChannel?.Guild;
 			//Other
 			content = message.Content ?? "";
-			isCommand = content.StartsWith(server?.GetMemory()?.GetData<CommandSystem,CommandServerData>()?.commandPrefix ?? MopBot.DefaultCommandPrefix);
+			isCommand = content.StartsWith(server?.GetMemory()?.GetData<CommandSystem, CommandServerData>()?.commandPrefix ?? MopBot.DefaultCommandPrefix);
 		}
 		private void Setup(RestUserMessage message)
 		{
@@ -104,10 +104,10 @@ namespace MopBot.Core
 			//Channel
 			messageChannel = message.Channel;
 			//Server
-			server = MopBot.client.Guilds.FirstOrDefault(s => s.Channels.Any(c => c.Id==messageChannel.Id));
+			server = MopBot.client.Guilds.FirstOrDefault(s => s.Channels.Any(c => c.Id == messageChannel.Id));
 			//Other
 			content = message.Content ?? "";
-			isCommand = content.StartsWith(server?.GetMemory()?.GetData<CommandSystem,CommandServerData>()?.commandPrefix ?? MopBot.DefaultCommandPrefix);
+			isCommand = content.StartsWith(server?.GetMemory()?.GetData<CommandSystem, CommandServerData>()?.commandPrefix ?? MopBot.DefaultCommandPrefix);
 		}
 
 		public void AddInfo(SocketGuild server)
@@ -122,7 +122,7 @@ namespace MopBot.Core
 			if(!MessageSystem.MessageIgnored(id)) {
 				MessageSystem.IgnoreMessage(id);
 
-				if(socketTextChannel==null || server.CurrentUser.HasChannelPermission(socketTextChannel,DiscordPermission.ManageMessages)) {
+				if(socketTextChannel == null || server.CurrentUser.HasChannelPermission(socketTextChannel, DiscordPermission.ManageMessages)) {
 					await message.DeleteAsync();
 				}
 			}

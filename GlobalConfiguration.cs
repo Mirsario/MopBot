@@ -15,12 +15,12 @@ namespace MopBot
 			public ulong[] usersToPingForExceptions;
 			public ulong? logChannel;
 			public bool enableBashCommand;
-			public Dictionary<string,bool> systemToggles;
+			public Dictionary<string, bool> systemToggles;
 			public int maxMemoryBackups = 10;
 		}
 
 		public const string ConfigurationFile = "BotConfig.json";
-		
+
 		public static Config config;
 
 		public static void Initialize()
@@ -29,7 +29,7 @@ namespace MopBot
 				config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(ConfigurationFile));
 			}
 
-			if(config==null) {
+			if(config == null) {
 				config = new Config();
 				Save();
 			}
@@ -37,7 +37,7 @@ namespace MopBot
 
 		public static void Save()
 		{
-			File.WriteAllText(ConfigurationFile,JsonConvert.SerializeObject(config,Formatting.Indented));
+			File.WriteAllText(ConfigurationFile, JsonConvert.SerializeObject(config, Formatting.Indented));
 		}
 	}
 }

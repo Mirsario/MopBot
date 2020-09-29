@@ -11,7 +11,7 @@ namespace MopBot.Core.Systems
 	public abstract class SystemContainer
 	{
 		public List<BotSystem> systems;
-		
+
 		public bool RegisteringData { get; private set; }
 
 		public SystemContainer()
@@ -21,17 +21,17 @@ namespace MopBot.Core.Systems
 
 		public async Task InitializeSystems()
 		{
-			for(int i = 0;i<systems.Count;i++) {
+			for(int i = 0; i < systems.Count; i++) {
 				await systems[i].PreInitialize();
 			}
 
-			for(int i = 0;i<systems.Count;i++) {
+			for(int i = 0; i < systems.Count; i++) {
 				await systems[i].Initialize();
 			}
 		}
 		public async Task UpdateSystems(bool allowBreak)
 		{
-			for(int i = 0;i<systems.Count;i++) {
+			for(int i = 0; i < systems.Count; i++) {
 				var system = systems[i];
 
 				try {
@@ -39,7 +39,7 @@ namespace MopBot.Core.Systems
 						if(allowBreak) {
 							break;
 						}
-					} else if(MopBot.client?.ConnectionState==ConnectionState.Connected) {
+					} else if(MopBot.client?.ConnectionState == ConnectionState.Connected) {
 						foreach(var server in MopBot.client.Guilds) {
 							if(system.IsEnabledForServer(server)) {
 								await system.ServerUpdate(server);
@@ -62,7 +62,7 @@ namespace MopBot.Core.Systems
 
 			RegisteringData = true;
 
-			system.RegisterDataType<ServerMemory,ServerData>();
+			system.RegisterDataType<ServerMemory, ServerData>();
 			system.RegisterDataTypes();
 
 			RegisteringData = false;

@@ -9,7 +9,7 @@ using Discord.WebSocket;
 
 namespace MopBot.Core.Systems
 {
-	[SystemConfiguration(AlwaysEnabled = true,Description = "Controls connection to discord.")]
+	[SystemConfiguration(AlwaysEnabled = true, Description = "Controls connection to discord.")]
 	public class DiscordConnectionSystem : BotSystem
 	{
 		public static bool isFullyReady;
@@ -23,7 +23,7 @@ namespace MopBot.Core.Systems
 			if(string.IsNullOrWhiteSpace(GlobalConfiguration.config.token)) {
 				throw new ArgumentException($"Add bot's token to '{GlobalConfiguration.ConfigurationFile}' file.");
 			}
-			
+
 			MopBot.client = client = new DiscordSocketClient(new DiscordSocketConfig() {
 				LogLevel = LogSeverity.Debug,
 				MessageCacheSize = 1000
@@ -31,12 +31,12 @@ namespace MopBot.Core.Systems
 
 			MopBot.OnClientInit(client);
 
-			await MopBot.TryCatchLogged("Attempting Login...",() => client.LoginAsync(TokenType.Bot,GlobalConfiguration.config.token.Trim()));
-			await MopBot.TryCatchLogged("Attempting Connection...",() => client.StartAsync());
+			await MopBot.TryCatchLogged("Attempting Login...", () => client.LoginAsync(TokenType.Bot, GlobalConfiguration.config.token.Trim()));
+			await MopBot.TryCatchLogged("Attempting Connection...", () => client.StartAsync());
 		}
 		public override async Task<bool> Update()
 		{
-			if(client.LoginState!=LoginState.LoggedIn || client.ConnectionState!=ConnectionState.Connected) {
+			if(client.LoginState != LoginState.LoggedIn || client.ConnectionState != ConnectionState.Connected) {
 				if(started) {
 					Console.WriteLine("Trying to restart client...");
 
@@ -45,7 +45,7 @@ namespace MopBot.Core.Systems
 						UseShellExecute = true
 					});
 				}
-				
+
 				return false;
 			}
 
@@ -53,14 +53,14 @@ namespace MopBot.Core.Systems
 
 			void Write(string text)
 			{
-				if(lastConsoleWrite!=text) {
+				if(lastConsoleWrite != text) {
 					Console.WriteLine(text);
 
 					lastConsoleWrite = text;
 				}
 			}
 
-			if(client.LoginState==LoginState.LoggedIn && !isFullyReady) {
+			if(client.LoginState == LoginState.LoggedIn && !isFullyReady) {
 				Write("Ready!");
 
 				isFullyReady = true;

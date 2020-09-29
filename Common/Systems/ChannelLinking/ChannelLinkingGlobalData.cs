@@ -5,6 +5,6 @@ namespace MopBot.Common.Systems.ChannelLinking
 {
 	public class ChannelLinkingGlobalData : GlobalData
 	{
-		public Dictionary<ulong,ChannelLink> links = new Dictionary<ulong,ChannelLink>();
+		public Dictionary<ulong, ChannelLink> links = new Dictionary<ulong, ChannelLink>();
 	}
 }

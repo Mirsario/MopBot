@@ -10,6 +10,6 @@ namespace MopBot.Common.Systems.CommandShop
 	[SystemConfiguration(Description = "Lets users trade CurrencySystem currencies for pre-defined sudo command executions in custom shops. Commands will be executed as the user who created the shop item that's 'bought'.")]
 	public partial class CommandShopSystem : BotSystem
 	{
-		public override void RegisterDataTypes() => RegisterDataType<ServerMemory,CommandShopServerData>();
+		public override void RegisterDataTypes() => RegisterDataType<ServerMemory, CommandShopServerData>();
 	}
 }

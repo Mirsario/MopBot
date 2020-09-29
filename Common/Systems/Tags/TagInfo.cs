@@ -9,7 +9,7 @@ namespace MopBot.Common.Systems.Tags
 		public string name;
 		public string text;
 
-		public Tag(ulong owner,string name,string text)
+		public Tag(ulong owner, string name, string text)
 		{
 			this.owner = owner;
 			this.name = name.ToLowerInvariant();

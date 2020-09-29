@@ -11,6 +11,6 @@ namespace MopBot.Core.Systems.Memory
 		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
 		public bool? isEnabled;
 
-		public virtual void Initialize(SocketGuild server) {}
+		public virtual void Initialize(SocketGuild server) { }
 	}
 }

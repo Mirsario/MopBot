@@ -11,7 +11,7 @@ namespace MopBot.Common.Systems.Changelogs
 		public string type;
 		public string text;
 
-		public ChangelogEntry(uint entryId,string type,string text)
+		public ChangelogEntry(uint entryId, string type, string text)
 		{
 			this.entryId = entryId;
 			this.type = type;

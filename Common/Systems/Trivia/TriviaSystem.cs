@@ -26,12 +26,12 @@ namespace MopBot.Common.Systems.Trivia
 
 		public override void RegisterDataTypes()
 		{
-			RegisterDataType<ServerMemory,TriviaServerData>();
+			RegisterDataType<ServerMemory, TriviaServerData>();
 		}
 
 		public override async Task ServerUpdate(SocketGuild server)
 		{
-			var triviaServerData = server.GetMemory().GetData<TriviaSystem,TriviaServerData>();
+			var triviaServerData = server.GetMemory().GetData<TriviaSystem, TriviaServerData>();
 
 			if(!triviaServerData.IsReady) {
 				return; //TODO: Let the admins know that this is misconfigured.
@@ -39,7 +39,7 @@ namespace MopBot.Common.Systems.Trivia
 
 			var now = DateTime.Now;
 
-			if((now-triviaServerData.lastTriviaPost).TotalSeconds<=triviaServerData.postIntervalInSeconds) {
+			if((now - triviaServerData.lastTriviaPost).TotalSeconds <= triviaServerData.postIntervalInSeconds) {
 				return;
 			}
 
@@ -48,7 +48,7 @@ namespace MopBot.Common.Systems.Trivia
 
 			var channel = server.GetTextChannel(triviaServerData.currentChannel);
 
-			if(channel==null) {
+			if(channel == null) {
 				return; //TODO: Same as above
 			}
 
@@ -59,11 +59,11 @@ namespace MopBot.Common.Systems.Trivia
 				lock(triviaServerData.questions) {
 					validQuestions = triviaServerData.questions.Where(q => !q.wasPosted).ToArray();
 				}
-					
-				if(validQuestions.Length==0) {
-					if(triviaServerData.autoClearCache && triviaServerData.questions.Count>0) {
+
+				if(validQuestions.Length == 0) {
+					if(triviaServerData.autoClearCache && triviaServerData.questions.Count > 0) {
 						ClearCache(triviaServerData);
-						
+
 						continue;
 					} else {
 						await channel.SendMessageAsync($"{server.Owner.Mention} We're out of trivia questions!\r\n\r\nAdd new questions, or..\r\n• Use `!trivia clearcache` to clear list of used questions;\r\n• Use `!trivia autoclearcache true` to automate this process, if you're fully okay with same questions being repeat;");
@@ -84,10 +84,10 @@ namespace MopBot.Common.Systems.Trivia
 			bool disallowRoleMention = false;
 			var currentUser = server.CurrentUser;
 
-			if(triviaServerData.triviaRole>0) {
+			if(triviaServerData.triviaRole > 0) {
 				role = server.GetRole(triviaServerData.triviaRole);
 
-				if(role!=null) {
+				if(role != null) {
 					if(!role.IsMentionable && currentUser.HasDiscordPermission(gp => gp.ManageRoles)) {
 						await role.ModifyAsync(rp => rp.Mentionable = true);
 						disallowRoleMention = true;
@@ -104,23 +104,23 @@ namespace MopBot.Common.Systems.Trivia
 				.WithDescription($"**{triviaServerData.currentQuestion.question}**")
 				.WithFooter("Type your answer right in this channel!");
 
-			if(triviaServerData.thumbnailUrls?.Length>0==true) {
+			if(triviaServerData.thumbnailUrls?.Length > 0 == true) {
 				try {
 					embedBuilder.WithThumbnailUrl(triviaServerData.thumbnailUrls[MopBot.Random.Next(triviaServerData.thumbnailUrls.Length)]);
 				}
-				catch {}
+				catch { }
 			}
 
-			await channel.SendMessageAsync(mention,embed:embedBuilder.Build());
+			await channel.SendMessageAsync(mention, embed: embedBuilder.Build());
 
 			if(disallowRoleMention) {
 				await role.ModifyAsync(rp => rp.Mentionable = false);
 			}
 
-			if(triviaServerData.lockTriviaChannel && currentUser.HasChannelPermission(channel,DiscordPermission.ManageChannel)) {
+			if(triviaServerData.lockTriviaChannel && currentUser.HasChannelPermission(channel, DiscordPermission.ManageChannel)) {
 				//Unlock the channel, since there's a question now.
 
-				await channel.ModifyPermissions(server.EveryoneRole,op => op.SendMessages==PermValue.Deny ? op.Modify(sendMessages:PermValue.Inherit) : op);
+				await channel.ModifyPermissions(server.EveryoneRole, op => op.SendMessages == PermValue.Deny ? op.Modify(sendMessages: PermValue.Inherit) : op);
 			}
 		}
 
@@ -129,14 +129,14 @@ namespace MopBot.Common.Systems.Trivia
 			var server = context.server;
 			var channel = context.socketTextChannel;
 
-			if(channel==null) {
+			if(channel == null) {
 				return;
 			}
 
-			var triviaServerMemory = server.GetMemory().GetData<TriviaSystem,TriviaServerData>();
+			var triviaServerMemory = server.GetMemory().GetData<TriviaSystem, TriviaServerData>();
 			var qa = triviaServerMemory.currentQuestion;
 
-			if(qa==null || channel.Id!=triviaServerMemory.currentChannel) {
+			if(qa == null || channel.Id != triviaServerMemory.currentChannel) {
 				return;
 			}
 
@@ -150,36 +150,36 @@ namespace MopBot.Common.Systems.Trivia
 
 				var user = context.socketServerUser;
 
-				CurrencyAmount.TryGiveToUser(ref triviaServerMemory.currencyRewards,user,out string givenString);
+				CurrencyAmount.TryGiveToUser(ref triviaServerMemory.currencyRewards, user, out string givenString);
 
-				var timeSpan = DateTime.Now-triviaServerMemory.lastTriviaPost.AddSeconds(triviaServerMemory.postIntervalInSeconds);
+				var timeSpan = DateTime.Now - triviaServerMemory.lastTriviaPost.AddSeconds(triviaServerMemory.postIntervalInSeconds);
 				var embed = MopBot.GetEmbedBuilder(server)
-					.WithDescription($"{user.Mention} wins{(givenString!=null ? $", and gets {givenString}" : null)}!\r\nThe question was `{qa.question}`, and their answer was `{match.Groups[1].Value}`.\r\n\r\nThe next question will come up in `{timeSpan:m'm 's's'}` from now.")
+					.WithDescription($"{user.Mention} wins{(givenString != null ? $", and gets {givenString}" : null)}!\r\nThe question was `{qa.question}`, and their answer was `{match.Groups[1].Value}`.\r\n\r\nThe next question will come up in `{timeSpan:m'm 's's'}` from now.")
 					.Build();
 
-				await channel.SendMessageAsync(embed:embed);
+				await channel.SendMessageAsync(embed: embed);
 
 				var currentUser = server.CurrentUser;
 
-				if(triviaServerMemory.lockTriviaChannel && currentUser.HasChannelPermission(channel,DiscordPermission.ManageChannel)) {
+				if(triviaServerMemory.lockTriviaChannel && currentUser.HasChannelPermission(channel, DiscordPermission.ManageChannel)) {
 					//Lock the channel, since the question has been answered.
 
-					await channel.ModifyPermissions(currentUser,op => op.Modify(sendMessages:PermValue.Allow)); //Make sure we're still allowed to post
-					await channel.ModifyPermissions(server.EveryoneRole,op => op.Modify(sendMessages:PermValue.Deny)); //Forbid posting for everyone else
+					await channel.ModifyPermissions(currentUser, op => op.Modify(sendMessages: PermValue.Allow)); //Make sure we're still allowed to post
+					await channel.ModifyPermissions(server.EveryoneRole, op => op.Modify(sendMessages: PermValue.Deny)); //Forbid posting for everyone else
 				}
-				
+
 				return;
 			}
 		}
 
 		public static Regex GetCurrentQuestionRegex(TriviaServerData data)
-			=> currentQuestionRegex ??= new Regex(@$"(?:^|[^\w])({string.Join('|',data.currentQuestion.answers.Select(a => Regex.Escape(a)))})(?=[^\w]|$)",RegexOptions.Compiled|RegexOptions.IgnoreCase);
-			
+			=> currentQuestionRegex ??= new Regex(@$"(?:^|[^\w])({string.Join('|', data.currentQuestion.answers.Select(a => Regex.Escape(a)))})(?=[^\w]|$)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
 		private static void ClearCache(TriviaServerData data)
 		{
 			//TODO: Perhaps track when the questions were posted, and only clear the flag on the older half?
 			lock(data.questions) {
-				for(int i = 0;i<data.questions.Count;i++) {
+				for(int i = 0; i < data.questions.Count; i++) {
 					data.questions[i].wasPosted = false;
 				}
 			}

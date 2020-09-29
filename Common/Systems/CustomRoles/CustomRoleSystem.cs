@@ -8,15 +8,16 @@ using MopBot.Core.Systems.Memory;
 
 namespace MopBot.Common.Systems.CustomRoles
 {
-	[RequirePermission(SpecialPermission.Owner,"customrole")]
-	[Group("customrole")] [Alias("colorrole")]
+	[RequirePermission(SpecialPermission.Owner, "customrole")]
+	[Group("customrole")]
+	[Alias("colorrole")]
 	[Summary("Lets you manage your unique color role.")]
 	[SystemConfiguration(Description = "Lets 'VIP' users make unique roles for themselves.")]
 	public partial class CustomRoleSystem : BotSystem
 	{
 		public override void RegisterDataTypes()
 		{
-			RegisterDataType<ServerUserMemory,CustomRoleServerUserData>();
+			RegisterDataType<ServerUserMemory, CustomRoleServerUserData>();
 		}
 		public override async Task Initialize()
 		{

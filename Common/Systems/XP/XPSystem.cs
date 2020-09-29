@@ -14,15 +14,16 @@ using MopBot.Utilities;
 
 namespace MopBot.Common.Systems.XP
 {
-	[Group("xp")] [Alias("exp","rank")]
+	[Group("xp")]
+	[Alias("exp", "rank")]
 	[Summary("Command to check your XP, and a group for managing the system.")]
 	[SystemConfiguration(Description = "A small XP/leveling system.")]
 	public partial class XPSystem : BotSystem
 	{
 		public override void RegisterDataTypes()
 		{
-			RegisterDataType<ServerUserMemory,XPServerUserData>();
-			RegisterDataType<ServerMemory,XPServerData>();
+			RegisterDataType<ServerUserMemory, XPServerUserData>();
+			RegisterDataType<ServerMemory, XPServerData>();
 		}
 
 		public override async Task Initialize() { }
@@ -30,40 +31,40 @@ namespace MopBot.Common.Systems.XP
 		{
 			var server = message.server;
 
-			if(server==null || message.isCommand || message.socketServerUser.IsBot) {
+			if(server == null || message.isCommand || message.socketServerUser.IsBot) {
 				return;
 			}
 
 			var serverMemory = MemorySystem.memory[server];
 			var user = message.socketServerUser;
-			var xpUserData = serverMemory[user].GetData<XPSystem,XPServerUserData>();
+			var xpUserData = serverMemory[user].GetData<XPSystem, XPServerUserData>();
 			var now = DateTime.Now;
 
 			xpUserData.lastXPReceive = now;
 
 			ulong xp = GetMessageXP(message);
 
-			await GiveXP(user,xp);
+			await GiveXP(user, xp);
 		}
 		public override async Task OnMessageDeleted(MessageContext message)
 		{
-			if(message==null ||  message.isCommand || message.server==null || message.socketServerUser==null || message.socketServerUser.IsBot) {
+			if(message == null || message.isCommand || message.server == null || message.socketServerUser == null || message.socketServerUser.IsBot) {
 				return;
 			}
 
 			ulong xp = GetMessageXP(message);
 
-			await TakeXP(message.socketServerUser,xp);
+			await TakeXP(message.socketServerUser, xp);
 		}
 
 		public static ulong GetMessageXP(MessageContext message)
 		{
-			ulong xp = (ulong)Math.Min(1,Math.Max(10,Regex.Matches(message.content,@"\w+").Count/5));
+			ulong xp = (ulong)Math.Min(1, Math.Max(10, Regex.Matches(message.content, @"\w+").Count / 5));
 			string text = message.content.ToLower() ?? "";
 
 			if(text.Contains("welcome") || text.Contains("hello") || text.Contains("hi") || text.Contains("hey")) {
 				xp += 5;
-			} else if(message.message.Attachments.Any(a => a.Width>=256 && a.Height>=256) || message.message.Embeds.Any(e => e.Type==EmbedType.Image || e.Type==EmbedType.Video)) {
+			} else if(message.message.Attachments.Any(a => a.Width >= 256 && a.Height >= 256) || message.message.Embeds.Any(e => e.Type == EmbedType.Image || e.Type == EmbedType.Video)) {
 				xp += 5;
 			}
 
@@ -71,25 +72,25 @@ namespace MopBot.Common.Systems.XP
 		}
 		public static uint XPToLevel(ulong xp)
 		{
-			if(xp==0) {
+			if(xp == 0) {
 				return 1;
 			}
 
-			return (uint)Math.Floor(Math.Sqrt(xp/3))+1;
+			return (uint)Math.Floor(Math.Sqrt(xp / 3)) + 1;
 		}
 		public static ulong LevelToXP(uint level)
 		{
-			ulong lvl = level-1;
+			ulong lvl = level - 1;
 
-			return 3*lvl*lvl;
+			return 3 * lvl * lvl;
 		}
 
-		private static async Task ModifyXP(Func<ulong,ulong> xpModifier,SocketGuildUser user,SocketUserMessage message = null)
+		private static async Task ModifyXP(Func<ulong, ulong> xpModifier, SocketGuildUser user, SocketUserMessage message = null)
 		{
 			var server = user.Guild;
 			var serverMemory = MemorySystem.memory[server];
 			var userMemory = serverMemory[user];
-			var xpUserData = userMemory.GetData<XPSystem,XPServerUserData>();
+			var xpUserData = userMemory.GetData<XPSystem, XPServerUserData>();
 
 			uint prevLvl = XPToLevel(xpUserData.xp);
 
@@ -97,8 +98,8 @@ namespace MopBot.Common.Systems.XP
 
 			uint newLvl = XPToLevel(xpUserData.xp);
 
-			if(message!=null) {
-				if(newLvl>prevLvl) {
+			if(message != null) {
+				if(newLvl > prevLvl) {
 					try {
 						await message.AddReactionAsync(EmoteUtils.Parse("🌟"));
 					}

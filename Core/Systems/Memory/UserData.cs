@@ -6,6 +6,6 @@ namespace MopBot.Core.Systems.Memory
 	[Serializable]
 	public class UserData : MemoryDataBase
 	{
-		public virtual void Initialize(IUser user) {}
+		public virtual void Initialize(IUser user) { }
 	}
 }

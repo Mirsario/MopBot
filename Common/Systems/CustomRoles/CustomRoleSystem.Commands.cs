@@ -14,35 +14,35 @@ namespace MopBot.Common.Systems.CustomRoles
 	public partial class CustomRoleSystem
 	{
 		[Command("set")]
-		[RequirePermission(SpecialPermission.Owner,"customrole.manage")]
-		public async Task SetCustomRoleCommand(byte red,byte green,byte blue,[Remainder]string roleName)
+		[RequirePermission(SpecialPermission.Owner, "customrole.manage")]
+		public async Task SetCustomRoleCommand(byte red, byte green, byte blue, [Remainder] string roleName)
 		{
 			var server = Context.server;
 			var user = Context.socketServerUser;
 
-			server.CurrentUser.RequirePermission(Context.socketServerChannel,DiscordPermission.ManageRoles);
+			server.CurrentUser.RequirePermission(Context.socketServerChannel, DiscordPermission.ManageRoles);
 
 			int topPos = -1;
 
 			foreach(var tempRole in user.Roles) {
 				if(!tempRole.IsEveryone) {
-					topPos = topPos==-1 ? tempRole.Position : Math.Max(topPos,tempRole.Position);
+					topPos = topPos == -1 ? tempRole.Position : Math.Max(topPos, tempRole.Position);
 				}
 			}
 
 			IRole role;
-			var customRoleUserData = MemorySystem.memory[server][user].GetData<CustomRoleSystem,CustomRoleServerUserData>();
-			var color = new Color(red,green,blue);
+			var customRoleUserData = MemorySystem.memory[server][user].GetData<CustomRoleSystem, CustomRoleServerUserData>();
+			var color = new Color(red, green, blue);
 
-			if(customRoleUserData.colorRole!=null && (role = server.GetRole(customRoleUserData.colorRole.Value))!=null) {
+			if(customRoleUserData.colorRole != null && (role = server.GetRole(customRoleUserData.colorRole.Value)) != null) {
 				await role.ModifyAsync(properties => {
 					properties.Color = color;
 					properties.Name = roleName;
 				});
 			} else {
-				var tempRole = await server.CreateRoleAsync(roleName,null,color);
+				var tempRole = await server.CreateRoleAsync(roleName, null, color);
 
-				await server.ReorderRolesAsync(new[] { new ReorderRoleProperties(tempRole.Id,topPos+1) });
+				await server.ReorderRolesAsync(new[] { new ReorderRoleProperties(tempRole.Id, topPos + 1) });
 				await user.AddRoleAsync(tempRole);
 
 				customRoleUserData.colorRole = tempRole.Id;
@@ -52,17 +52,17 @@ namespace MopBot.Common.Systems.CustomRoles
 		}
 
 		[Command("remove")]
-		[RequirePermission(SpecialPermission.Owner,"customrole.manage")]
+		[RequirePermission(SpecialPermission.Owner, "customrole.manage")]
 		public async Task RemoveCustomRoleCommand()
 		{
 			var server = Context.server;
 
-			server.CurrentUser.RequirePermission(Context.socketServerChannel,DiscordPermission.ManageRoles);
+			server.CurrentUser.RequirePermission(Context.socketServerChannel, DiscordPermission.ManageRoles);
 
 			var user = Context.socketServerUser;
-			var userMemory = MemorySystem.memory[server][user].GetData<CustomRoleSystem,CustomRoleServerUserData>();
+			var userMemory = MemorySystem.memory[server][user].GetData<CustomRoleSystem, CustomRoleServerUserData>();
 
-			if(userMemory.colorRole==null || !user.Roles.TryGetFirst(r => r.Id==userMemory.colorRole.Value,out var role)) {
+			if(userMemory.colorRole == null || !user.Roles.TryGetFirst(r => r.Id == userMemory.colorRole.Value, out var role)) {
 				throw new BotError("You don't have a custom role set.");
 			}
 
@@ -72,12 +72,12 @@ namespace MopBot.Common.Systems.CustomRoles
 		}
 
 		[Command("detect")]
-		[RequirePermission(SpecialPermission.Owner,"customrole.admin")]
+		[RequirePermission(SpecialPermission.Owner, "customrole.admin")]
 		public async Task DetectCustomRolesCommand()
 		{
 			var server = Context.server;
 
-			if(server==null) {
+			if(server == null) {
 				return;
 			}
 
@@ -92,28 +92,28 @@ namespace MopBot.Common.Systems.CustomRoles
 
 				var members = role.Members.ToArray();
 
-				if(members.Length==0) {
+				if(members.Length == 0) {
 					unused += $"{role.Name} is unused.\r\n";
 
 					continue;
 				}
 
-				if(members.Length==1) {
+				if(members.Length == 1) {
 					var user = members[0];
-					var customRoleUserData = serverMemory[user].GetData<CustomRoleSystem,CustomRoleServerUserData>();
+					var customRoleUserData = serverMemory[user].GetData<CustomRoleSystem, CustomRoleServerUserData>();
 
-					if(customRoleUserData.colorRole!=null) {
+					if(customRoleUserData.colorRole != null) {
 						continue;
 					}
 
-					if(user.Roles.OrderByDescending(r => r.Position).First().Id==role.Id) {
+					if(user.Roles.OrderByDescending(r => r.Position).First().Id == role.Id) {
 						customRoleUserData.colorRole = role.Id;
-						
+
 						string newText = $"Detected {user.GetDisplayName()}'s custom role to be ''{role.Name}''.\r\n";
 
-						if(text.Length+newText.Length>=2000) {
-							await Context.ReplyAsync(text,false);
-							
+						if(text.Length + newText.Length >= 2000) {
+							await Context.ReplyAsync(text, false);
+
 							text = "";
 						}
 
@@ -122,8 +122,8 @@ namespace MopBot.Common.Systems.CustomRoles
 				}
 			}
 
-			await Context.ReplyAsync(text,false);
-			await Context.ReplyAsync(unused,false);
+			await Context.ReplyAsync(text, false);
+			await Context.ReplyAsync(unused, false);
 			await Context.ReplyAsync("Done.");
 		}
 	}

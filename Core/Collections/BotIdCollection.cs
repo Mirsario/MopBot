@@ -18,8 +18,8 @@ namespace MopBot.Collections
 	[Serializable]
 	public class BotIdCollection<T> : ICollection<NameIdValue<T>>
 	{
-		[JsonProperty] private readonly Dictionary<string,ulong> NameToId = new Dictionary<string,ulong>(StringComparer.InvariantCultureIgnoreCase);
-		[JsonProperty] private readonly Dictionary<ulong,T> IdToValue = new Dictionary<ulong,T>();
+		[JsonProperty] private readonly Dictionary<string, ulong> NameToId = new Dictionary<string, ulong>(StringComparer.InvariantCultureIgnoreCase);
+		[JsonProperty] private readonly Dictionary<ulong, T> IdToValue = new Dictionary<ulong, T>();
 
 		public T this[string key] => IdToValue[GetIdFromName(key)];
 		public T this[ulong key] => IdToValue[key];
@@ -34,7 +34,7 @@ namespace MopBot.Collections
 			NameToId[item.name] = item.id;
 			IdToValue[item.id] = item.value;
 		}
-		public void Add(string name,T value)
+		public void Add(string name, T value)
 		{
 			StringUtils.CheckAndLowerStringId(ref name);
 
@@ -47,7 +47,7 @@ namespace MopBot.Collections
 			NameToId[name] = id;
 			IdToValue[id] = value;
 		}
-		public void Rename(string name,string newName)
+		public void Rename(string name, string newName)
 		{
 			StringUtils.CheckAndLowerStringId(ref newName);
 
@@ -63,7 +63,7 @@ namespace MopBot.Collections
 		public bool Remove(NameIdValue<T> item) => Remove(item.name);
 		public bool Remove(string name)
 		{
-			if(NameToId.TryGetValue(name,out ulong id)) {
+			if(NameToId.TryGetValue(name, out ulong id)) {
 				NameToId.Remove(name);
 				IdToValue.Remove(id);
 
@@ -78,14 +78,14 @@ namespace MopBot.Collections
 			IdToValue.Clear();
 		}
 		//Ids
-		public bool TryGetIdFromName(string name,out ulong id) => NameToId.TryGetValue(name,out id);
-		public ulong GetIdFromName(string name) => NameToId.TryGetValue(name,out ulong id) ? id : throw new BotError($"Unknown `{typeof(T).Name}`: {name}");
+		public bool TryGetIdFromName(string name, out ulong id) => NameToId.TryGetValue(name, out id);
+		public ulong GetIdFromName(string name) => NameToId.TryGetValue(name, out ulong id) ? id : throw new BotError($"Unknown `{typeof(T).Name}`: {name}");
 		//Values
-		public bool TryGetValue(ulong id,out T result) => IdToValue.TryGetValue(id,out result);
-		public bool TryGetValue(string nameId,out T result,out ulong id)
+		public bool TryGetValue(ulong id, out T result) => IdToValue.TryGetValue(id, out result);
+		public bool TryGetValue(string nameId, out T result, out ulong id)
 		{
-			if(NameToId.TryGetValue(nameId,out id)) {
-				return IdToValue.TryGetValue(id,out result);
+			if(NameToId.TryGetValue(nameId, out id)) {
+				return IdToValue.TryGetValue(id, out result);
 			}
 
 			result = default;
@@ -96,8 +96,8 @@ namespace MopBot.Collections
 		public bool ContainsKey(ulong key) => IdToValue.ContainsKey(key);
 		public bool Contains(NameIdValue<T> item) => IdToValue.ContainsKey(item.id);
 		//Etc
-		public void CopyTo(Array array,int index) => throw new NotImplementedException();
-		public void CopyTo(NameIdValue<T>[] array,int arrayIndex) => throw new NotImplementedException();
+		public void CopyTo(Array array, int index) => throw new NotImplementedException();
+		public void CopyTo(NameIdValue<T>[] array, int arrayIndex) => throw new NotImplementedException();
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 		public IEnumerator<NameIdValue<T>> GetEnumerator()
 		{

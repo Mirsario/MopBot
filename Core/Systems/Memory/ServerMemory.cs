@@ -11,7 +11,7 @@ namespace MopBot.Core.Systems.Memory
 
 		public ServerUserMemory this[IUser user] {
 			get => GetSubMemory<ServerUserMemory>(user.Id);
-			set => SetSubMemory(user.Id,value);
+			set => SetSubMemory(user.Id, value);
 		}
 
 		public override void Initialize()

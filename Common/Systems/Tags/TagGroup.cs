@@ -11,7 +11,7 @@ namespace MopBot.Common.Systems.Tags
 
 		public List<ulong> tagIDs = new List<ulong>();
 
-		public TagGroup(ulong owner,string name)
+		public TagGroup(ulong owner, string name)
 		{
 			this.owner = owner;
 			this.name = name.ToLowerInvariant();

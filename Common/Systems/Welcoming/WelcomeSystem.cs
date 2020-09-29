@@ -12,28 +12,28 @@ namespace MopBot.Common.Systems.Welcoming
 	{
 		public override void RegisterDataTypes()
 		{
-			RegisterDataType<ServerMemory,WelcomeServerData>();
+			RegisterDataType<ServerMemory, WelcomeServerData>();
 		}
 
 		public override async Task OnUserJoined(SocketGuildUser user)
 		{
 			var server = user.Guild;
 			var memory = server.GetMemory();
-			var welcomeData = memory.GetData<WelcomeSystem,WelcomeServerData>();
+			var welcomeData = memory.GetData<WelcomeSystem, WelcomeServerData>();
 
-			if(!server.TryGetTextChannel(welcomeData.channel,out var welcomeChannel)) {
+			if(!server.TryGetTextChannel(welcomeData.channel, out var welcomeChannel)) {
 				return;
 			}
 
 			string msg;
 
-			if(!memory.GetSubMemories<ServerUserMemory>().Any(p => p.Key==user.Id)) {
+			if(!memory.GetSubMemories<ServerUserMemory>().Any(p => p.Key == user.Id)) {
 				msg = welcomeData.messageJoin;
 			} else {
 				msg = welcomeData.messageRejoin;
 			}
 
-			await welcomeChannel.SendMessageAsync(user.Mention,embed:MopBot.GetEmbedBuilder(server).WithDescription(msg).Build());
+			await welcomeChannel.SendMessageAsync(user.Mention, embed: MopBot.GetEmbedBuilder(server).WithDescription(msg).Build());
 		}
 	}
 }

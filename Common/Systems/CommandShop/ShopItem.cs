@@ -11,7 +11,7 @@ namespace MopBot.Common.Systems.CommandShop
 		public CurrencyAmount[] prices;
 		public SudoCommand command;
 
-		public ShopItem(string name,CurrencyAmount[] prices,SudoCommand command)
+		public ShopItem(string name, CurrencyAmount[] prices, SudoCommand command)
 		{
 			this.name = name;
 			this.prices = prices;

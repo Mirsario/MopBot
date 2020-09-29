@@ -5,4 +5,4 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Code Quality","CS1998:This async method lacks 'await' operators and will run synchronously.",Justification = "<Pending>")]
+[assembly: SuppressMessage("Code Quality", "CS1998:This async method lacks 'await' operators and will run synchronously.", Justification = "<Pending>")]

@@ -10,12 +10,12 @@ namespace MopBot.Common.Systems.XP
 	{
 		public bool? onlyAnnounceRoleRewards;
 		public ulong? xpReceiveDelay;
-		public Dictionary<uint,ulong[]> levelRewards;
+		public Dictionary<uint, ulong[]> levelRewards;
 
 		public override void Initialize(SocketGuild server)
 		{
 			xpReceiveDelay = (ulong?)300;
-			levelRewards = new Dictionary<uint,ulong[]>();
+			levelRewards = new Dictionary<uint, ulong[]>();
 			onlyAnnounceRoleRewards = true;
 		}
 	}

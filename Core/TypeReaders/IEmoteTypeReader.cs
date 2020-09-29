@@ -12,13 +12,13 @@ namespace MopBot.Core.TypeReaders
 	{
 		public override Type[] Types => new[] { typeof(IEmote) };
 
-		public override async Task<TypeReaderResult> ReadAsync(ICommandContext context,string input,IServiceProvider services)
+		public override async Task<TypeReaderResult> ReadAsync(ICommandContext context, string input, IServiceProvider services)
 		{
-			if(EmoteUtils.TryParse(input,out var result)) {
+			if(EmoteUtils.TryParse(input, out var result)) {
 				return TypeReaderResult.FromSuccess(result);
 			}
 
-			return TypeReaderResult.FromError(CommandError.ParseFailed,$"Unable to parse emote `{input}`.");
+			return TypeReaderResult.FromError(CommandError.ParseFailed, $"Unable to parse emote `{input}`.");
 		}
 	}
 }

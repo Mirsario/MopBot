@@ -12,7 +12,7 @@ namespace MopBot.Utilities
 	{
 		public static async Task<string> DownloadString(string url)
 		{
-			if(!Uri.TryCreate(url,UriKind.Absolute,out var realUrl)) {
+			if(!Uri.TryCreate(url, UriKind.Absolute, out var realUrl)) {
 				throw new BotError("Invalid url.");
 			}
 
@@ -25,20 +25,20 @@ namespace MopBot.Utilities
 				throw new BotError(e);
 			}
 		}
-		public static async Task DownloadFile(string url,string localPath,string[] validExtensions = null)
+		public static async Task DownloadFile(string url, string localPath, string[] validExtensions = null)
 		{
-			if(!Uri.TryCreate(url,UriKind.Absolute,out var realUrl)) {
+			if(!Uri.TryCreate(url, UriKind.Absolute, out var realUrl)) {
 				throw new BotError("Invalid url.");
 			}
 
-			if(validExtensions!=null && validExtensions.Any(ext => string.IsNullOrWhiteSpace(new FileInfo(realUrl.AbsolutePath).Extension))) {
-				throw new BotError($"Url has no extension, or it's forbidden. The following extensions are allowed: {string.Join(",",validExtensions.Select(ext => ext.ToString()))}.");
+			if(validExtensions != null && validExtensions.Any(ext => string.IsNullOrWhiteSpace(new FileInfo(realUrl.AbsolutePath).Extension))) {
+				throw new BotError($"Url has no extension, or it's forbidden. The following extensions are allowed: {string.Join(",", validExtensions.Select(ext => ext.ToString()))}.");
 			}
 
 			using var client = new WebClient();
 
 			try {
-				await client.DownloadFileTaskAsync(realUrl,localPath);
+				await client.DownloadFileTaskAsync(realUrl, localPath);
 			}
 			catch(Exception e) {
 				throw new BotError(e);

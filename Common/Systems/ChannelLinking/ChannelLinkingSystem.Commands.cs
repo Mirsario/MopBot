@@ -14,19 +14,19 @@ namespace MopBot.Common.Systems.ChannelLinking
 	public partial class ChannelLinkingSystem
 	{
 		[Command("add")]
-		public Task LinkChannelCommand(ulong serverId,string remoteChannelName) => LinkChannelCommand(Context.socketTextChannel,serverId,remoteChannelName);
+		public Task LinkChannelCommand(ulong serverId, string remoteChannelName) => LinkChannelCommand(Context.socketTextChannel, serverId, remoteChannelName);
 		[Command("add")]
-		public async Task LinkChannelCommand(SocketTextChannel localChannel,ulong serverId,string remoteChannelName)
+		public async Task LinkChannelCommand(SocketTextChannel localChannel, ulong serverId, string remoteChannelName)
 		{
 			var remoteServer = await GetServerFromId(serverId);
 
-			if(remoteServer==null) {
+			if(remoteServer == null) {
 				return;
 			}
 
-			var remoteChannel = remoteServer.Channels.FirstOrDefault(c => c.Name==remoteChannelName);
+			var remoteChannel = remoteServer.Channels.FirstOrDefault(c => c.Name == remoteChannelName);
 
-			if(remoteChannel==null) {
+			if(remoteChannel == null) {
 				throw new BotError("Channel not found.");
 			}
 
@@ -34,27 +34,27 @@ namespace MopBot.Common.Systems.ChannelLinking
 				throw new BotError("Channel must be a text channel.");
 			}
 
-			await LinkChannel(Context.socketServerUser,localChannel,textChannel);
+			await LinkChannel(Context.socketServerUser, localChannel, textChannel);
 		}
 		[Command("accept")]
-		public Task AcceptLinkInviteCommand(ulong linkId) => AcceptLinkInviteCommand(Context.socketTextChannel,linkId);
+		public Task AcceptLinkInviteCommand(ulong linkId) => AcceptLinkInviteCommand(Context.socketTextChannel, linkId);
 		[Command("accept")]
-		public async Task AcceptLinkInviteCommand(SocketTextChannel localChannel,ulong linkId)
+		public async Task AcceptLinkInviteCommand(SocketTextChannel localChannel, ulong linkId)
 		{
-			var globalData = MemorySystem.memory.GetData<ChannelLinkingSystem,ChannelLinkingGlobalData>();
+			var globalData = MemorySystem.memory.GetData<ChannelLinkingSystem, ChannelLinkingGlobalData>();
 
-			if(!globalData.links.TryGetValue(linkId,out var link)) {
+			if(!globalData.links.TryGetValue(linkId, out var link)) {
 				throw new BotError("Invalid link id.");
 			}
 
-			var localIds = new ServerChannelIds(localChannel.Guild.Id,localChannel.Id);
+			var localIds = new ServerChannelIds(localChannel.Guild.Id, localChannel.Id);
 
 			if(!link.invitedChannels.Contains(localIds)) {
 				throw new BotError("There are no invites to that link associated with this channel.");
 			}
 
 			var localServer = localChannel.Guild;
-			var localServerData = localServer.GetMemory().GetData<ChannelLinkingSystem,ChannelLinkingServerData>();
+			var localServerData = localServer.GetMemory().GetData<ChannelLinkingSystem, ChannelLinkingServerData>();
 
 			localServerData.channelLinks[localChannel.Id] = linkId;
 
@@ -66,10 +66,10 @@ namespace MopBot.Common.Systems.ChannelLinking
 
 			string Notification = $"This channel is now linked with channel `{localChannel.Name}` from server `{localServer.Name}`! :confetti_ball::confetti_ball::confetti_ball:";
 
-			for(int i = 0;i<link.connectedChannels.Count;i++) {
+			for(int i = 0; i < link.connectedChannels.Count; i++) {
 				var ids = link.connectedChannels[i];
 
-				if((ids.serverId==localServer.Id && ids.channelId==localChannel.Id) || !ids.TryGetTextChannel(out var channel)) {
+				if((ids.serverId == localServer.Id && ids.channelId == localChannel.Id) || !ids.TryGetTextChannel(out var channel)) {
 					continue;
 				}
 
@@ -79,7 +79,7 @@ namespace MopBot.Common.Systems.ChannelLinking
 			string channelList = string.Join(
 				"\r\n",
 				link.connectedChannels
-					.Where(ids => ids.channelId!=localChannel.Id)
+					.Where(ids => ids.channelId != localChannel.Id)
 					.Select(ids => ids.TryGetChannel(out var channel) ? $"{channel.Guild.Name}/#{channel.Name}" : "Unknown")
 			);
 

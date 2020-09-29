@@ -3,7 +3,7 @@
 	public enum DiscordPermission
 	{
 		Administrator,
-		
+
 		ManageServer,
 		ManageMessages,
 		ManageChannel,

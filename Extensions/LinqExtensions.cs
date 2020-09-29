@@ -5,18 +5,18 @@ namespace MopBot.Extensions
 {
 	public static class LinqExtensions
 	{
-		public static IEnumerable<T> ExceptIndex<T>(this IEnumerable<T> source,int index)
+		public static IEnumerable<T> ExceptIndex<T>(this IEnumerable<T> source, int index)
 		{
 			int i = 0;
 
 			foreach(var value in source) {
-				if(i++!=index) {
+				if(i++ != index) {
 					yield return value;
 				}
 			}
 		}
-		
-		public static int FirstIndex<T>(this IEnumerable<T> source,Func<T,bool> predicate)
+
+		public static int FirstIndex<T>(this IEnumerable<T> source, Func<T, bool> predicate)
 		{
 			int index = 0;
 
@@ -31,7 +31,7 @@ namespace MopBot.Extensions
 			return -1;
 		}
 
-		public static bool TryGetFirst<T>(this IEnumerable<T> source,out T result)
+		public static bool TryGetFirst<T>(this IEnumerable<T> source, out T result)
 		{
 			foreach(var value in source) {
 				result = value;
@@ -43,7 +43,7 @@ namespace MopBot.Extensions
 
 			return false;
 		}
-		public static bool TryGetFirst<T>(this IEnumerable<T> source,Func<T,bool> predicate,out T result)
+		public static bool TryGetFirst<T>(this IEnumerable<T> source, Func<T, bool> predicate, out T result)
 		{
 			foreach(var value in source) {
 				if(predicate(value)) {
@@ -58,24 +58,24 @@ namespace MopBot.Extensions
 			return false;
 		}
 
-		public static IEnumerable<TResult> SelectIgnoreNull<TSource,TResult>(this IEnumerable<TSource> source,Func<TSource,TResult> selector)
+		public static IEnumerable<TResult> SelectIgnoreNull<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
 		{
-			if(source==null) {
+			if(source == null) {
 				throw new ArgumentNullException(nameof(source));
 			}
-			
-			if(selector==null) {
+
+			if(selector == null) {
 				throw new ArgumentNullException(nameof(selector));
 			}
 
-			return SelectIgnoreNullIterator(source,selector);
+			return SelectIgnoreNullIterator(source, selector);
 		}
-		private static IEnumerable<TResult> SelectIgnoreNullIterator<TSource,TResult>(IEnumerable<TSource> source,Func<TSource,TResult> selector)
+		private static IEnumerable<TResult> SelectIgnoreNullIterator<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, TResult> selector)
 		{
 			foreach(var element in source) {
 				var result = selector(element);
 
-				if(result!=null) {
+				if(result != null) {
 					yield return result;
 				}
 			}

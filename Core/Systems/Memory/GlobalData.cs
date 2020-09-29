@@ -2,6 +2,6 @@
 {
 	public class GlobalData : MemoryDataBase
 	{
-		public virtual void Initialize() {}
+		public virtual void Initialize() { }
 	}
 }

@@ -18,18 +18,18 @@ namespace MopBot.Common.Systems.Showcase
 		public EmbedCache(SocketGuild server)
 		{
 			cacheDate = DateTime.Now;
-			color = server.GetMemory().GetData<CommandSystem,CommandServerData>().embedColor.Value;
+			color = server.GetMemory().GetData<CommandSystem, CommandServerData>().embedColor.Value;
 		}
 
 		public EmbedBuilder ToBuilder(SocketGuild server)
 		{
 			var builder = MopBot.GetEmbedBuilder(server);
 
-			if(authorName!=null) {
-				builder.WithAuthor(authorName,imageUrl);
+			if(authorName != null) {
+				builder.WithAuthor(authorName, imageUrl);
 			}
 
-			if(description!=null) {
+			if(description != null) {
 				builder.WithDescription(description);
 			}
 
