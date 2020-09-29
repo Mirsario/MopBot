@@ -61,30 +61,6 @@ namespace MopBot.Core.Systems
 			}
 
 			if(client.LoginState==LoginState.LoggedIn && !isFullyReady) {
-				if(client.Guilds.Count==0 || client.Guilds.Contains(null)) {
-					Write("Waiting for servers...");
-
-					return false;
-				}
-
-				foreach(var server in client.Guilds) {
-					void TryWrite(string part) => Write($"Awaiting information about server '{server.Name}' / {server.Id} ({part})...");
-
-					var channels = server.Channels;
-
-					if(channels==null || channels.Count==0 || channels.Any(c => c==null || c.Name==null || c.Users==null)) {
-						TryWrite("Channels");
-
-						return false;
-					}
-
-					if(server.EveryoneRole==null) {
-						TryWrite("Roles");
-
-						return false;
-					}
-				}
-
 				Write("Ready!");
 
 				isFullyReady = true;
