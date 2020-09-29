@@ -8,8 +8,6 @@ namespace MopBot.Core.Systems.Memory
 	{
 		public void RegisterSubMemory<T>() where T : MemoryBase
 		{
-			Console.WriteLine($"Registering submemory '{typeof(T).Name}' for memory '{GetType().Name}'.");
-
 			subMemory.Add(typeof(T),new Dictionary<ulong,MemoryBase>());
 		}
 		public T GetSubMemory<T>(ulong id) where T : MemoryBase
