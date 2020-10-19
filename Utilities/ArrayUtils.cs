@@ -56,39 +56,5 @@ namespace MopBot
 
 			array = newArray;
 		}
-		public static bool TryGetFirst<T>(T[] array, Predicate<T> predicate, out T result)
-		{
-			for(int i = 0; i < array.Length; i++) {
-				var element = array[i];
-
-				if(predicate(element)) {
-					result = element;
-
-					return true;
-				}
-			}
-
-			result = default;
-
-			return false;
-		}
-		public static void ModifyOrAddFirst<T>(ref T[] array, Predicate<T> predicate, Func<T> instancer, Action<T> action, bool createArrayIfNull = false)
-		{
-			T element;
-
-			if(array == null) {
-				if(!createArrayIfNull) {
-					throw new ArgumentNullException(nameof(array));
-				}
-
-				array = new T[1] {
-					element = instancer()
-				};
-			} else if(!TryGetFirst(array, predicate, out element)) {
-				element = instancer();
-			}
-
-			action(element);
-		}
 	}
 }

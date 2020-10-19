@@ -8,6 +8,7 @@ using MopBot.Extensions;
 using MopBot.Core.Systems.Permissions;
 
 #pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+
 namespace MopBot.Common.Systems.Showcase
 {
 	public partial class ShowcaseSystem
@@ -31,28 +32,24 @@ namespace MopBot.Common.Systems.Showcase
 		public async Task SetupChannelShowcase(SocketTextChannel channel, SocketTextChannel spotlightChannel, uint spotlightScore, [Remainder] SocketRole[] rewardRoles = null)
 		{
 			if(channel == spotlightChannel) {
-				throw new BotError("'channel' can't be the same value as 'spotlightChannel'.");
+				throw new BotError($"'{nameof(channel)}' can't be the same value as '{nameof(spotlightChannel)}'.");
 			}
 
 			var showcaseData = Context.server.GetMemory().GetData<ShowcaseSystem, ShowcaseServerData>();
-			var channelId = channel.Id;
+			ulong channelId = channel.Id;
 
 			if(spotlightChannel != null && !showcaseData.ChannelIs<SpotlightChannel>(spotlightChannel)) {
 				throw new BotError($"Channel <#{spotlightChannel.Id}> is not a spotlight channel. Setup it as one first before setting up showcase channels for it.");
 			}
 
-			ArrayUtils.ModifyOrAddFirst(
-				ref showcaseData.showcaseChannels,
-				c => c.id == channelId,
-				() => new ShowcaseChannel(),
-				c => {
-					c.id = channel.Id;
-					c.spotlightChannel = spotlightChannel == null ? 0 : spotlightChannel.Id;
-					c.minSpotlightScore = spotlightScore;
-					c.rewardRoles = rewardRoles == null || rewardRoles.Length == 0 ? null : rewardRoles.SelectIgnoreNull(role => role.Id).ToList();
-				},
-				true
-			);
+			if(!showcaseData.showcaseChannels.TryGetFirst(c => c.id == channelId, out var channelData)) {
+				showcaseData.showcaseChannels.Add(channelData = new ShowcaseChannel());
+			}
+
+			channelData.id = channel.Id;
+			channelData.spotlightChannel = spotlightChannel == null ? 0 : spotlightChannel.Id;
+			channelData.minSpotlightScore = spotlightScore;
+			channelData.rewardRoles = rewardRoles == null || rewardRoles.Length == 0 ? null : rewardRoles.SelectIgnoreNull(role => role.Id).ToList();
 		}
 
 		[Command("setupchannel spotlight")]
@@ -60,12 +57,14 @@ namespace MopBot.Common.Systems.Showcase
 		public async Task SetupChannelSpotlight(SocketTextChannel channel, [Remainder] SocketRole[] rewardRoles)
 		{
 			var showcaseData = Context.server.GetMemory().GetData<ShowcaseSystem, ShowcaseServerData>();
-			var channelId = channel.Id;
+			ulong channelId = channel.Id;
 
-			ArrayUtils.ModifyOrAddFirst(ref showcaseData.spotlightChannels, c => c.id == channelId, () => new SpotlightChannel(), c => {
-				c.id = channel.Id;
-				c.rewardRoles = rewardRoles == null || rewardRoles.Length == 0 ? null : rewardRoles.SelectIgnoreNull(role => role.Id).ToList();
-			}, true);
+			if(!showcaseData.spotlightChannels.TryGetFirst(c => c.id == channelId, out var channelData)) {
+				showcaseData.spotlightChannels.Add(channelData = new SpotlightChannel());
+			}
+
+			channelData.id = channel.Id;
+			channelData.rewardRoles = rewardRoles == null || rewardRoles.Length == 0 ? null : rewardRoles.SelectIgnoreNull(role => role.Id).ToList();
 		}
 
 		[Command("setemote")]
