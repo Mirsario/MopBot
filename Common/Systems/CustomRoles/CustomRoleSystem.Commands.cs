@@ -40,7 +40,7 @@ namespace MopBot.Common.Systems.CustomRoles
 					properties.Name = roleName;
 				});
 			} else {
-				var tempRole = await server.CreateRoleAsync(roleName, null, color);
+				var tempRole = await server.CreateRoleAsync(roleName, color: color, isMentionable: false);
 
 				await server.ReorderRolesAsync(new[] { new ReorderRoleProperties(tempRole.Id, topPos + 1) });
 				await user.AddRoleAsync(tempRole);
