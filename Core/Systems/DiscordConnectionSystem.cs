@@ -16,7 +16,6 @@ namespace MopBot.Core.Systems
 
 		public DiscordSocketClient client;
 		public string lastConsoleWrite;
-		public bool started;
 
 		public override async Task Initialize()
 		{
@@ -36,21 +35,6 @@ namespace MopBot.Core.Systems
 		}
 		public override async Task<bool> Update()
 		{
-			if(client.LoginState != LoginState.LoggedIn || client.ConnectionState != ConnectionState.Connected) {
-				if(started) {
-					Console.WriteLine("Trying to restart client...");
-
-					Process.Start(new ProcessStartInfo {
-						FileName = "",
-						UseShellExecute = true
-					});
-				}
-
-				return false;
-			}
-
-			started = true;
-
 			void Write(string text)
 			{
 				if(lastConsoleWrite != text) {
