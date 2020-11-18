@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Discord.Commands;
+using Discord.WebSocket;
+using MopBot.Core.Systems.Permissions;
+using MopBot.Extensions;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Discord;
-using Discord.WebSocket;
-using Discord.Commands;
-using MopBot.Extensions;
-using MopBot.Core.Systems.Permissions;
 
 namespace MopBot.Common.Systems.MessageManagement
 {
@@ -13,34 +12,37 @@ namespace MopBot.Common.Systems.MessageManagement
 	{
 		[Command("quote")]
 		[RequirePermission(SpecialPermission.Owner, "messagemanaging.quote")]
-		public async Task QuoteMessagesCommand(ulong messageId, int numMessages)
+		public async Task QuoteMessagesCommand(ulong messageId, int numMessages, bool allowGrouping = true)
 		{
 			var channel = Context.socketTextChannel;
 
-			await CopyMessagesInternal(numMessages, channel, messageId);
+			await CopyMessagesInternal(channel, numMessages, channel, messageId, allowGrouping);
 		}
+
 		[Command("copy")]
 		[RequirePermission(SpecialPermission.Owner, "messagemanaging.copy")]
-		public async Task CopyMessagesCommand(int numMessages, SocketGuildChannel channel, ulong bottomMessageId = 0)
-		{
-			if(!(channel is ITextChannel toChannel)) {
-				throw new BotError($"<#{channel.Id}> isn't a text channel.");
-			}
+		public async Task CopyMessagesCommand(int numMessages, SocketTextChannel destinationChannel, ulong bottomMessageId = 0, bool allowGrouping = true)
+			=> await CopyMessagesCommand(Context.socketTextChannel, numMessages, destinationChannel, bottomMessageId, allowGrouping);
 
-			await CopyMessagesInternal(numMessages, toChannel, bottomMessageId);
-		}
+		[Command("copy")]
+		[RequirePermission(SpecialPermission.Owner, "messagemanaging.copy")]
+		public async Task CopyMessagesCommand(SocketTextChannel sourceChannel, int numMessages, SocketTextChannel destinationChannel, ulong bottomMessageId = 0, bool allowGrouping = true)
+			=> await CopyMessagesInternal(sourceChannel, numMessages, destinationChannel, bottomMessageId, allowGrouping);
+
 		[Command("move")]
 		[RequirePermission(SpecialPermission.Owner, "messagemanaging.move")]
-		public async Task MoveMessagesCommand(int numMessages, SocketGuildChannel channel, ulong bottomMessageId = 0)
+		public async Task MoveMessagesCommand(int numMessages, SocketTextChannel destinationChannel, ulong bottomMessageId = 0, bool allowGrouping = true)
+			=> await CopyMessagesCommand(Context.socketTextChannel, numMessages, destinationChannel, bottomMessageId, allowGrouping);
+
+		[Command("move")]
+		[RequirePermission(SpecialPermission.Owner, "messagemanaging.move")]
+		public async Task MoveMessagesCommand(SocketTextChannel sourceChannel, int numMessages, SocketTextChannel destinationChannel, ulong bottomMessageId = 0, bool allowGrouping = true)
 		{
 			var context = Context;
-			context.server.CurrentUser.RequirePermission(channel, DiscordPermission.ManageMessages);
 
-			if(!(channel is ITextChannel toChannel)) {
-				throw new BotError($"<#{channel.Id}> isn't a text channel.");
-			}
+			context.server.CurrentUser.RequirePermission(destinationChannel, DiscordPermission.ManageMessages);
 
-			var messageList = await CopyMessagesInternal(numMessages, toChannel, bottomMessageId);
+			var messageList = await CopyMessagesInternal(sourceChannel, numMessages, destinationChannel, bottomMessageId, allowGrouping);
 
 			try {
 				await context.socketTextChannel.DeleteMessagesAsync(messageList);
@@ -51,13 +53,6 @@ namespace MopBot.Common.Systems.MessageManagement
 			}
 		}
 
-		/*[Command("send")] [Alias("say")]
-		[RequirePermission(SpecialPermission.Owner,"messagemanaging.send")]
-		public async Task SendMessageCommand([Remainder]string text)
-		{
-			Utils.RemoveQuotemarks(ref text);
-			await Context.socketTextChannel.SendMessageAsync(text);
-		}*/
 		[Command("send")]
 		[Alias("say")]
 		[Priority(-1)]

@@ -16,19 +16,16 @@ namespace MopBot.Common.Systems.MessageManagement
 	[SystemConfiguration(Description = "Contains commands for sending messages, as well as moving and copying existing messages. Useful!")]
 	public partial class MessageManagementSystem : BotSystem
 	{
-		public static async Task QuoteMessages(ITextChannel textChannel, IEnumerable<IMessage> messages)
+		public static async Task QuoteMessages(ITextChannel textChannel, IEnumerable<IMessage> messages, bool allowGrouping = true)
 		{
 			IMessage prevMessage = null;
 			var messageGroups = new List<List<IMessage>>();
-			int listIndex = -1;
 
 			foreach(var message in messages) {
-				if(listIndex < 0 || prevMessage.Author.Id != message.Author.Id || message.Attachments.Count > 0) {
+				if(!allowGrouping || messageGroups.Count == 0 || prevMessage.Author.Id != message.Author.Id || message.Attachments.Count > 0) {
 					messageGroups.Add(new List<IMessage> { message });
-
-					listIndex++;
 				} else {
-					messageGroups[listIndex].Add(message);
+					messageGroups[messageGroups.Count - 1].Add(message);
 				}
 
 				prevMessage = message;
@@ -111,28 +108,27 @@ namespace MopBot.Common.Systems.MessageManagement
 			}
 		}
 
-		internal async Task<List<IMessage>> CopyMessagesInternal(int numMessages, ITextChannel toChannel, ulong bottomMessageId = 0)
+		internal async Task<List<IMessage>> CopyMessagesInternal(ITextChannel sourceChannel, int numMessages, ITextChannel destinationChannel, ulong bottomMessageId = 0, bool allowGrouping = true)
 		{
-			const int MaxMessages = 200;
+			const int MaxMessages = 1000;
 
 			if(numMessages > MaxMessages) {
 				throw new BotError($"Won't copy more than {MaxMessages} messages.");
 			}
 
-			var fromChannel = Context.Channel;
 			var messageList = new List<IMessage>();
 
 			if(bottomMessageId != 0) {
 				numMessages--;
 
-				messageList.Add(await fromChannel.GetMessageAsync(bottomMessageId));
+				messageList.Add(await sourceChannel.GetMessageAsync(bottomMessageId));
 			}
 
 			if(numMessages > 0) {
-				await fromChannel.GetMessagesAsync(bottomMessageId == 0 ? Context.message.Id : bottomMessageId, Direction.Before, numMessages).ForEachAsync(collection => messageList.AddRange(collection));
+				await sourceChannel.GetMessagesAsync(bottomMessageId == 0 ? Context.message.Id : bottomMessageId, Direction.Before, numMessages).ForEachAsync(collection => messageList.AddRange(collection));
 			}
 
-			await QuoteMessages(toChannel, messageList);
+			await QuoteMessages(destinationChannel, messageList, allowGrouping);
 
 			return messageList;
 		}

@@ -7,6 +7,7 @@ using Discord.Commands;
 using MopBot.Extensions;
 using MopBot.Core.Systems;
 using MopBot.Core.Systems.Permissions;
+using System.Collections.Generic;
 
 namespace MopBot.Common.Systems.Moderation
 {
@@ -53,12 +54,12 @@ namespace MopBot.Common.Systems.Moderation
 		[Command("clear")]
 		[Summary("Removes a specified amount of messages.")]
 		[RequirePermission(SpecialPermission.Owner, "moderation.clear")]
-		public Task ClearCommand(uint amount) => ClearCommand(Context.socketTextChannel, amount);
+		public Task ClearCommand(uint amount, ulong bottomMessageId = 0) => ClearCommand(Context.socketTextChannel, amount, bottomMessageId);
 
 		[Command("clear")]
 		[Summary("Removes a specified amount of messages.")]
 		[RequirePermission(SpecialPermission.Owner, "moderation.clear")]
-		public async Task ClearCommand(SocketTextChannel channel, uint amount)
+		public async Task ClearCommand(SocketTextChannel channel, uint amount, ulong bottomMessageId = 0)
 		{
 			var context = Context;
 			var server = context.server;
@@ -66,14 +67,34 @@ namespace MopBot.Common.Systems.Moderation
 			server.CurrentUser.RequirePermission(channel, DiscordPermission.ManageMessages);
 
 			int highestRole = server.GetUser(MopBot.client.CurrentUser.Id).Roles.Max(r => r.Position);
-
 			var utcNow = DateTime.UtcNow.AddMinutes(1); //+1 min
-			var messages = (await channel.GetMessagesAsync((int)amount + 1).FlattenAsync())
-				.Where(m => m != null && (m.Author?.Id == MopBot.client.CurrentUser.Id || ((utcNow - m.Timestamp.UtcDateTime).TotalDays < 14 && (m.Author as SocketGuildUser)?.Roles?.All(r => r.Position < highestRole) == true)));
+			var messageList = new List<IMessage>();
+
+			if(bottomMessageId != 0) {
+				amount--;
+
+				messageList.Add(await channel.GetMessageAsync(bottomMessageId));
+			}
+
+			messageList.AddRange(
+				(await channel.GetMessagesAsync((int)amount + 1).FlattenAsync()).Where(m => {
+					if(m == null) {
+						return false;
+					}
+
+					if(m.Author?.Id != MopBot.client.CurrentUser.Id) {
+						if((utcNow - m.Timestamp.UtcDateTime).TotalDays >= 14 || ((m.Author as SocketGuildUser)?.Roles?.All(r => r.Position < highestRole)) != true) {
+							return false;
+						}
+					}
+
+					return true;
+				})
+			);
 
 			MessageSystem.IgnoreMessage(context.message.Id);
 
-			await channel.DeleteMessagesAsync(messages);
+			await channel.DeleteMessagesAsync(messageList);
 		}
 	}
 }
