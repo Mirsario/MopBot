@@ -32,7 +32,7 @@ namespace MopBot.Common.Systems.MessageManagement
 		[Command("move")]
 		[RequirePermission(SpecialPermission.Owner, "messagemanaging.move")]
 		public async Task MoveMessagesCommand(int numMessages, SocketTextChannel destinationChannel, ulong bottomMessageId = 0, bool allowGrouping = true)
-			=> await CopyMessagesCommand(Context.socketTextChannel, numMessages, destinationChannel, bottomMessageId, allowGrouping);
+			=> await MoveMessagesCommand(Context.socketTextChannel, numMessages, destinationChannel, bottomMessageId, allowGrouping);
 
 		[Command("move")]
 		[RequirePermission(SpecialPermission.Owner, "messagemanaging.move")]
