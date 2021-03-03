@@ -11,7 +11,7 @@ namespace MopBot.Common.Systems.Welcoming
 	[Group("welcoming")]
 	[Alias("welcome")]
 	[Summary("Group for controlling WelcomeSystem.")]
-	[RequirePermission(SpecialPermission.Owner, "welcome.manage")]
+	[RequirePermission(SpecialPermission.Admin, "welcome.manage")]
 	partial class WelcomeSystem
 	{
 		[Command("setchannel")]

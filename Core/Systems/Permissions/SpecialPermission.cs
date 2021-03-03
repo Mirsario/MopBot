@@ -7,7 +7,8 @@ namespace MopBot.Core.Systems.Permissions
 	[Flags]
 	public enum SpecialPermission : byte
 	{
-		Owner = 1,
-		BotMaster = 2
+		Owner,
+		Admin,
+		BotMaster
 	}
 }

@@ -12,7 +12,7 @@ namespace MopBot.Common.Systems.Issues
 	public partial class IssueSystem
 	{
 		[Command("setchannel")]
-		[RequirePermission(SpecialPermission.Owner, "issuesystem.configure")]
+		[RequirePermission(SpecialPermission.Admin, "issuesystem.configure")]
 		public async Task SetChannel(SocketGuildChannel channel)
 		{
 			var data = Context.server.GetMemory().GetData<IssueSystem, IssueServerData>();
@@ -24,7 +24,7 @@ namespace MopBot.Common.Systems.Issues
 
 		[Command("new")]
 		[Alias("add", "open")]
-		[RequirePermission(SpecialPermission.Owner, "issuesystem.issues.manage")]
+		[RequirePermission(SpecialPermission.Admin, "issuesystem.issues.manage")]
 		public async Task New([Remainder] string issueText)
 		{
 			if(await NewIssueInternal(issueText, true) == null) {
@@ -34,12 +34,12 @@ namespace MopBot.Common.Systems.Issues
 
 		[Command("close")]
 		[Alias("fix")]
-		[RequirePermission(SpecialPermission.Owner, "issuesystem.issues.manage")]
+		[RequirePermission(SpecialPermission.Admin, "issuesystem.issues.manage")]
 		public Task FixIssue(uint issueId) => FixIssueInternal(issueId, true);
 
 		[Command("newclosed")]
 		[Alias("addclosed", "openandclose", "newfixed", "addfixed", "openandfix")]
-		[RequirePermission(SpecialPermission.Owner, "issuesystem.issues.manage")]
+		[RequirePermission(SpecialPermission.Admin, "issuesystem.issues.manage")]
 		public async Task AddFixedIssue([Remainder] string issueText)
 		{
 			var newIssue = await NewIssueInternal(issueText, false);
@@ -49,7 +49,7 @@ namespace MopBot.Common.Systems.Issues
 
 		[Command("edit")]
 		[Alias("modify")]
-		[RequirePermission(SpecialPermission.Owner, "issuesystem.issues.manage")]
+		[RequirePermission(SpecialPermission.Admin, "issuesystem.issues.manage")]
 		public async Task EditIssue(uint issueId, [Remainder] string issueText)
 		{
 			var data = Context.server.GetMemory().GetData<IssueSystem, IssueServerData>();
@@ -63,7 +63,7 @@ namespace MopBot.Common.Systems.Issues
 
 		[Command("show")]
 		[Alias("see")]
-		[RequirePermission(SpecialPermission.Owner, "issuesystem.issues.show")]
+		[RequirePermission(SpecialPermission.Admin, "issuesystem.issues.show")]
 		public async Task ShowIssue(uint issueId)
 		{
 			var data = Context.server.GetMemory().GetData<IssueSystem, IssueServerData>();
@@ -80,7 +80,7 @@ namespace MopBot.Common.Systems.Issues
 
 		[Command("remove")]
 		[Alias("delete")]
-		[RequirePermission(SpecialPermission.Owner, "issuesystem.issues.manage")]
+		[RequirePermission(SpecialPermission.Admin, "issuesystem.issues.manage")]
 		public async Task RemoveIssue(uint issueId)
 		{
 			var server = Context.server;
@@ -94,7 +94,7 @@ namespace MopBot.Common.Systems.Issues
 
 		[Command("clearclosed")]
 		[Alias("clearfixed")]
-		[RequirePermission(SpecialPermission.Owner, "issuesystem.issues.manage")]
+		[RequirePermission(SpecialPermission.Admin, "issuesystem.issues.manage")]
 		public async Task ClearFixedIssues(string justReleasedVersion)
 		{
 			var server = Context.server;

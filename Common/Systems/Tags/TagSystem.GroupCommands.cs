@@ -99,7 +99,7 @@ namespace MopBot.Common.Systems.Tags
 
 		[Command("group global")]
 		[Alias("group setglobal")]
-		[RequirePermission(SpecialPermission.Owner, "tagsystem.manageglobals")]
+		[RequirePermission(SpecialPermission.Admin, "tagsystem.manageglobals")]
 		public async Task TagGroupGlobalCommand(string groupName, bool value)
 		{
 			groupName = groupName.ToLowerInvariant();

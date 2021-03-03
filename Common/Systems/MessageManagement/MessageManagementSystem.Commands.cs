@@ -11,7 +11,7 @@ namespace MopBot.Common.Systems.MessageManagement
 	public partial class MessageManagementSystem
 	{
 		[Command("quote")]
-		[RequirePermission(SpecialPermission.Owner, "messagemanaging.quote")]
+		[RequirePermission(SpecialPermission.Admin, "messagemanaging.quote")]
 		public async Task QuoteMessagesCommand(ulong messageId, int numMessages, bool allowGrouping = true)
 		{
 			var channel = Context.socketTextChannel;
@@ -20,22 +20,22 @@ namespace MopBot.Common.Systems.MessageManagement
 		}
 
 		[Command("copy")]
-		[RequirePermission(SpecialPermission.Owner, "messagemanaging.copy")]
+		[RequirePermission(SpecialPermission.Admin, "messagemanaging.copy")]
 		public async Task CopyMessagesCommand(int numMessages, SocketTextChannel destinationChannel, ulong bottomMessageId = 0, bool allowGrouping = true)
 			=> await CopyMessagesCommand(Context.socketTextChannel, numMessages, destinationChannel, bottomMessageId, allowGrouping);
 
 		[Command("copy")]
-		[RequirePermission(SpecialPermission.Owner, "messagemanaging.copy")]
+		[RequirePermission(SpecialPermission.Admin, "messagemanaging.copy")]
 		public async Task CopyMessagesCommand(SocketTextChannel sourceChannel, int numMessages, SocketTextChannel destinationChannel, ulong bottomMessageId = 0, bool allowGrouping = true)
 			=> await CopyMessagesInternal(sourceChannel, numMessages, destinationChannel, bottomMessageId, allowGrouping);
 
 		[Command("move")]
-		[RequirePermission(SpecialPermission.Owner, "messagemanaging.move")]
+		[RequirePermission(SpecialPermission.Admin, "messagemanaging.move")]
 		public async Task MoveMessagesCommand(int numMessages, SocketTextChannel destinationChannel, ulong bottomMessageId = 0, bool allowGrouping = true)
 			=> await MoveMessagesCommand(Context.socketTextChannel, numMessages, destinationChannel, bottomMessageId, allowGrouping);
 
 		[Command("move")]
-		[RequirePermission(SpecialPermission.Owner, "messagemanaging.move")]
+		[RequirePermission(SpecialPermission.Admin, "messagemanaging.move")]
 		public async Task MoveMessagesCommand(SocketTextChannel sourceChannel, int numMessages, SocketTextChannel destinationChannel, ulong bottomMessageId = 0, bool allowGrouping = true)
 		{
 			var context = Context;
@@ -56,12 +56,12 @@ namespace MopBot.Common.Systems.MessageManagement
 		[Command("send")]
 		[Alias("say")]
 		[Priority(-1)]
-		[RequirePermission(SpecialPermission.Owner, "messagemanaging.send")]
+		[RequirePermission(SpecialPermission.Admin, "messagemanaging.send")]
 		public Task SendMessageCommand([Remainder] string text) => SendMessageInternal(Context.socketTextChannel, text);
 
 		[Command("send")]
 		[Alias("say")]
-		[RequirePermission(SpecialPermission.Owner, "messagemanaging.send")]
+		[RequirePermission(SpecialPermission.Admin, "messagemanaging.send")]
 		public Task SendMessageCommand(SocketTextChannel textChannel, [Remainder] string text) => SendMessageInternal(textChannel, text);
 
 		private async Task SendMessageInternal(SocketTextChannel textChannel, string text)

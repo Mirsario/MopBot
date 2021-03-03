@@ -100,7 +100,7 @@ namespace MopBot.Common.Systems.Currency
 		}
 
 		[Command("setup")]
-		[RequirePermission(SpecialPermission.Owner, "currency.manage")]
+		[RequirePermission(SpecialPermission.Admin, "currency.manage")]
 		public async Task SetupCurrencyCommand(string currencyId, string displayName, string description, IEmote emote)
 		{
 			var currencyServerData = Context.server.GetMemory().GetData<CurrencySystem, CurrencyServerData>();
@@ -116,7 +116,7 @@ namespace MopBot.Common.Systems.Currency
 		}
 
 		[Command("rename")]
-		[RequirePermission(SpecialPermission.Owner, "currency.manage")]
+		[RequirePermission(SpecialPermission.Admin, "currency.manage")]
 		public async Task RenameCurrencyCommand(string currencyId, string newCurrencyId)
 		{
 			var context = Context;
@@ -126,7 +126,7 @@ namespace MopBot.Common.Systems.Currency
 		}
 
 		[Command("give")]
-		[RequirePermission(SpecialPermission.Owner, "currency.admin")]
+		[RequirePermission(SpecialPermission.Admin, "currency.admin")]
 		public async Task GiveCurrencyAdminCommand(SocketGuildUser user, [Remainder] string amountCurrencyPairs)
 		{
 			var context = Context;
@@ -134,7 +134,7 @@ namespace MopBot.Common.Systems.Currency
 		}
 
 		[Command("take")]
-		[RequirePermission(SpecialPermission.Owner, "currency.admin")]
+		[RequirePermission(SpecialPermission.Admin, "currency.admin")]
 		public async Task TakeCurrencyAdminCommand(SocketGuildUser user, [Remainder] string amountCurrencyPairs)
 		{
 			var context = Context;

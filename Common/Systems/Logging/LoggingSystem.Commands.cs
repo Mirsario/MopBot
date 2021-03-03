@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace MopBot.Common.Systems.Logging
 {
-	[RequirePermission(SpecialPermission.Owner, "logging")]
+	[RequirePermission(SpecialPermission.Admin, "logging")]
 	public partial class LoggingSystem
 	{
 		[Command("setchannel")]
-		[RequirePermission(SpecialPermission.Owner, "logging.manage")]
+		[RequirePermission(SpecialPermission.Admin, "logging.manage")]
 		public async Task SetChannel(SocketGuildChannel channel)
 		{
 			Context.server.GetMemory().GetData<LoggingSystem, LoggingServerData>().loggingChannel = channel.Id;

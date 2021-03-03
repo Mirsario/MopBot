@@ -11,7 +11,7 @@ namespace MopBot.Common.Systems.Changelogs
 	[Group("changelog")]
 	[Alias("changes", "cl")]
 	[Summary("Helps managing project changelog channels")]
-	[RequirePermission(SpecialPermission.Owner, "changelog")]
+	[RequirePermission(SpecialPermission.Admin, "changelog")]
 	[SystemConfiguration(Description = "Helps maintaning changelogs, which then can be converted to text lists in different formats: Discord, BBCode, Patreon, etc.")]
 	public partial class ChangelogSystem : BotSystem
 	{

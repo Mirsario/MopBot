@@ -14,7 +14,7 @@ namespace MopBot.Core.Systems
 	[Group("systems")]
 	[Alias("system")]
 	[Summary("Group for commands that let admins control which systems will be enabled for this server.")]
-	[RequirePermission(SpecialPermission.Owner, "managesystems")]
+	[RequirePermission(SpecialPermission.Admin, "managesystems")]
 	[SystemConfiguration(AlwaysEnabled = true, Description = "Lets admins select which systems will be enabled for this server.")]
 	public class SystemsSystem : BotSystem
 	{

@@ -12,15 +12,15 @@ namespace MopBot.Common.Systems.XP
 	public partial class XPSystem
 	{
 		[Command("give")]
-		[RequirePermission(SpecialPermission.Owner)]
+		[RequirePermission(SpecialPermission.Admin)]
 		public async Task GiveXP(SocketGuildUser user, ulong numXP) => await ModifyXP(xp => xp + numXP, user);
 
 		[Command("take")]
-		[RequirePermission(SpecialPermission.Owner)]
+		[RequirePermission(SpecialPermission.Admin)]
 		public async Task TakeXP(SocketGuildUser user, ulong numXP) => await ModifyXP(xp => xp - numXP, user);
 
 		[Command("set")]
-		[RequirePermission(SpecialPermission.Owner)]
+		[RequirePermission(SpecialPermission.Admin)]
 		public async Task SetXP(SocketGuildUser user, ulong newXP) => await ModifyXP(xp => newXP, user);
 
 		[Command]

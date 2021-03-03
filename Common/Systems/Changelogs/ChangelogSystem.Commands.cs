@@ -131,7 +131,7 @@ namespace MopBot.Common.Systems.Changelogs
 
 		[Command("remove")]
 		[Alias("delete")]
-		[RequirePermission(SpecialPermission.Owner, "changelog.entries.manage")]
+		[RequirePermission(SpecialPermission.Admin, "changelog.entries.manage")]
 		public async Task RemoveEntry(params uint[] ids)
 		{
 			var server = Context.server;
@@ -154,7 +154,7 @@ namespace MopBot.Common.Systems.Changelogs
 
 		[Command("clear")]
 		[Alias("empty")]
-		[RequirePermission(SpecialPermission.Owner, "changelog.entries.manage")]
+		[RequirePermission(SpecialPermission.Admin, "changelog.entries.manage")]
 		public async Task ClearEntries([Remainder] string confirmation)
 		{
 			var context = Context;
@@ -180,7 +180,7 @@ namespace MopBot.Common.Systems.Changelogs
 
 		[Command("show")]
 		[Alias("see")]
-		[RequirePermission(SpecialPermission.Owner, "changelog.entries.show")]
+		[RequirePermission(SpecialPermission.Admin, "changelog.entries.show")]
 		public async Task ShowEntry(uint entryId)
 		{
 			var context = Context;
@@ -294,7 +294,7 @@ namespace MopBot.Common.Systems.Changelogs
 		}
 
 		[Command("parse")]
-		[RequirePermission(SpecialPermission.Owner, "changelog.entries.parse")]
+		[RequirePermission(SpecialPermission.Admin, "changelog.entries.parse")]
 		public async Task Parse(SocketTextChannel channel, SocketGuildUser fromUser = null, ulong? afterMessage = null)
 		{
 			var context = Context;

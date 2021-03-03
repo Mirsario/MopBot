@@ -13,7 +13,7 @@ namespace MopBot.Common.Systems.CommandShop
 	public partial class CommandShopSystem
 	{
 		[Command("setup")]
-		[RequirePermission(SpecialPermission.Owner, "commandshop.manage")]
+		[RequirePermission(SpecialPermission.Admin, "commandshop.manage")]
 		public async Task SetupShopCommand(string shopId, string displayName, string description = null, string thumbnailUrl = null)
 		{
 			StringUtils.CheckAndLowerStringId(ref shopId);
@@ -32,7 +32,7 @@ namespace MopBot.Common.Systems.CommandShop
 			shop.thumbnailUrl = thumbnailUrl;
 		}
 		[Command("rename")]
-		[RequirePermission(SpecialPermission.Owner, "commandshop.manage")]
+		[RequirePermission(SpecialPermission.Admin, "commandshop.manage")]
 		public async Task RenameShopCommand(string shopId, string newShopId)
 		{
 			StringUtils.CheckAndLowerStringId(ref newShopId);
@@ -50,7 +50,7 @@ namespace MopBot.Common.Systems.CommandShop
 		}
 
 		[Command("additem")]
-		[RequirePermission(SpecialPermission.Owner, "commandshop.manage")]
+		[RequirePermission(SpecialPermission.Admin, "commandshop.manage")]
 		public async Task AddItemCommand(string shopId, string itemName, string itemPrice, string itemCommand)
 		{
 			MopBot.CheckForNullOrEmpty(itemName, nameof(itemName));
@@ -72,7 +72,7 @@ namespace MopBot.Common.Systems.CommandShop
 		}
 		[Command("removeitem")]
 		[Alias("deleteitem", "delitem", "rmitem")]
-		[RequirePermission(SpecialPermission.Owner, "commandshop.manage")]
+		[RequirePermission(SpecialPermission.Admin, "commandshop.manage")]
 		public async Task RemoveItemCommand(string shopId, int itemId)
 		{
 			var cmdShopServerData = Context.server.GetMemory().GetData<CommandShopSystem, CommandShopServerData>();

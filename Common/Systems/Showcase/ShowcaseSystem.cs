@@ -17,7 +17,7 @@ namespace MopBot.Common.Systems.Showcase
 {
 	[Group("showcase")]
 	[Summary("Group for commands for managing the showcase system, which let's admins setup channels with reaction-based voting and spotlighting.")]
-	[RequirePermission(SpecialPermission.Owner, "showcasesystem")]
+	[RequirePermission(SpecialPermission.Admin, "showcasesystem")]
 	[SystemConfiguration(Description = "Lets admins setup channels with reaction-based voting. There's also spotlighting support, which moves channels with X score to a selected channel, and also gives author customizable rewards if needed.")]
 	public partial class ShowcaseSystem : BotSystem
 	{

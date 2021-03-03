@@ -21,14 +21,14 @@ namespace MopBot.Common.Systems.Trivia
 	public partial class TriviaSystem
 	{
 		[Command("skip")]
-		[RequirePermission(SpecialPermission.Owner, "triviasystem.skip")]
+		[RequirePermission(SpecialPermission.Admin, "triviasystem.skip")]
 		public async Task SkipQuestionCommand()
 		{
 			Context.server.GetMemory().GetData<TriviaSystem, TriviaServerData>().lastTriviaPost = default;
 		}
 
 		[Command("clearcache")]
-		[RequirePermission(SpecialPermission.Owner, "triviasystem.manage")]
+		[RequirePermission(SpecialPermission.Admin, "triviasystem.manage")]
 		public async Task ClearCacheCommand()
 		{
 			ClearCache(Context.server.GetMemory().GetData<TriviaSystem, TriviaServerData>());
@@ -38,7 +38,7 @@ namespace MopBot.Common.Systems.Trivia
 
 		//TODO: There's some very similar uploading & downloading code in MemorySystem.cs, should really make such code shared.
 		[Command("getquestions")]
-		[RequirePermission(SpecialPermission.Owner, "triviasystem.manage")]
+		[RequirePermission(SpecialPermission.Admin, "triviasystem.manage")]
 		[Summary("Sends you all current questions in JSON format.")]
 		public async Task GetQuestionsCommand([Remainder] string args = "")
 		{
@@ -77,7 +77,7 @@ namespace MopBot.Common.Systems.Trivia
 		}
 
 		[Command("setquestions")]
-		[RequirePermission(SpecialPermission.Owner, "triviasystem.manage")]
+		[RequirePermission(SpecialPermission.Admin, "triviasystem.manage")]
 		[Summary("Replaces current questions with (string question -> string[] answers) dictionary from a JSON file.")]
 		public async Task SetQuestionsCommand(string url = null)
 		{
@@ -147,7 +147,7 @@ namespace MopBot.Common.Systems.Trivia
 		}
 
 		[Command("addquestion")]
-		[RequirePermission(SpecialPermission.Owner, "triviasystem.manage")]
+		[RequirePermission(SpecialPermission.Admin, "triviasystem.manage")]
 		[Summary("Replaces current questions with (string question -> string[] answers) dictionary from a JSON file.")]
 		public async Task AddQuestionCommand([Remainder] string questionAndAnswers)
 		{
@@ -173,14 +173,14 @@ namespace MopBot.Common.Systems.Trivia
 
 		[Command("setchannels")]
 		[Alias("setchannel")]
-		[RequirePermission(SpecialPermission.Owner, "triviasystem.manage")]
+		[RequirePermission(SpecialPermission.Admin, "triviasystem.manage")]
 		public async Task SetChannelsCommand([Remainder] ITextChannel[] channels)
 		{
 			Context.server.GetMemory().GetData<TriviaSystem, TriviaServerData>().triviaChannels = channels.Select(c => c.Id).ToList();
 		}
 
 		[Command("setrole")]
-		[RequirePermission(SpecialPermission.Owner, "triviasystem.manage")]
+		[RequirePermission(SpecialPermission.Admin, "triviasystem.manage")]
 		public async Task SetRoleCommand(SocketRole role)
 		{
 			Context.server.GetMemory().GetData<TriviaSystem, TriviaServerData>().triviaRole = role?.Id ?? 0;
@@ -188,7 +188,7 @@ namespace MopBot.Common.Systems.Trivia
 
 		[Command("setinterval")]
 		[Alias("setpostinterval")]
-		[RequirePermission(SpecialPermission.Owner, "triviasystem.manage")]
+		[RequirePermission(SpecialPermission.Admin, "triviasystem.manage")]
 		public async Task SetIntervalCommand(ulong intervalInSeconds)
 		{
 			if(intervalInSeconds < MinPostIntervalInSeconds) {
@@ -201,7 +201,7 @@ namespace MopBot.Common.Systems.Trivia
 
 		[Command("setthumbnails")]
 		[Alias("setimages")]
-		[RequirePermission(SpecialPermission.Owner, "triviasystem.manage")]
+		[RequirePermission(SpecialPermission.Admin, "triviasystem.manage")]
 		public async Task SetThumbnailUrlsCommand(params string[] urls)
 		{
 			var newUrls = new List<string>();
@@ -220,7 +220,7 @@ namespace MopBot.Common.Systems.Trivia
 		}
 
 		[Command("setlockchannel")]
-		[RequirePermission(SpecialPermission.Owner, "triviasystem.manage")]
+		[RequirePermission(SpecialPermission.Admin, "triviasystem.manage")]
 		public async Task SetLockChannelCommand(bool doLockChannel)
 		{
 			Context.server.GetMemory().GetData<TriviaSystem, TriviaServerData>().lockTriviaChannel = doLockChannel;
@@ -228,7 +228,7 @@ namespace MopBot.Common.Systems.Trivia
 
 		[Command("setautoclearcache")]
 		[Alias("autoclearcache")]
-		[RequirePermission(SpecialPermission.Owner, "triviasystem.manage")]
+		[RequirePermission(SpecialPermission.Admin, "triviasystem.manage")]
 		public async Task SetAutoClearCacheCommand(bool doClearCacheAutomatically)
 		{
 			Context.server.GetMemory().GetData<TriviaSystem, TriviaServerData>().autoClearCache = doClearCacheAutomatically;
@@ -236,7 +236,7 @@ namespace MopBot.Common.Systems.Trivia
 
 		[Command("setcurrencyrewards")]
 		[Alias("setrewards")]
-		[RequirePermission(SpecialPermission.Owner, "triviasystem.manage")]
+		[RequirePermission(SpecialPermission.Admin, "triviasystem.manage")]
 		public async Task SetCurrencyRewardsCommand([Remainder] string currencyAmountPairs = null)
 		{
 			var context = Context;

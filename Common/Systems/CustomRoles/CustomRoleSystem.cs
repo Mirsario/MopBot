@@ -8,7 +8,7 @@ using MopBot.Core.Systems.Memory;
 
 namespace MopBot.Common.Systems.CustomRoles
 {
-	[RequirePermission(SpecialPermission.Owner, "customrole")]
+	[RequirePermission(SpecialPermission.Admin, "customrole")]
 	[Group("customrole")]
 	[Alias("colorrole")]
 	[Summary("Lets you manage your unique color role.")]

@@ -15,7 +15,7 @@ using MopBot.Extensions;
 namespace MopBot.Common.Systems.AutoModeration
 {
 	[SystemConfiguration(Description = "Automatically does moderation through various message filtering in a configurable way.")]
-	[RequirePermission(SpecialPermission.Owner, "automod")]
+	[RequirePermission(SpecialPermission.Admin, "automod")]
 	public partial class AutoModerationSystem : BotSystem
 	{
 		public override void RegisterDataTypes()

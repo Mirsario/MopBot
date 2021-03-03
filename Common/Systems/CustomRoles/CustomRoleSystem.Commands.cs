@@ -14,7 +14,7 @@ namespace MopBot.Common.Systems.CustomRoles
 	public partial class CustomRoleSystem
 	{
 		[Command("set")]
-		[RequirePermission(SpecialPermission.Owner, "customrole.manage")]
+		[RequirePermission(SpecialPermission.Admin, "customrole.manage")]
 		public async Task SetCustomRoleCommand(byte red, byte green, byte blue, [Remainder] string roleName)
 		{
 			var server = Context.server;
@@ -52,7 +52,7 @@ namespace MopBot.Common.Systems.CustomRoles
 		}
 
 		[Command("remove")]
-		[RequirePermission(SpecialPermission.Owner, "customrole.manage")]
+		[RequirePermission(SpecialPermission.Admin, "customrole.manage")]
 		public async Task RemoveCustomRoleCommand()
 		{
 			var server = Context.server;
@@ -72,7 +72,7 @@ namespace MopBot.Common.Systems.CustomRoles
 		}
 
 		[Command("detect")]
-		[RequirePermission(SpecialPermission.Owner, "customrole.admin")]
+		[RequirePermission(SpecialPermission.Admin, "customrole.admin")]
 		public async Task DetectCustomRolesCommand()
 		{
 			var server = Context.server;

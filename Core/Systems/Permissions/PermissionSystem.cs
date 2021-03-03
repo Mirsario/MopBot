@@ -11,7 +11,7 @@ namespace MopBot.Core.Systems.Permissions
 	[Alias("permissions", "perms", "perm")]
 	[Summary("Group for configuring permissions.")]
 	[SystemConfiguration(AlwaysEnabled = true)]
-	[RequirePermission(SpecialPermission.Owner, "permissions")]
+	[RequirePermission(SpecialPermission.Admin, "permissions")]
 	public partial class PermissionSystem : BotSystem
 	{
 		public static ConcurrentDictionary<string, PermissionGroup> defaultGroups;

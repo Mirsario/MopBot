@@ -14,12 +14,12 @@ namespace MopBot.Common.Systems.Moderation
 	[Group("mod")]
 	[Summary("Group for simple moderation commands, like `kick`, `ban` and `clear`.")]
 	[SystemConfiguration(Description = "This system adds simple moderation commands, like `kick`, `ban` and `clear`.")]
-	[RequirePermission(SpecialPermission.Owner, "moderation")]
+	[RequirePermission(SpecialPermission.Admin, "moderation")]
 	public class ModerationSystem : BotSystem
 	{
 		[Command("ban")]
 		[Summary("Permamently bans a specified user.")]
-		[RequirePermission(SpecialPermission.Owner, "moderation.ban")]
+		[RequirePermission(SpecialPermission.Admin, "moderation.ban")]
 		public async Task BanCommand(IUser targetUser, [Remainder] string reason = "No reason provided.")
 		{
 			var context = Context;
@@ -36,7 +36,7 @@ namespace MopBot.Common.Systems.Moderation
 
 		[Command("kick")]
 		[Summary("Kicks a specified user.")]
-		[RequirePermission(SpecialPermission.Owner, "moderation.kick")]
+		[RequirePermission(SpecialPermission.Admin, "moderation.kick")]
 		public async Task KickCommand(SocketGuildUser targetUser, [Remainder] string reason = "No reason provided.")
 		{
 			var context = Context;
@@ -53,12 +53,12 @@ namespace MopBot.Common.Systems.Moderation
 
 		[Command("clear")]
 		[Summary("Removes a specified amount of messages.")]
-		[RequirePermission(SpecialPermission.Owner, "moderation.clear")]
+		[RequirePermission(SpecialPermission.Admin, "moderation.clear")]
 		public Task ClearCommand(uint amount, ulong bottomMessageId = 0) => ClearCommand(Context.socketTextChannel, amount, bottomMessageId);
 
 		[Command("clear")]
 		[Summary("Removes a specified amount of messages.")]
-		[RequirePermission(SpecialPermission.Owner, "moderation.clear")]
+		[RequirePermission(SpecialPermission.Admin, "moderation.clear")]
 		public async Task ClearCommand(SocketTextChannel channel, uint amount, ulong bottomMessageId = 0)
 		{
 			var context = Context;

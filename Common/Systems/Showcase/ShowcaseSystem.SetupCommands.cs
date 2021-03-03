@@ -14,7 +14,7 @@ namespace MopBot.Common.Systems.Showcase
 	public partial class ShowcaseSystem
 	{
 		[Command("removechannel")]
-		[RequirePermission(SpecialPermission.Owner, "showcasesystem.configure")]
+		[RequirePermission(SpecialPermission.Admin, "showcasesystem.configure")]
 		public async Task RemoveChannel(SocketTextChannel channel)
 		{
 			var showcaseData = Context.server.GetMemory().GetData<ShowcaseSystem, ShowcaseServerData>();
@@ -23,11 +23,11 @@ namespace MopBot.Common.Systems.Showcase
 		}
 
 		[Command("setupchannel showcase")]
-		[RequirePermission(SpecialPermission.Owner, "showcasesystem.configure")]
+		[RequirePermission(SpecialPermission.Admin, "showcasesystem.configure")]
 		public Task SetupChannelShowcase(SocketTextChannel channel, [Remainder] SocketRole[] rewardRoles = null) => SetupChannelShowcase(channel, null, 0, rewardRoles);
 
 		[Command("setupchannel showcase")]
-		[RequirePermission(SpecialPermission.Owner, "showcasesystem.configure")]
+		[RequirePermission(SpecialPermission.Admin, "showcasesystem.configure")]
 		[Priority(10)]
 		public async Task SetupChannelShowcase(SocketTextChannel channel, SocketTextChannel spotlightChannel, uint spotlightScore, [Remainder] SocketRole[] rewardRoles = null)
 		{
@@ -53,7 +53,7 @@ namespace MopBot.Common.Systems.Showcase
 		}
 
 		[Command("setupchannel spotlight")]
-		[RequirePermission(SpecialPermission.Owner, "showcasesystem.configure")]
+		[RequirePermission(SpecialPermission.Admin, "showcasesystem.configure")]
 		public async Task SetupChannelSpotlight(SocketTextChannel channel, [Remainder] SocketRole[] rewardRoles)
 		{
 			var showcaseData = Context.server.GetMemory().GetData<ShowcaseSystem, ShowcaseServerData>();
@@ -68,7 +68,7 @@ namespace MopBot.Common.Systems.Showcase
 		}
 
 		[Command("setemote")]
-		[RequirePermission(SpecialPermission.Owner, "showcasesystem.configure")]
+		[RequirePermission(SpecialPermission.Admin, "showcasesystem.configure")]
 		public async Task SetEmote(EmoteType type, IEmote emote)
 		{
 			var showcaseData = Context.server.GetMemory().GetData<ShowcaseSystem, ShowcaseServerData>();
@@ -78,7 +78,7 @@ namespace MopBot.Common.Systems.Showcase
 		}
 
 		[Command("resetemote")]
-		[RequirePermission(SpecialPermission.Owner, "showcasesystem.configure")]
+		[RequirePermission(SpecialPermission.Admin, "showcasesystem.configure")]
 		public Task SetEmote(EmoteType type) => SetEmote(type, null);
 	}
 }

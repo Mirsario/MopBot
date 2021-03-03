@@ -13,7 +13,7 @@ namespace MopBot.Common.Systems.Issues
 	[Group("issue")]
 	[Alias("issues", "knownissues")]
 	[Summary("Helps managing project issues channels")]
-	[RequirePermission(SpecialPermission.Owner, "issuesystem")]
+	[RequirePermission(SpecialPermission.Admin, "issuesystem")]
 	[SystemConfiguration(Description = "In-discord bug tracker. Can write to ChangelogSystem when an issue gets fixed.")]
 	public partial class IssueSystem : BotSystem
 	{

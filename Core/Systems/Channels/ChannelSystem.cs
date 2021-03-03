@@ -14,7 +14,7 @@ namespace MopBot.Core.Systems.Channels
 	[Group("channels")]
 	[Alias("channel")]
 	[Summary("Group for managing channel roles, like `Rules`, `BotArea`, etc..")]
-	[RequirePermission(SpecialPermission.Owner, "managechannels")]
+	[RequirePermission(SpecialPermission.Admin, "managechannels")]
 	[SystemConfiguration(AlwaysEnabled = true, Description = "Manages channel roles, like 'Rules', 'BotArea', etc.")]
 	public partial class ChannelSystem : BotSystem
 	{

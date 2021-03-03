@@ -13,7 +13,7 @@ namespace MopBot.Common.Systems.Posting
 {
 	[Group("post")]
 	[Summary("Group for managing and making large multi-message posts.")]
-	[RequirePermission(SpecialPermission.Owner, "postsystem")]
+	[RequirePermission(SpecialPermission.Admin, "postsystem")]
 	[SystemConfiguration(EnabledByDefault = true, Description = "Commands to simplify large multi-message posts. [[Split]] in input marks a message split.")]
 	public class PostingSystem : BotSystem
 	{
@@ -134,7 +134,7 @@ namespace MopBot.Common.Systems.Posting
 
 		[Command("new")]
 		[Alias("create")]
-		[RequirePermission(SpecialPermission.Owner, "postsystem.manage")]
+		[RequirePermission(SpecialPermission.Admin, "postsystem.manage")]
 		public async Task NewPost(SocketTextChannel inChannel, SourceType sourceType, [Remainder] string source)
 		{
 			var pieces = await ParseToPost(sourceType, source);

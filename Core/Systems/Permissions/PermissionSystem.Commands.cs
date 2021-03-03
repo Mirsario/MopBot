@@ -16,7 +16,7 @@ namespace MopBot.Core.Systems.Permissions
 
 		[Command("listfull")]
 		[Alias("viewfull", "showfull", "listall", "viewall", "showall")]
-		[RequirePermission(SpecialPermission.Owner, "permissions.view")]
+		[RequirePermission(SpecialPermission.Admin, "permissions.view")]
 		public async Task ListFullCommand()
 		{
 			var data = MemorySystem.memory[Context.server].GetData<PermissionSystem, PermissionServerData>();

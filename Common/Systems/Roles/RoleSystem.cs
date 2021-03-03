@@ -19,7 +19,7 @@ namespace MopBot.Common.Systems.Roles
 		//User stuff
 
 		[Command("join")]
-		[RequirePermission(SpecialPermission.Owner, "roles.join")]
+		[RequirePermission(SpecialPermission.Admin, "roles.join")]
 		public async Task JoinRoleCommand([Remainder] SocketRole role)
 		{
 			var context = Context;
@@ -37,7 +37,7 @@ namespace MopBot.Common.Systems.Roles
 		}
 
 		[Command("leave")]
-		[RequirePermission(SpecialPermission.Owner, "roles.leave")]
+		[RequirePermission(SpecialPermission.Admin, "roles.leave")]
 		public async Task LeaveRoleCommand([Remainder] SocketRole role)
 		{
 			var context = Context;
@@ -57,7 +57,7 @@ namespace MopBot.Common.Systems.Roles
 		//Admin stuff
 
 		[Command("give")]
-		[RequirePermission(SpecialPermission.Owner, "roles.give")]
+		[RequirePermission(SpecialPermission.Admin, "roles.give")]
 		public async Task GiveRoleCommand(SocketGuildUser user, [Remainder] SocketRole role)
 		{
 			var context = Context;
@@ -71,7 +71,7 @@ namespace MopBot.Common.Systems.Roles
 		}
 
 		[Command("take")]
-		[RequirePermission(SpecialPermission.Owner, "roles.take")]
+		[RequirePermission(SpecialPermission.Admin, "roles.take")]
 		public async Task TakeRoleCommand(SocketGuildUser user, [Remainder] SocketRole role)
 		{
 			var context = Context;
@@ -86,7 +86,7 @@ namespace MopBot.Common.Systems.Roles
 
 		[Command("mentionrole")]
 		[Alias("pingrole", "mention")]
-		[RequirePermission(SpecialPermission.Owner, "mentionroles")]
+		[RequirePermission(SpecialPermission.Admin, "mentionroles")]
 		public async Task MentionRoleCommand(IRole role)
 		{
 			bool wasMentionable = role.IsMentionable;
