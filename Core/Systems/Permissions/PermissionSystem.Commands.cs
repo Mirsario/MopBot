@@ -114,8 +114,27 @@ namespace MopBot.Core.Systems.Permissions
 				throw new BotError($"Cannot assign `everyone` permission group to any roles.");
 			}
 
-			data.roleGroups.TryGetValue(role.Id, out string prevGroup);
+			//data.roleGroups.TryGetValue(role.Id, out string prevGroup);
 			data.roleGroups[role.Id] = permGroup;
+		}
+
+		[Command("removerolegroup")]
+		[Alias("removerolepermissiongroup")]
+		public async Task RemoveRolePermissionGroupCommand(SocketRole role)
+		{
+			string properName = role.Name.Replace("@", "");
+
+			if(properName == "everyone" && !role.IsEveryone) {
+				role = Context.server.EveryoneRole;
+			}
+
+			var data = MemorySystem.memory[Context.server].GetData<PermissionSystem, PermissionServerData>();
+
+			if(role.Id == Context.server.EveryoneRole.Id) {
+				throw new BotError($"Cannot reassign `everyone` role's group.");
+			}
+
+			data.roleGroups.Remove(role.Id);
 		}
 
 		[Command("getrolegroup")]
