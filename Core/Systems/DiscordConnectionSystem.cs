@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -25,7 +23,8 @@ namespace MopBot.Core.Systems
 
 			MopBot.client = client = new DiscordSocketClient(new DiscordSocketConfig() {
 				LogLevel = LogSeverity.Debug,
-				MessageCacheSize = 1000
+				MessageCacheSize = 1000,
+				AlwaysDownloadUsers = true
 			});
 
 			MopBot.OnClientInit(client);
