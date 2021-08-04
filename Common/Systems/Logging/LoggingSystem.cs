@@ -53,11 +53,17 @@ namespace MopBot.Common.Systems.Logging
 
 			await loggingChannel.SendMessageAsync(embed: embed);
 		}
-		public override async Task OnUserUpdated(SocketGuildUser oldUser, SocketGuildUser newUser)
+		public override async Task OnUserUpdated(Cacheable<SocketGuildUser, ulong> oldUserCached, SocketGuildUser newUser)
 		{
 			if(!DiscordConnectionSystem.isFullyReady) {
 				return;
 			}
+
+			if (!oldUserCached.HasValue) {
+				return;
+			}
+
+			var oldUser = oldUserCached.Value;
 
 			string mention = $"**Mention:** {newUser.Mention}";
 

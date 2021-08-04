@@ -55,7 +55,7 @@ namespace MopBot.Common.Systems.Trivia
 			IMessageChannel textChannel;
 
 			if(args?.ToLower() != "here") {
-				textChannel = await user.GetOrCreateDMChannelAsync() ?? throw new BotError("I'm unable to send you a private message. Use `!trivia getquestions here` to post the data right in this channel (everyone will be able to see answers to them!)");
+				textChannel = await user.CreateDMChannelAsync() ?? throw new BotError("I'm unable to send you a private message. Use `!trivia getquestions here` to post the data right in this channel (everyone will be able to see answers to them!)");
 			} else {
 				textChannel = Context.Channel;
 			}

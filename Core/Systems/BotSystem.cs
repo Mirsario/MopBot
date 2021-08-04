@@ -37,7 +37,7 @@ namespace MopBot.Core.Systems
 
 		public virtual async Task OnUserJoined(SocketGuildUser user) { }
 		public virtual async Task OnUserLeft(SocketGuildUser user) { }
-		public virtual async Task OnUserUpdated(SocketGuildUser oldUser, SocketGuildUser newUser) { }
+		public virtual async Task OnUserUpdated(Cacheable<SocketGuildUser, ulong> oldUser, SocketGuildUser newUser) { }
 		public virtual async Task OnMessageReceived(MessageContext context) { }
 		public virtual async Task OnMessageDeleted(MessageContext context) { }
 		public virtual async Task OnMessageUpdated(MessageContext context, IMessage oldMessage) { }

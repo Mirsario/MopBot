@@ -194,9 +194,7 @@ namespace MopBot
 			client.UserJoined += async user => await BotSystem.CallForEnabledSystems(user.Guild, s => s.OnUserJoined(user));
 			client.UserLeft += async user => await BotSystem.CallForEnabledSystems(user.Guild, s => s.OnUserLeft(user));
 
-			client.GuildMemberUpdated += async (oldUser, newUser) => {
-				await BotSystem.CallForEnabledSystems(newUser.Guild, s => s.OnUserUpdated(oldUser, newUser));
-			};
+			client.GuildMemberUpdated += async (oldUser, newUser) => await BotSystem.CallForEnabledSystems(newUser.Guild, s => s.OnUserUpdated(oldUser, newUser));
 		}
 		public static async Task OnReady()
 		{

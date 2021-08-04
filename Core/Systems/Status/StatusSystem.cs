@@ -13,10 +13,10 @@ namespace MopBot.Core.Systems.Status
 		public static Activity currentActivity;
 		public static bool noActivityChanging;
 
-		private static List<Activity> activities = new List<Activity>() {
-			new Activity(ActivityType.Playing,"a Mopster"),
-			new Activity(ActivityType.Playing,"Janitor Class"),
-			new Activity(ActivityType.Watching,"a Bucket"),
+		private static readonly List<Activity> localActivities = new List<Activity>() {
+			new Activity(ActivityType.Playing, "a Mopster"),
+			new Activity(ActivityType.Playing, "Janitor Class"),
+			new Activity(ActivityType.Watching, "a Bucket"),
 		};
 
 		public DateTime lastActivityChange;
@@ -27,11 +27,11 @@ namespace MopBot.Core.Systems.Status
 			var now = DateTime.Now;
 
 			if(!noActivityChanging && (currentActivity.name == null || (now - lastActivityChange).TotalMinutes >= 5)) {
-				int index, indexOf = activities.IndexOf(currentActivity);
+				int index, indexOf = localActivities.IndexOf(currentActivity);
 
-				while((index = MopBot.Random.Next(activities.Count)) == indexOf) { }
+				while((index = MopBot.Random.Next(localActivities.Count)) == indexOf) { }
 
-				currentActivity = activities[index];
+				currentActivity = localActivities[index];
 				lastActivityChange = now;
 			}
 
@@ -41,9 +41,9 @@ namespace MopBot.Core.Systems.Status
 				return true;
 			}
 
-			var activity = user.Activity;
+			var activities = user.Activities;
 
-			if(activity?.Name != currentActivity.name || activity?.Type != currentActivity.type) {
+			if(activities?.Any() != true || !activities.Any(a => a.Name == currentActivity.name && a.Type == currentActivity.type)) {
 				await client.SetGameAsync(currentActivity.name, type: currentActivity.type);
 			}
 

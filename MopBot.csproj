@@ -23,8 +23,8 @@
 	<Import Project="$(SolutionDir)SolutionDefines.targets" Condition="exists('$(SolutionDir)SolutionDefines.targets')" />
 	
 	<ItemGroup>
-		<PackageReference Include="Discord.Net" Version="2.3.0" />
-		<PackageReference Include="Discord.Net.Analyzers" Version="2.3.0" />
+		<PackageReference Include="Discord.Net" Version="3.0.0-dev-20210710.3" />
+		<PackageReference Include="Discord.Net.Analyzers" Version="3.0.0-dev-20210710.3" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
 	</ItemGroup>

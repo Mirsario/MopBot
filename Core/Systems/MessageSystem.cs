@@ -66,7 +66,7 @@ namespace MopBot.Core.Systems
 				await CallForEnabledSystems(context.server, s => s.OnMessageUpdated(context, cachedMessage.Value));
 			}
 		}
-		public static async Task MessageDeleted(Cacheable<IMessage, ulong> cachedMessage, ISocketMessageChannel channel)
+		public static async Task MessageDeleted(Cacheable<IMessage, ulong> cachedMessage, Cacheable<IMessageChannel, ulong> channel)
 		{
 			if(!DiscordConnectionSystem.isFullyReady || !cachedMessage.HasValue) {
 				return;
@@ -87,7 +87,7 @@ namespace MopBot.Core.Systems
 
 			await CallForEnabledSystems(context.server, s => s.OnMessageDeleted(context));
 		}
-		public static async Task ReactionAdded(Cacheable<IUserMessage, ulong> cachedMessage, ISocketMessageChannel channel, SocketReaction reaction)
+		public static async Task ReactionAdded(Cacheable<IUserMessage, ulong> cachedMessage, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
 		{
 			if(!DiscordConnectionSystem.isFullyReady) {
 				return;

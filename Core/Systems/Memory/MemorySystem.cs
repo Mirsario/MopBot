@@ -300,7 +300,7 @@ namespace MopBot.Core.Systems.Memory
 
 		private async Task GetTextFileCommand(bool postHere, string text, string fileName, string message)
 		{
-			var dmChannel = postHere ? null : await Context.socketUser.GetOrCreateDMChannelAsync();
+			var dmChannel = postHere ? null : await Context.socketUser.CreateDMChannelAsync();
 			IMessageChannel textChannel;
 
 			if(!postHere && dmChannel == null) {
