@@ -69,6 +69,9 @@ namespace MopBot.Core.Systems.Commands
 				CaseSensitiveCommands = false
 			});
 
+			//commandService.AddTypeReader(new UserTypeReader<
+			commandService.AddTypeReader<SocketGuildUser>(new DownloadCapableUserTypeReader<SocketGuildUser>(), true);
+
 			foreach(var type in MopBot.botTypes.Where(t => !t.IsAbstract && typeof(CustomTypeReader).IsAssignableFrom(t))) {
 				var instance = (CustomTypeReader)Activator.CreateInstance(type);
 
