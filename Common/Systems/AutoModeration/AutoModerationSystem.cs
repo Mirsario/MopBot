@@ -113,6 +113,10 @@ namespace MopBot.Common.Systems.AutoModeration
 		}
 		private async Task CheckMessagePings(MessageContext context)
 		{
+			if(context.message is not IUserMessage) {
+				return;
+			}
+
 			if(context.socketServerUser.Id == context.server.OwnerId || context.socketServerUser.HasAnyPermissions("automod.immune", "automod.pingban.immune")) {
 				return;
 			}
