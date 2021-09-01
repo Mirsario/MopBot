@@ -29,19 +29,19 @@ namespace MopBot.Common.Systems.Currency
 		public async Task ShowCurrenciesCommand()
 		{
 			var context = Context;
-			var userId = context.user.Id;
+			ulong userId = context.user.Id;
 			var currencyServerData = context.server.GetMemory().GetData<CurrencySystem, CurrencyServerData>();
 
 			var currencies = currencyServerData.Currencies;
 
-			if(currencies.Count == 0) {
+			if (currencies.Count == 0) {
 				throw new BotError("There are currently no currencies on this server.");
 			}
 
 			var builder = MopBot.GetEmbedBuilder(context)
 				.WithAuthor($"{context.user.GetDisplayName()}'s Coins & Points", context.user.GetAvatarUrl());
 
-			foreach(var nameId in currencies) {
+			foreach (var nameId in currencies) {
 				var currency = nameId.value;
 				ulong amount = currency.GetAmount(userId); //currencyUserData[id];
 
@@ -64,7 +64,7 @@ namespace MopBot.Common.Systems.Currency
 
 			var currencies = currencyServerData.Currencies;
 
-			if(currencies.Count == 0) {
+			if (currencies.Count == 0) {
 				throw new BotError("There are currently no currencies on this server.");
 			}
 
@@ -75,7 +75,7 @@ namespace MopBot.Common.Systems.Currency
 
 			var top = currency.UsersWealth.Take(NumShown).ToArray();
 
-			if(!top.TryGetFirst(out var first)) {
+			if (!top.TryGetFirst(out var first)) {
 				throw new BotError("There are no ranked users with that currency as of right now.");
 			}
 
@@ -92,7 +92,7 @@ namespace MopBot.Common.Systems.Currency
 				.WithAuthor(GetLine(false, i++, first.Key, first.Value, firstUser), firstUser?.GetAvatarUrl())
 				.WithFooter($"Showing {NumShown} users with most '{currency.displayName}'.");
 
-			if(top.Length > 1) {
+			if (top.Length > 1) {
 				builder.WithDescription(string.Join("\r\n", top.TakeLast(top.Length - 1).Select(p => GetLine(true, i++, p.Key, p.Value))));
 			}
 
@@ -106,7 +106,7 @@ namespace MopBot.Common.Systems.Currency
 			var currencyServerData = Context.server.GetMemory().GetData<CurrencySystem, CurrencyServerData>();
 			var currencies = currencyServerData.Currencies;
 
-			if(!currencies.TryGetValue(currencyId, out Currency currency, out _)) {
+			if (!currencies.TryGetValue(currencyId, out Currency currency, out _)) {
 				currencies.Add(currencyId, currency = new Currency());
 			}
 

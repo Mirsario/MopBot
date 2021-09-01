@@ -23,7 +23,24 @@ namespace MopBot.Common.Systems.Trivia
 		//public SudoCommand command;
 		public CurrencyAmount[] currencyRewards;
 
-		[JsonIgnore] public bool IsReady => postIntervalInSeconds >= TriviaSystem.MinPostIntervalInSeconds && triviaChannels != null && triviaChannels.Count != 0 && questions != null && questions.Count != 0;
+		[JsonIgnore]
+		public bool IsReady {
+			get {
+				if (postIntervalInSeconds < TriviaSystem.MinPostIntervalInSeconds) {
+					return false;
+				}
+
+				if (triviaChannels == null || triviaChannels.Count == 0) {
+					return false;
+				}
+
+				if (questions == null || questions.Count == 0) {
+					return false;
+				}
+
+				return true;
+			}
+		}
 
 		public override void Initialize(SocketGuild server) { }
 	}

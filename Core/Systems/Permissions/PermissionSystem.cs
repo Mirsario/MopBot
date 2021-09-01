@@ -20,9 +20,10 @@ namespace MopBot.Core.Systems.Permissions
 		{
 			RegisterDataType<ServerMemory, PermissionServerData>();
 		}
+
 		public override async Task Initialize()
 		{
-			if(defaultGroups == null) {
+			if (defaultGroups == null) {
 				defaultGroups = new ConcurrentDictionary<string, PermissionGroup>();
 				defaultGroups.TryAdd("everyone", new PermissionGroup("everyone"));
 				defaultGroups.TryAdd("vip", new PermissionGroup("vip"));

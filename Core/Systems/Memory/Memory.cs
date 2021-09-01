@@ -20,6 +20,7 @@ namespace MopBot.Core.Systems.Memory
 			RegisterSubMemory<UserMemory>();
 			RegisterSubMemory<ServerMemory>();
 		}
+
 		public override void OnDataCreated(GlobalData data)
 		{
 			data.Initialize();

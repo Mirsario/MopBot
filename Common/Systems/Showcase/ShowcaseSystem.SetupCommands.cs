@@ -31,18 +31,18 @@ namespace MopBot.Common.Systems.Showcase
 		[Priority(10)]
 		public async Task SetupChannelShowcase(SocketTextChannel channel, SocketTextChannel spotlightChannel, uint spotlightScore, [Remainder] SocketRole[] rewardRoles = null)
 		{
-			if(channel == spotlightChannel) {
+			if (channel == spotlightChannel) {
 				throw new BotError($"'{nameof(channel)}' can't be the same value as '{nameof(spotlightChannel)}'.");
 			}
 
 			var showcaseData = Context.server.GetMemory().GetData<ShowcaseSystem, ShowcaseServerData>();
 			ulong channelId = channel.Id;
 
-			if(spotlightChannel != null && !showcaseData.ChannelIs<SpotlightChannel>(spotlightChannel)) {
+			if (spotlightChannel != null && !showcaseData.ChannelIs<SpotlightChannel>(spotlightChannel)) {
 				throw new BotError($"Channel <#{spotlightChannel.Id}> is not a spotlight channel. Setup it as one first before setting up showcase channels for it.");
 			}
 
-			if(!showcaseData.showcaseChannels.TryGetFirst(c => c.id == channelId, out var channelData)) {
+			if (!showcaseData.showcaseChannels.TryGetFirst(c => c.id == channelId, out var channelData)) {
 				showcaseData.showcaseChannels.Add(channelData = new ShowcaseChannel());
 			}
 
@@ -59,7 +59,7 @@ namespace MopBot.Common.Systems.Showcase
 			var showcaseData = Context.server.GetMemory().GetData<ShowcaseSystem, ShowcaseServerData>();
 			ulong channelId = channel.Id;
 
-			if(!showcaseData.spotlightChannels.TryGetFirst(c => c.id == channelId, out var channelData)) {
+			if (!showcaseData.spotlightChannels.TryGetFirst(c => c.id == channelId, out var channelData)) {
 				showcaseData.spotlightChannels.Add(channelData = new SpotlightChannel());
 			}
 

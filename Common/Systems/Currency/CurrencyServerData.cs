@@ -7,8 +7,11 @@ namespace MopBot.Common.Systems.Currency
 {
 	public class CurrencyServerData : ServerData
 	{
-		[JsonProperty] private BotIdCollection<Currency> currencies;
-		[JsonIgnore] public BotIdCollection<Currency> Currencies => currencies ??= new BotIdCollection<Currency>();
+		[JsonProperty]
+		private BotIdCollection<Currency> currencies;
+
+		[JsonIgnore]
+		public BotIdCollection<Currency> Currencies => currencies ??= new BotIdCollection<Currency>();
 
 		public override void Initialize(SocketGuild server) { }
 	}

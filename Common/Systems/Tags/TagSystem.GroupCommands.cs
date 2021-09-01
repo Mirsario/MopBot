@@ -23,7 +23,7 @@ namespace MopBot.Common.Systems.Tags
 			var globalData = memory.GetData<TagSystem, TagGlobalData>();
 			var userData = memory[user].GetData<TagSystem, TagUserData>();
 
-			if(globalData.tagGroups.Any(g => g.Value.name == groupName)) {
+			if (globalData.tagGroups.Any(g => g.Value.name == groupName)) {
 				throw new BotError($@"Group `{groupName}` already exists. Pick an unique name.");
 			}
 
@@ -37,10 +37,12 @@ namespace MopBot.Common.Systems.Tags
 		}
 
 		[Command("group addtag")]
-		public Task TagGroupAddTagCommand(string groupName, string tagName) => TagGroupAddTagInternal(Context.socketUser, groupName, Context.socketUser, tagName);
+		public Task TagGroupAddTagCommand(string groupName, string tagName)
+			=> TagGroupAddTagInternal(Context.socketUser, groupName, Context.socketUser, tagName);
 
 		[Command("group addtag")]
-		public Task TagGroupAddTagCommand(string groupName, SocketUser tagOwner, string tagName) => TagGroupAddTagInternal(Context.socketUser, groupName, tagOwner, tagName);
+		public Task TagGroupAddTagCommand(string groupName, SocketUser tagOwner, string tagName)
+			=> TagGroupAddTagInternal(Context.socketUser, groupName, tagOwner, tagName);
 
 		[Command("group subscribe")]
 		[Alias("group sub")]
@@ -53,13 +55,13 @@ namespace MopBot.Common.Systems.Tags
 			var globalData = memory.GetData<TagSystem, TagGlobalData>();
 			var userData = memory[user].GetData<TagSystem, TagUserData>();
 
-			if(!globalData.tagGroups.TryGetFirst(g => g.Value.name == groupName, out var pair)) {
+			if (!globalData.tagGroups.TryGetFirst(g => g.Value.name == groupName, out var pair)) {
 				throw new BotError($@"Group `{groupName}` does not exist.");
 			}
 
 			ulong groupId = pair.Key;
 
-			if(userData.subscribedTagGroups.Contains(groupId)) {
+			if (userData.subscribedTagGroups.Contains(groupId)) {
 				throw new BotError("You're already subscribed to that group.");
 			}
 
@@ -78,18 +80,18 @@ namespace MopBot.Common.Systems.Tags
 			var globalData = memory.GetData<TagSystem, TagGlobalData>();
 			var userData = memory[user].GetData<TagSystem, TagUserData>();
 
-			if(!globalData.tagGroups.TryGetFirst(g => g.Value.name == groupName, out var pair)) {
+			if (!globalData.tagGroups.TryGetFirst(g => g.Value.name == groupName, out var pair)) {
 				throw new BotError($@"Group `{groupName}` does not exist.");
 			}
 
 			ulong groupId = pair.Key;
 			var group = pair.Value;
 
-			if(!userData.subscribedTagGroups.Contains(groupId)) {
+			if (!userData.subscribedTagGroups.Contains(groupId)) {
 				throw new BotError("You're already not subscribed to that group.");
 			}
 
-			if(group.owner == user.Id) {
+			if (group.owner == user.Id) {
 				throw new BotError("You cannot unsubscribe from a group you own.");
 			}
 
@@ -107,18 +109,18 @@ namespace MopBot.Common.Systems.Tags
 			var globalData = MemorySystem.memory.GetData<TagSystem, TagGlobalData>();
 			var serverData = Context.server.GetMemory().GetData<TagSystem, TagServerData>();
 
-			if(!globalData.tagGroups.TryGetFirst(g => g.Value.name == groupName, out var pair)) {
+			if (!globalData.tagGroups.TryGetFirst(g => g.Value.name == groupName, out var pair)) {
 				throw new BotError($@"Group `{groupName}` does not exist.");
 			}
 
 			ulong groupId = pair.Key;
 			bool currentValue = serverData.globalTagGroups.Contains(groupId);
 
-			if(currentValue == value) {
+			if (currentValue == value) {
 				throw new BotError($@"Group `{groupName}` is already {(value ? "global" : "not global")} for this server.");
 			}
 
-			if(value) {
+			if (value) {
 				serverData.globalTagGroups.Add(groupId);
 			} else {
 				serverData.globalTagGroups.Remove(groupId);
@@ -136,17 +138,17 @@ namespace MopBot.Common.Systems.Tags
 			var memory = MemorySystem.memory;
 			var globalData = memory.GetData<TagSystem, TagGlobalData>();
 
-			if(!globalData.tagGroups.TryGetFirst(g => g.Value.name == groupName, out var idGroupPair)) {
+			if (!globalData.tagGroups.TryGetFirst(g => g.Value.name == groupName, out var idGroupPair)) {
 				throw new BotError($@"Group `{groupName}` does not exist.");
 			}
 
 			var group = idGroupPair.Value;
 
-			if(user.Id != group.owner) {
+			if (user.Id != group.owner) {
 				throw new BotError($@"Can't add tags to group `{groupName}`, you're neither that group's owner, nor its maintainer.");
 			}
 
-			if(group.tagIDs.Contains(tagId)) {
+			if (group.tagIDs.Contains(tagId)) {
 				throw new BotError($"Group `{groupName}` already contains tag `{tagName}`.");
 			}
 

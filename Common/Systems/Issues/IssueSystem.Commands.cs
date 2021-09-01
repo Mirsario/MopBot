@@ -27,7 +27,7 @@ namespace MopBot.Common.Systems.Issues
 		[RequirePermission(SpecialPermission.Admin, "issuesystem.issues.manage")]
 		public async Task New([Remainder] string issueText)
 		{
-			if(await NewIssueInternal(issueText, true) == null) {
+			if (await NewIssueInternal(issueText, true) == null) {
 				return;
 			}
 		}
@@ -102,10 +102,10 @@ namespace MopBot.Common.Systems.Issues
 			int numClosed = 0;
 			var channel = await data.GetIssueChannel(Context);
 
-			for(int i = 0; i < data.issues.Count; i++) {
+			for (int i = 0; i < data.issues.Count; i++) {
 				var issue = data.issues[i];
 
-				if(issue.status == IssueStatus.Closed) {
+				if (issue.status == IssueStatus.Closed) {
 					await data.UnpublishIssue(issue, server);
 
 					data.issues.RemoveAt(i--);
@@ -114,7 +114,7 @@ namespace MopBot.Common.Systems.Issues
 				}
 			}
 
-			if(justReleasedVersion != null) {
+			if (justReleasedVersion != null) {
 				await channel.SendMessageAsync($"***{justReleasedVersion} has just been released. Channel has been cleared.***\r\n{numClosed}+ issues were fixed.");
 			}
 		}

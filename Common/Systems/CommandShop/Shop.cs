@@ -12,7 +12,9 @@ namespace MopBot.Common.Systems.CommandShop
 		public string description;
 		public string thumbnailUrl;
 
-		[JsonProperty] private ShopItem[] items;
+		[JsonProperty]
+		private ShopItem[] items;
+
 		[JsonIgnore]
 		public ShopItem[] Items {
 			get => items;
@@ -27,7 +29,7 @@ namespace MopBot.Common.Systems.CommandShop
 			catch {
 				ArrayUtils.RemoveAt(ref items, index);
 
-				if(throwError) {
+				if (throwError) {
 					throw new BotError("There's been something wrong with that item, and so it has been removed.");
 				}
 			}

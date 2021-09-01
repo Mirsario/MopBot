@@ -43,7 +43,7 @@ namespace MopBot.Core.Systems.Channels
 				string name;
 				SocketGuildChannel channel;
 
-				if(dict.TryGetValue(role, out ulong id) && (channel = server.GetChannel(id)) != null) {
+				if (dict.TryGetValue(role, out ulong id) && (channel = server.GetChannel(id)) != null) {
 					name = $"#{channel.Name}";
 				} else {
 					name = "None";

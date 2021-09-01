@@ -46,13 +46,14 @@ namespace MopBot.Core.Systems.Memory
 
 			canSave = true;
 		}
+
 		public override async Task<bool> Update()
 		{
-			if(!loadedMemory) {
+			if (!loadedMemory) {
 				return false;
 			}
 
-			if(forceSave || (DateTime.Now - lastSave).TotalSeconds >= 60) {
+			if (forceSave || (DateTime.Now - lastSave).TotalSeconds >= 60) {
 				await Save();
 
 				forceSave = false;
@@ -63,21 +64,21 @@ namespace MopBot.Core.Systems.Memory
 
 		public async Task Save()
 		{
-			if(!canSave) {
+			if (!canSave) {
 				return;
 			}
 
-			if(File.Exists(MemoryFile)) {
+			if (File.Exists(MemoryFile)) {
 				Directory.CreateDirectory(BackupDirectory);
 				File.Copy(MemoryFile, Path.Combine(BackupDirectory, $"{DateTime.Now:yyyy-MM-dd-HH:mm:ss}.json"), true);
 
 				//Delete some backups if there's too many
-				if(GlobalConfiguration.config.maxMemoryBackups > 0) {
+				if (GlobalConfiguration.config.maxMemoryBackups > 0) {
 					var directoryInfo = new DirectoryInfo(BackupDirectory);
 					var files = directoryInfo.GetFiles("*.json");
 
-					if(files != null && files.Length > GlobalConfiguration.config.maxMemoryBackups) {
-						foreach(var file in files.OrderByDescending(f => f.LastWriteTime).TakeLast(files.Length - GlobalConfiguration.config.maxMemoryBackups)) {
+					if (files != null && files.Length > GlobalConfiguration.config.maxMemoryBackups) {
+						foreach (var file in files.OrderByDescending(f => f.LastWriteTime).TakeLast(files.Length - GlobalConfiguration.config.maxMemoryBackups)) {
 							File.Delete(file.FullName);
 						}
 					}
@@ -88,6 +89,7 @@ namespace MopBot.Core.Systems.Memory
 
 			lastSave = DateTime.Now;
 		}
+
 		public async Task Load()
 		{
 			loadedMemory = false;
@@ -104,24 +106,24 @@ namespace MopBot.Core.Systems.Memory
 
 			Console.WriteLine($"Took {stopwatch.ElapsedMilliseconds}ms.");
 
-			if(memory == null) {
+			if (memory == null) {
 				Console.WriteLine("Looking for a memory backup...");
 
-				if(Directory.Exists(BackupDirectory)) {
+				if (Directory.Exists(BackupDirectory)) {
 					var directoryInfo = new DirectoryInfo(BackupDirectory);
 					var files = directoryInfo.GetFiles("*.json");
 
-					if(files != null && files.Length > 0) {
+					if (files != null && files.Length > 0) {
 						var sortedFiles = files.OrderByDescending(f => f.LastWriteTime).ToArray();
 
-						for(int i = 0; i < sortedFiles.Length; i++) {
+						for (int i = 0; i < sortedFiles.Length; i++) {
 							var file = sortedFiles[i];
 
 							Console.Write($"Trying backup '{file.Name}'... ");
 
 							memory = await MemoryBase.Load<Memory>(file.FullName);
 
-							if(memory != null) {
+							if (memory != null) {
 								Console.WriteLine("Success! We're saved?");
 								break;
 							}
@@ -131,7 +133,7 @@ namespace MopBot.Core.Systems.Memory
 					}
 				}
 
-				if(memory == null) {
+				if (memory == null) {
 					Console.WriteLine("Out of backups! This is not good. Resetting memory...");
 
 					memory = new Memory();
@@ -159,31 +161,31 @@ namespace MopBot.Core.Systems.Memory
 		{
 			var server = Context.server;
 
-			if(server == null) {
+			if (server == null) {
 				return;
 			}
 
-			if(!Context.socketMessage.Attachments.TryGetFirst(a => a.Filename.EndsWith(".txt") || a.Filename.EndsWith(".json"), out Attachment file) && url == null) {
+			if (!Context.socketMessage.Attachments.TryGetFirst(a => a.Filename.EndsWith(".txt") || a.Filename.EndsWith(".json"), out Attachment file) && url == null) {
 				await Context.ReplyAsync("Expected a .json file attachment or a link to it.");
 				return;
 			}
 
 			string urlString = file?.Url ?? url;
 
-			if(!Uri.TryCreate(urlString, UriKind.Absolute, out Uri uri)) {
+			if (!Uri.TryCreate(urlString, UriKind.Absolute, out Uri uri)) {
 				await Context.ReplyAsync($"Invalid Url: `{urlString}`.");
 				return;
 			}
 
-			using(var client = new WebClient()) {
+			using (var client = new WebClient()) {
 				try {
 					client.DownloadFile(uri, TempMemoryFile);
 				}
-				catch(Exception e) {
+				catch (Exception e) {
 					await Context.ReplyAsync("An exception has occured during file download.");
 					await MopBot.HandleException(e);
 
-					if(File.Exists(TempMemoryFile)) {
+					if (File.Exists(TempMemoryFile)) {
 						File.Delete(TempMemoryFile);
 					}
 
@@ -196,10 +198,10 @@ namespace MopBot.Core.Systems.Memory
 			try {
 				memory[server] = await MemoryBase.Load<ServerMemory>(TempMemoryFile, serverMemory.id, false) ?? throw new InvalidDataException();
 			}
-			catch(Exception e) {
+			catch (Exception e) {
 				await Context.ReplyAsync("There was something wrong with the json file you provided.");
 
-				if(!(e is InvalidDataException)) {
+				if (!(e is InvalidDataException)) {
 					await MopBot.HandleException(e);
 				}
 
@@ -229,31 +231,31 @@ namespace MopBot.Core.Systems.Memory
 		{
 			var server = Context.server;
 
-			if(server == null) {
+			if (server == null) {
 				return;
 			}
 
-			if(!Context.socketMessage.Attachments.TryGetFirst(a => a.Filename.EndsWith(".txt") || a.Filename.EndsWith(".json"), out Attachment file) && url == null) {
+			if (!Context.socketMessage.Attachments.TryGetFirst(a => a.Filename.EndsWith(".txt") || a.Filename.EndsWith(".json"), out Attachment file) && url == null) {
 				await Context.ReplyAsync("Expected a .json file attachment or a link to it.");
 				return;
 			}
 
 			string urlString = file?.Url ?? url;
 
-			if(!Uri.TryCreate(urlString, UriKind.Absolute, out Uri uri)) {
+			if (!Uri.TryCreate(urlString, UriKind.Absolute, out Uri uri)) {
 				await Context.ReplyAsync($"Invalid Url: `{urlString}`.");
 				return;
 			}
 
-			using(var client = new WebClient()) {
+			using (var client = new WebClient()) {
 				try {
 					client.DownloadFile(uri, TempMemoryFile);
 				}
-				catch(Exception e) {
+				catch (Exception e) {
 					await Context.ReplyAsync("An exception has occured during file download.");
 					await MopBot.HandleException(e);
 
-					if(File.Exists(TempMemoryFile)) {
+					if (File.Exists(TempMemoryFile)) {
 						File.Delete(TempMemoryFile);
 					}
 
@@ -267,10 +269,10 @@ namespace MopBot.Core.Systems.Memory
 				memory = await MemoryBase.Load<Memory>(TempMemoryFile, serverMemory.id, false) ?? throw new InvalidDataException();
 				GC.Collect();
 			}
-			catch(Exception e) {
+			catch (Exception e) {
 				await Context.ReplyAsync("There was something wrong with the json file you provided.");
 
-				if(!(e is InvalidDataException)) {
+				if (!(e is InvalidDataException)) {
 					await MopBot.HandleException(e);
 				}
 
@@ -303,7 +305,7 @@ namespace MopBot.Core.Systems.Memory
 			var dmChannel = postHere ? null : await Context.socketUser.CreateDMChannelAsync();
 			IMessageChannel textChannel;
 
-			if(!postHere && dmChannel == null) {
+			if (!postHere && dmChannel == null) {
 				await Context.ReplyAsync("Unable to send you a private message.");
 				return;
 			}

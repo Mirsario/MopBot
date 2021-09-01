@@ -21,39 +21,43 @@ namespace MopBot.Core.Systems
 
 		public async Task InitializeSystems()
 		{
-			for(int i = 0; i < systems.Count; i++) {
+			for (int i = 0; i < systems.Count; i++) {
 				await systems[i].PreInitialize();
 			}
 
-			for(int i = 0; i < systems.Count; i++) {
+			for (int i = 0; i < systems.Count; i++) {
 				await systems[i].Initialize();
 			}
 		}
+
 		public async Task UpdateSystems(bool allowBreak)
 		{
-			for(int i = 0; i < systems.Count; i++) {
+			for (int i = 0; i < systems.Count; i++) {
 				var system = systems[i];
 
 				try {
-					if(!await system.Update()) {
-						if(allowBreak) {
+					if (!await system.Update()) {
+						if (allowBreak) {
 							break;
 						}
-					} else if(MopBot.client?.ConnectionState == ConnectionState.Connected) {
-						foreach(var server in MopBot.client.Guilds) {
-							if(system.IsEnabledForServer(server)) {
+					} else if (MopBot.client?.ConnectionState == ConnectionState.Connected) {
+						foreach (var server in MopBot.client.Guilds) {
+							if (system.IsEnabledForServer(server)) {
 								await system.ServerUpdate(server);
 							}
 						}
 					}
 				}
-				catch(Exception e) {
+				catch (Exception e) {
 					await MopBot.HandleException(e);
 					break;
 				}
 			}
 		}
-		public async Task<BotSystem> AddSystem<T>() where T : BotSystem => await AddSystem(typeof(T));
+
+		public async Task<BotSystem> AddSystem<T>() where T : BotSystem
+			=> await AddSystem(typeof(T));
+
 		public async Task<BotSystem> AddSystem(Type type)
 		{
 			BotSystem system = (BotSystem)Activator.CreateInstance(type);

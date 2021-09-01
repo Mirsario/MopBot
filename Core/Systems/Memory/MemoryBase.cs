@@ -14,12 +14,14 @@ namespace MopBot.Core.Systems.Memory
 		protected virtual string Name => null; //Doesn't do anything
 
 		public virtual void Initialize() { }
+
 		public virtual void ReadFromJson(JObject jObj) { }
+
 		public virtual void WriteToJson(ref JObject jObj)
 		{
 			string name = Name;
 
-			if(!string.IsNullOrEmpty(name)) {
+			if (!string.IsNullOrEmpty(name)) {
 				jObj["name"] = name;
 			}
 		}
@@ -35,14 +37,14 @@ namespace MopBot.Core.Systems.Memory
 
 		public static async Task<T> Load<T>(string filePath, ulong setId = 0, bool logExceptions = true) where T : MemoryBase
 		{
-			if(!File.Exists(filePath)) {
+			if (!File.Exists(filePath)) {
 				return null;
 			}
 
 			try {
 				var jObj = JObject.Parse(await File.ReadAllTextAsync(filePath));
 
-				if(jObj != null) {
+				if (jObj != null) {
 					T result = (T)Activator.CreateInstance(typeof(T));
 
 					result.id = setId;
@@ -52,14 +54,15 @@ namespace MopBot.Core.Systems.Memory
 					return result;
 				}
 			}
-			catch(Exception e) {
-				if(logExceptions) {
+			catch (Exception e) {
+				if (logExceptions) {
 					await MopBot.HandleException(e, "An error has occured when loading memory.");
 				}
 			}
 
 			return null;
 		}
+
 		public static async Task Save(MemoryBase memory, string filePath)
 		{
 			try {

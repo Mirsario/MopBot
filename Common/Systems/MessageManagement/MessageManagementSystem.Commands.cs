@@ -47,7 +47,7 @@ namespace MopBot.Common.Systems.MessageManagement
 			try {
 				await context.socketTextChannel.DeleteMessagesAsync(messageList);
 			}
-			catch(Exception e) {
+			catch (Exception e) {
 				await MopBot.HandleException(e);
 				await context.ReplyAsync($"Error deleting messages: ```{string.Join("\r\n", messageList.Select(m => m == null ? "NULL" : m.Id.ToString()))}```");
 			}

@@ -28,7 +28,9 @@ namespace MopBot.Extensions
 	public static class UnsortedExtensions
 	{
 		public static BindingFlags anyFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
-		public static string GetDisplayName(this IUser user) => (user as IGuildUser)?.Nickname ?? user?.Username ?? "UnknownUser";
+
+		public static string GetDisplayName(this IUser user)
+			=> (user as IGuildUser)?.Nickname ?? user?.Username ?? "UnknownUser";
 
 		public static SocketUserMessage ToSocketUserMessage(this RestUserMessage restMessage, SocketTextChannel channel)
 		{
@@ -40,6 +42,7 @@ namespace MopBot.Extensions
 
 			return msgNew;
 		}
+
 		public static async Task<SocketGuildUser[]> GetReactionUsersAsync(this SocketMessage message, SocketGuild server, IEmote emote, RequestOptions options = null)
 		{
 			//await MessageHelper.AddReactionAsync(this, emote, base.Discord, options);
@@ -48,7 +51,8 @@ namespace MopBot.Extensions
 			Type discordRestApiClient = assembly.GetType("Discord.API.DiscordRestApiClient");
 			var method = discordRestApiClient.GetMethod("GetReactionUsersAsync", BindingFlags.Public | BindingFlags.Instance);
 			var property = typeof(BaseDiscordClient).GetProperty("ApiClient", BindingFlags.NonPublic | BindingFlags.Instance);
-			var obj = property.GetValue(MopBot.client);
+			object obj = property.GetValue(MopBot.client);
+
 			var task = (Task)method.Invoke(obj, new object[] {
 				message.Channel.Id,
 				message.Id,
@@ -59,22 +63,23 @@ namespace MopBot.Extensions
 
 			try {
 				task.Wait();
-				var list = task.GetType().GetProperty("Result", BindingFlags.Public | BindingFlags.Instance).GetValue(task);
+
+				object list = task.GetType().GetProperty("Result", BindingFlags.Public | BindingFlags.Instance).GetValue(task);
 				var enumerable = (IEnumerable)list;
 				var result = new List<SocketGuildUser>();
 
-				foreach(var value in enumerable) {
+				foreach (object value in enumerable) {
 					result.Add(server.GetUser((ulong)userType.GetProperty("Id", BindingFlags.Public | BindingFlags.Instance).GetValue(value)));
 				}
 
 				return result.ToArray();
 			}
-			catch(HttpException exception) {
-				if(MemorySystem.memory[server].GetData<ChannelSystem, ChannelServerData>().TryGetChannelByRoles(out var tempChannel, ChannelRole.Logs, ChannelRole.BotArea, ChannelRole.Default) && tempChannel is IMessageChannel logChannel) {
+			catch (HttpException exception) {
+				if (MemorySystem.memory[server].GetData<ChannelSystem, ChannelServerData>().TryGetChannelByRoles(out var tempChannel, ChannelRole.Logs, ChannelRole.BotArea, ChannelRole.Default) && tempChannel is IMessageChannel logChannel) {
 					await logChannel.SendMessageAsync($"Unable to add reactions in <#{message.Channel.Id}>, an HttpException has occured:\r\n{exception.Message}");
 				}
 			}
-			catch(Exception exception) {
+			catch (Exception exception) {
 				await MopBot.HandleException(exception);
 			}
 
@@ -83,7 +88,7 @@ namespace MopBot.Extensions
 
 		public static bool SetIfNull<T>(this object obj, ref T field, Func<T> func)
 		{
-			if(field == null) {
+			if (field == null) {
 				field = func();
 
 				return true;
@@ -91,9 +96,10 @@ namespace MopBot.Extensions
 
 			return false;
 		}
+
 		public static bool AddIfMissing<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, Func<TValue> func)
 		{
-			if(!dict.ContainsKey(key)) {
+			if (!dict.ContainsKey(key)) {
 				dict.Add(key, func());
 
 				return true;
@@ -101,9 +107,10 @@ namespace MopBot.Extensions
 
 			return false;
 		}
+
 		public static bool AddIfMissingOrNull<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, Func<TValue> func)
 		{
-			if(!dict.ContainsKey(key) || dict[key] == null) {
+			if (!dict.ContainsKey(key) || dict[key] == null) {
 				dict.Add(key, func());
 
 				return true;
@@ -112,22 +119,25 @@ namespace MopBot.Extensions
 			return false;
 		}
 
-		#region MopBot
-		public static bool HasRole(this SocketGuildUser user, IRole role) => user.Roles.Any(r => r.Id == role.Id);
+		// MopBot
+
+		public static bool HasRole(this SocketGuildUser user, IRole role)
+			=> user.Roles.Any(r => r.Id == role.Id);
+
 		public static DColor GetColor(this IUser user)
 		{
 			var defaultColor = new DColor(240, 240, 240);
 			uint defaultRawValue = defaultColor.RawValue;
 			var color = defaultColor;
 
-			if(!(user is SocketGuildUser serverUser)) {
+			if (user is not SocketGuildUser serverUser) {
 				return color;
 			}
 
-			foreach(var role in serverUser.Roles.OrderBy(role => role.Position)) {
+			foreach (var role in serverUser.Roles.OrderBy(role => role.Position)) {
 				var roleColor = role.Color;
 
-				if(roleColor.RawValue != defaultRawValue) {
+				if (roleColor.RawValue != defaultRawValue) {
 					color = roleColor;
 				}
 			}
@@ -135,89 +145,95 @@ namespace MopBot.Extensions
 			return color;
 		}
 
-		public static bool IsBotMaster(this IUser user) => GlobalConfiguration.config.masterUsers?.Contains(user.Id) == true;
+		public static bool IsBotMaster(this IUser user)
+			=> GlobalConfiguration.config.masterUsers?.Contains(user.Id) == true;
+
 		public static bool HasDiscordPermission(this SocketGuildUser user, Func<GuildPermissions, bool> getPerm)
 		{
 			var roles = user.Roles.OrderBy(r => r.Position);
 
-			foreach(var role in roles) {
+			foreach (var role in roles) {
 				var permissions = role.Permissions;
 
-				if(permissions.Administrator || getPerm(permissions)) {
+				if (permissions.Administrator || getPerm(permissions)) {
 					return true;
 				}
 			}
 
 			return false;
 		}
+
 		public static bool HasChannelPermission(this SocketGuildUser user, SocketGuildChannel channel, DiscordPermission permission)
 		{
-			if(channel == null) {
+			if (channel == null) {
 				throw new ArgumentNullException(nameof(channel));
 			}
 
-			if(user.Roles.Any(r => r.Permissions.Administrator)) {
+			if (user.Roles.Any(r => r.Permissions.Administrator)) {
 				return true;
 			}
 
 			bool? result = null;
 
-			foreach(var role in user.Roles.OrderBy(r => r.Position)) {
+			foreach (var role in user.Roles.OrderBy(r => r.Position)) {
 				var rolePerms = role.Permissions;
 
-				if(rolePerms.TryGetValueFromEnum(permission, out bool roleResult)) {
+				if (rolePerms.TryGetValueFromEnum(permission, out bool roleResult)) {
 					result = roleResult;
 				}
 
 				var roleOverwrite = channel.GetPermissionOverwrite(role);
 
-				if(roleOverwrite.HasValue && roleOverwrite.Value.TryGetValueFromEnum(permission, out bool? roleOverwriteResult) && roleOverwriteResult.HasValue) {
+				if (roleOverwrite.HasValue && roleOverwrite.Value.TryGetValueFromEnum(permission, out bool? roleOverwriteResult) && roleOverwriteResult.HasValue) {
 					result = roleOverwriteResult.Value;
 				}
 			}
 
 			var userOverwrite = channel.GetPermissionOverwrite(user);
 
-			if(userOverwrite.HasValue && userOverwrite.Value.TryGetValueFromEnum(permission, out bool? userOverwriteResult) && userOverwriteResult.HasValue) {
+			if (userOverwrite.HasValue && userOverwrite.Value.TryGetValueFromEnum(permission, out bool? userOverwriteResult) && userOverwriteResult.HasValue) {
 				result = userOverwriteResult.Value;
 			}
 
 			return result ?? false;
 		}
+
 		public static void RequirePermission(this SocketGuildUser user, SocketGuildChannel channel, DiscordPermission permission)
 		{
-			if(!user.HasChannelPermission(channel, permission)) {
+			if (!user.HasChannelPermission(channel, permission)) {
 				throw new BotError($"{(user.Id == MopBot.client.CurrentUser.Id ? "I'm" : "You're")} missing the following permission: `{permission}`");
 			}
 		}
+
 		public static void RequirePermission(this SocketGuildUser user, string permission)
 		{
-			if(!user.HasAnyPermissions(permission)) {
+			if (!user.HasAnyPermissions(permission)) {
 				throw new BotError($"Missing the following permission: `{permission}`.");
 			}
 		}
+
 		public static bool HasAnyPermissions(this SocketGuildUser user, params string[] permissions)
 		{
 			var serverData = MemorySystem.memory[user.Guild].GetData<PermissionSystem, PermissionServerData>();
 
 			var roles = user.Roles.Select(role => (role.Position, role.Id)).OrderBy(tuple => tuple.Position).Select(tuple => tuple.Id).Concat(new List<ulong>() { 0 });
-			foreach(var permission in permissions) {
+			foreach (var permission in permissions) {
 				bool? result = null;
 
-				foreach(ulong roleId in roles) {
-					if(!serverData.roleGroups.TryGetValue(roleId, out string groupName)) {
+				foreach (ulong roleId in roles) {
+					if (!serverData.roleGroups.TryGetValue(roleId, out string groupName)) {
 						continue;
 					}
 
 					var group = serverData.permissionGroups[groupName];
 					bool? newResult = group[permission];
 
-					if(result == null || newResult != null) {
+					if (result == null || newResult != null) {
 						result = newResult;
 					}
 				}
 
-				if(result == true) {
+				if (result == true) {
 					return true;
 				}
 			}
@@ -229,8 +245,7 @@ namespace MopBot.Extensions
 		{
 			bool result = true;
 
-			value = permission switch
-			{
+			value = permission switch {
 				DiscordPermission.Administrator => perms.Administrator,
 				DiscordPermission.ManageServer => perms.ManageGuild,
 				DiscordPermission.ManageMessages => perms.ManageMessages,
@@ -268,14 +283,14 @@ namespace MopBot.Extensions
 
 			return result;
 		}
+
 		public static bool TryGetValueFromEnum(this OverwritePermissions perms, DiscordPermission permission, out bool? value)
 		{
 			static bool? GetNBool(PermValue val) => val == PermValue.Allow ? true : (val == PermValue.Deny ? false : (bool?)null);
 
 			bool result = true;
 
-			value = permission switch
-			{
+			value = permission switch {
 				DiscordPermission.EmbedLinks => GetNBool(perms.EmbedLinks),
 				DiscordPermission.AttachFiles => GetNBool(perms.AttachFiles),
 				DiscordPermission.ReadMessageHistory => GetNBool(perms.ReadMessageHistory),
@@ -299,7 +314,7 @@ namespace MopBot.Extensions
 				_ => result = false
 			};
 
-			if(!result) {
+			if (!result) {
 				value = null;
 			}
 
@@ -308,6 +323,7 @@ namespace MopBot.Extensions
 
 		public static Task Success(this ICommandContext context)
 			=> context.AddPredefinedReaction(PredefinedEmote.Success);
+
 		public static Task Failure(this ICommandContext context)
 			=> context.AddPredefinedReaction(PredefinedEmote.Failure);
 
@@ -315,7 +331,7 @@ namespace MopBot.Extensions
 		{
 			string emoji;
 
-			switch(emote) {
+			switch (emote) {
 				case PredefinedEmote.Success:
 					emoji = "✅";
 					break;
@@ -329,48 +345,66 @@ namespace MopBot.Extensions
 			await context.Message.AddReactionAsync(new Emoji(emoji));
 		}
 
-		public static async Task<IUserMessage> ReplyAsync(this ICommandContext context, Embed embed, bool mention = true, ISocketMessageChannel channelOverride = null) => await (channelOverride ?? context.Channel).SendMessageAsync(mention ? context.User.Mention + " " : null, embed: embed);
-		public static async Task<IUserMessage> ReplyAsync(this ICommandContext context, string text, EmbedBuilder embedBuilder, bool mention = true, ISocketMessageChannel channelOverride = null) => await (channelOverride ?? context.Channel).SendMessageAsync((mention ? context.User.Mention + " " : null) + text, embed: embedBuilder.Build());
+		public static async Task<IUserMessage> ReplyAsync(this ICommandContext context, Embed embed, bool mention = true, ISocketMessageChannel channelOverride = null)
+			=> await (channelOverride ?? context.Channel).SendMessageAsync(mention ? context.User.Mention + " " : null, embed: embed);
+		
+		public static async Task<IUserMessage> ReplyAsync(this ICommandContext context, string text, EmbedBuilder embedBuilder, bool mention = true, ISocketMessageChannel channelOverride = null)
+			=> await (channelOverride ?? context.Channel).SendMessageAsync((mention ? context.User.Mention + " " : null) + text, embed: embedBuilder.Build());
+		
 		public static async Task<IUserMessage> ReplyAsync(this MessageContext context, string text, bool mention = true, ISocketMessageChannel channelOverride = null)
 			=> await (channelOverride ?? context.Channel).SendMessageAsync((mention ? context.User.Mention + " " : null) + text);
 
-		public static ServerMemory GetMemory(this SocketGuild server) => MemorySystem.memory[server];
-		public static ServerUserMemory GetMemory(this SocketGuildUser user) => MemorySystem.memory[user.Guild][user];
+		public static ServerMemory GetMemory(this SocketGuild server)
+			=> MemorySystem.memory[server];
+		
+		public static ServerUserMemory GetMemory(this SocketGuildUser user)
+			=> MemorySystem.memory[user.Guild][user];
 
-		public static bool CheckSynced(this PreconditionAttribute precondition, ICommandContext context, CommandInfo command) => precondition.CheckSynced(context, command, MopBot.serviceProvaider);
+		public static bool CheckSynced(this PreconditionAttribute precondition, ICommandContext context, CommandInfo command)
+			=> precondition.CheckSynced(context, command, MopBot.serviceProvaider);
+
 		public static bool PermissionsMet(this IEnumerable<PreconditionAttribute> preconditions, ICommandContext context, CommandInfo command = null)
 		{
 			var permReqs = preconditions.SelectIgnoreNull(p => p as RequirePermissionAttribute);
 
-			if(permReqs == null || permReqs.Count() == 0) {
+			if (permReqs == null || permReqs.Count() == 0) {
 				return true;
 			}
 
 			return permReqs.All(p => p.CheckSynced(context, command)) != false;
 		}
-		public static bool AllMet(this IEnumerable<PreconditionAttribute> preconditions, ICommandContext context, CommandInfo command) => preconditions.AllMet(context, command, MopBot.serviceProvaider);
-		public static async Task<bool> AllMetAsync(this IEnumerable<PreconditionAttribute> preconditions, ICommandContext context, CommandInfo command) => await preconditions.AllMetAsync(context, command, MopBot.serviceProvaider);
-		#endregion
-		#region Discord
-		public static bool ColorEquals(this Discord.Color colorA, Discord.Color colorB) => colorA.R == colorB.R && colorA.G == colorB.G && colorA.B == colorB.B;
+
+		public static bool AllMet(this IEnumerable<PreconditionAttribute> preconditions, ICommandContext context, CommandInfo command)
+			=> preconditions.AllMet(context, command, MopBot.serviceProvaider);
+
+		public static async Task<bool> AllMetAsync(this IEnumerable<PreconditionAttribute> preconditions, ICommandContext context, CommandInfo command)
+			=> await preconditions.AllMetAsync(context, command, MopBot.serviceProvaider);
+
+		// Discord
+
+		public static bool ColorEquals(this Color colorA, Color colorB)
+			=> colorA.R == colorB.R && colorA.G == colorB.G && colorA.B == colorB.B;
+
 		public static bool CheckSynced(this PreconditionAttribute precondition, ICommandContext context, CommandInfo command, IServiceProvider provider)
 		{
 			var task = precondition.CheckPermissionsAsync(context, command, provider);
 
-			if(!task.IsCompleted) {
+			if (!task.IsCompleted) {
 				task.RunSynchronously();
 			}
 
 			return task.Result.IsSuccess;
 		}
+
 		public static bool AllMet(this IEnumerable<PreconditionAttribute> preconditions, ICommandContext context, CommandInfo command, IServiceProvider provider)
 		{
 			return preconditions.All(p => p.CheckSynced(context, command, provider));
 		}
+
 		public static async Task<bool> AllMetAsync(this IEnumerable<PreconditionAttribute> preconditions, ICommandContext context, CommandInfo command, IServiceProvider provider)
 		{
-			foreach(var precondition in preconditions) {
-				if(!(await precondition.CheckPermissionsAsync(context, command, provider)).IsSuccess) {
+			foreach (var precondition in preconditions) {
+				if (!(await precondition.CheckPermissionsAsync(context, command, provider)).IsSuccess) {
 					return false;
 				}
 			}
@@ -383,33 +417,34 @@ namespace MopBot.Extensions
 			var perms = channel.GetPermissionOverwrite(role) ?? OverwritePermissions.InheritAll;
 			var newPerms = func(perms);
 
-			if(perms.AllowValue != newPerms.AllowValue || perms.DenyValue != newPerms.DenyValue) {
+			if (perms.AllowValue != newPerms.AllowValue || perms.DenyValue != newPerms.DenyValue) {
 				await channel.AddPermissionOverwriteAsync(role, newPerms);
 			}
 		}
+
 		public static async Task ModifyPermissions(this SocketGuildChannel channel, IUser user, Func<OverwritePermissions, OverwritePermissions> func)
 		{
 			var perms = channel.GetPermissionOverwrite(user) ?? OverwritePermissions.InheritAll;
 			var newPerms = func(perms);
 
-			if(perms.AllowValue != newPerms.AllowValue || perms.DenyValue != newPerms.DenyValue) {
+			if (perms.AllowValue != newPerms.AllowValue || perms.DenyValue != newPerms.DenyValue) {
 				await channel.AddPermissionOverwriteAsync(user, newPerms);
 			}
 		}
-		#endregion
 
-		#region Reflection
+		// Reflection
+
 		public static bool IsDerivedFrom(this Type type, Type from)
 		{
 			return type != from && from.IsAssignableFrom(type);
 		}
-		#endregion
 
-		#region StringExtensions
+		// StringExtensions
+
 		public static bool EndsWithAny(this string source, params string[] strings)
 		{
-			for(int i = 0; i < strings.Length; i++) {
-				if(source.EndsWith(strings[i])) {
+			for (int i = 0; i < strings.Length; i++) {
+				if (source.EndsWith(strings[i])) {
 					return true;
 				}
 			}
@@ -419,55 +454,61 @@ namespace MopBot.Extensions
 
 		public static string TruncateWithDots(this string value, int maxLength)
 		{
-			if(string.IsNullOrEmpty(value) || value.Length <= maxLength) {
+			if (string.IsNullOrEmpty(value) || value.Length <= maxLength) {
 				return value;
 			}
 
-			if(maxLength > 3) {
+			if (maxLength > 3) {
 				return value.Substring(0, maxLength - 3) + "...";
 			}
 
 			return value.Substring(0, maxLength);
 		}
 
-		public static string Repeat(this string str, int numTimes) => string.Concat(Enumerable.Repeat(str, numTimes));
+		public static string Repeat(this string str, int numTimes)
+			=> string.Concat(Enumerable.Repeat(str, numTimes));
 
-		public static bool ContainsWord(this string str, params string[] words) => words.Any(q => str.ContainsWord(q));
+		public static bool ContainsWord(this string str, params string[] words)
+			=> words.Any(q => str.ContainsWord(q));
+
 		public static bool ContainsWord(this string str, string word)
 		{
-			if(str == word || str.StartsWith(word) && !char.IsLetterOrDigit(str[word.Length])) {
+			if (str == word || str.StartsWith(word) && !char.IsLetterOrDigit(str[word.Length])) {
 				return true;
 			}
 
-			if(str.IndexOf(" " + word, out int index)) {
+			if (str.IndexOf(" " + word, out int index)) {
 				index += 1 + word.Length;
 
-				if(index >= str.Length || !char.IsLetterOrDigit(str[index])) {
+				if (index >= str.Length || !char.IsLetterOrDigit(str[index])) {
 					return true;
 				}
 			}
 
 			return false;
 		}
+
 		public static bool IndexOf(this string str, string text, out int index)
 		{
 			index = str.IndexOf(text);
 
 			return index != -1;
 		}
+
 		public static bool Contains(this string str, char character)
 		{
-			for(int i = 0; i < str.Length; i++) {
-				if(str[i] == character) {
+			for (int i = 0; i < str.Length; i++) {
+				if (str[i] == character) {
 					return true;
 				}
 			}
 
 			return false;
 		}
+
 		public static string Capitalize(this string input)
 		{
-			switch(input) {
+			switch (input) {
 				case null:
 					throw new ArgumentNullException(nameof(input));
 				case "":
@@ -476,13 +517,14 @@ namespace MopBot.Extensions
 					return input.First().ToString().ToUpper() + input.Substring(1);
 			}
 		}
+
 		public static string RemoveWhitespaces(this string input)
 		{
 			var sb = new StringBuilder(input);
 
 			int pos = 0;
-			for(int i = 0; i < input.Length; i++) {
-				switch(input[i]) {
+			for (int i = 0; i < input.Length; i++) {
+				switch (input[i]) {
 					case ' ':
 					case '\t':
 					case '\r':
@@ -498,6 +540,5 @@ namespace MopBot.Extensions
 
 			return sb.ToString();
 		}
-		#endregion
 	}
 }

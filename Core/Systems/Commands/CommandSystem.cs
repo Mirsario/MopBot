@@ -27,36 +27,38 @@ namespace MopBot.Core.Systems.Commands
 		{
 			RegisterDataType<ServerMemory, CommandServerData>();
 		}
+
 		public override async Task Initialize()
 		{
 			commandGroupToSystem = new Dictionary<string, BotSystem>();
 			commandToSystem = new Dictionary<string, BotSystem>();
 
-			foreach(var type in MopBot.botTypes.Where(t => !t.IsAbstract && t.IsDerivedFrom(typeof(BotSystem)))) {
+			foreach (var type in MopBot.botTypes.Where(t => !t.IsAbstract && t.IsDerivedFrom(typeof(BotSystem)))) {
 				string group = null;
 
 				var system = MopBot.instance.systems.First(t => t.GetType() == type);
 
-				if(system == null) {
+				if (system == null) {
 					throw new Exception($"Couldn't find instance of System {type.Name}");
 				}
 
 				var groupAttribute = type.GetCustomAttribute<GroupAttribute>();
 
-				if(groupAttribute != null) {
+				if (groupAttribute != null) {
 					group = groupAttribute.Prefix;
 					commandGroupToSystem[group] = system;
 				}
 
-				foreach(var method in type.GetMethods()) {
+				foreach (var method in type.GetMethods()) {
 					var cmdAttribute = method.GetCustomAttribute<CommandAttribute>();
 
-					if(cmdAttribute != null) {
+					if (cmdAttribute != null) {
 						commandToSystem[$"{(group == null ? null : $"{group} ")}{cmdAttribute.Text}"] = system;
 					}
 				}
 			}
 		}
+
 		public override async Task OnMessageReceived(MessageContext message)
 		{
 			await ExecuteCommand(message);
@@ -72,19 +74,20 @@ namespace MopBot.Core.Systems.Commands
 			//commandService.AddTypeReader(new UserTypeReader<
 			commandService.AddTypeReader<SocketGuildUser>(new DownloadCapableUserTypeReader<SocketGuildUser>(), true);
 
-			foreach(var type in MopBot.botTypes.Where(t => !t.IsAbstract && typeof(CustomTypeReader).IsAssignableFrom(t))) {
+			foreach (var type in MopBot.botTypes.Where(t => !t.IsAbstract && typeof(CustomTypeReader).IsAssignableFrom(t))) {
 				var instance = (CustomTypeReader)Activator.CreateInstance(type);
 
-				foreach(Type assignedType in instance.Types) {
+				foreach (Type assignedType in instance.Types) {
 					commandService.AddTypeReader(assignedType, instance);
 				}
 			}
 		}
+
 		public static async Task ExecuteCommand(MessageContext context, bool skipRegex = false)
 		{
 			var server = context.server;
 
-			if(server == null || !context.isCommand) {
+			if (server == null || !context.isCommand) {
 				return;
 			}
 
@@ -93,26 +96,26 @@ namespace MopBot.Core.Systems.Commands
 			//Regex parsing
 			char symbol = skipRegex ? ' ' : commandServerData.commandPrefix;
 
-			if(!commandRegex.TryGetValue(symbol, out Regex regex)) {
+			if (!commandRegex.TryGetValue(symbol, out Regex regex)) {
 				//										([!]|&&)((?:"[\s\S]*?"|[\s\S](?!&&))+)(?!&&)
 				commandRegex[symbol] = regex = new Regex($@"({(skipRegex ? "$" : $"[{symbol}]")}|&&)((?:""[\s\S]*?""|[\s\S](?!&&))+)(?!&&)", RegexOptions.Compiled);
 			}
 
 			var matches = regex.Matches(context.content);
 
-			if(matches.Count == 0) {
+			if (matches.Count == 0) {
 				return;
 			}
 
 			bool fail = false;
 
-			for(int i = 0; i < matches.Count; i++) {
+			for (int i = 0; i < matches.Count; i++) {
 				Match match = matches[i];
 				string commandText = match.Groups[2].Value.Trim();
 
 				var searchResult = commandService.Search(context, commandText);
 
-				if(!searchResult.IsSuccess) {
+				if (!searchResult.IsSuccess) {
 					Console.WriteLine($"Search for '{commandText}' failed.");
 					return;
 				}
@@ -123,13 +126,13 @@ namespace MopBot.Core.Systems.Commands
 				bool matchSucceeded = false;
 				bool forceBreak = false;
 
-				for(int j = 0; j < numCommands; j++) {
+				for (int j = 0; j < numCommands; j++) {
 					var commandMatch = commandMatches[j];
 					var command = commandMatch.Command;
 
 					bool lastCommand = j == numCommands - 1;
 
-					if(!TryGetCommandsSystem(command, out BotSystem system) || !system.IsEnabledForServer(server)) {
+					if (!TryGetCommandsSystem(command, out BotSystem system) || !system.IsEnabledForServer(server)) {
 						continue;
 					}
 
@@ -139,7 +142,7 @@ namespace MopBot.Core.Systems.Commands
 					var parseResult = await commandMatch.ParseAsync(context, searchResult, preconditionResult, MopBot.serviceProvaider);
 					var result = (ExecuteResult)await commandMatch.ExecuteAsync(context, parseResult, MopBot.serviceProvaider);
 
-					if(result.IsSuccess) {
+					if (result.IsSuccess) {
 						matchSucceeded = true;
 						break;
 					} else {
@@ -147,13 +150,13 @@ namespace MopBot.Core.Systems.Commands
 
 						EmbedBuilder embedBuilder;
 
-						switch(e) {
+						switch (e) {
 							case CommandError.Exception:
 								var exception = result.Exception;
 
 								embedBuilder = MopBot.GetEmbedBuilder(server);
 
-								if(exception is BotError botError) {
+								if (exception is BotError botError) {
 									embedBuilder.Title = $"❌ - {botError.Message}";
 									embedBuilder.Color = Color.Orange;
 								} else {
@@ -168,7 +171,7 @@ namespace MopBot.Core.Systems.Commands
 
 								break;
 							case CommandError.UnmetPrecondition:
-								if(lastCommand) {
+								if (lastCommand) {
 									await context.ReplyAsync(MopBot.GetEmbedBuilder(server)
 										.WithTitle($"❌ - {result.ErrorReason}")
 										.WithColor(Color.Orange)
@@ -178,7 +181,7 @@ namespace MopBot.Core.Systems.Commands
 
 								break;
 							default: {
-									if(!lastCommand || e == CommandError.Unsuccessful) {
+									if (!lastCommand || e == CommandError.Unsuccessful) {
 										break;
 									}
 
@@ -193,43 +196,44 @@ namespace MopBot.Core.Systems.Commands
 								}
 						}
 
-						if(e != CommandError.Unsuccessful && (lastCommand || forceBreak)) {
+						if (e != CommandError.Unsuccessful && (lastCommand || forceBreak)) {
 							await context.Failure();
 						}
 
-						if(forceBreak) {
+						if (forceBreak) {
 							break;
 						}
 					}
 				}
 
-				if(!matchSucceeded || forceBreak) {
+				if (!matchSucceeded || forceBreak) {
 					fail = true;
 					break;
 				}
 			}
 
-			if(!fail && context is MessageContext c && c.message != null && !MessageSystem.MessageIgnored(c.message.Id) && c.socketTextChannel != null && await c.socketTextChannel.GetMessageAsync(c.message.Id) != null) {
+			if (!fail && context is MessageContext c && c.message != null && !MessageSystem.MessageIgnored(c.message.Id) && c.socketTextChannel != null && await c.socketTextChannel.GetMessageAsync(c.message.Id) != null) {
 				await context.Success();
 			}
 		}
+
 		public static List<(string[] aliases, string description, bool isGroup)> GetAvailableCommands(SocketGuild server, SocketGuildUser user, bool fillNullDescription = false)
 		{
 			var result = new List<(string[] aliases, string description, bool isGroup)>();
 			var shownCommands = new List<string>();
 			var context = new MessageContext(null, server, user);
 
-			foreach(var m in commandService.Modules) {
+			foreach (var m in commandService.Modules) {
 				string noDescription = fillNullDescription ? "No description provided." : null;
 
-				if(m.Group != null) {
-					if(!shownCommands.Contains(m.Group) && commandGroupToSystem.TryGetValue(m.Group, out BotSystem system) && system.IsEnabledForServer(server) && m.Preconditions.PermissionsMet(context)) {
+				if (m.Group != null) {
+					if (!shownCommands.Contains(m.Group) && commandGroupToSystem.TryGetValue(m.Group, out BotSystem system) && system.IsEnabledForServer(server) && m.Preconditions.PermissionsMet(context)) {
 						result.Add((m.Aliases.ToArray(), m.Summary ?? noDescription, true));
 						shownCommands.Add(m.Group);
 					}
 				} else {
-					foreach(var c in m.Commands) {
-						if(!shownCommands.Contains(c.Name) && commandToSystem.TryGetValue(c.Name, out BotSystem system) && system.IsEnabledForServer(server) && c.Preconditions.PermissionsMet(context, c)) {
+					foreach (var c in m.Commands) {
+						if (!shownCommands.Contains(c.Name) && commandToSystem.TryGetValue(c.Name, out BotSystem system) && system.IsEnabledForServer(server) && c.Preconditions.PermissionsMet(context, c)) {
 							result.Add((c.Aliases.ToArray(), c.Summary ?? noDescription, false));
 							shownCommands.Add(c.Name);
 						}
@@ -239,17 +243,18 @@ namespace MopBot.Core.Systems.Commands
 
 			return result;
 		}
+
 		public static bool TryGetCommandsSystem(CommandInfo command, out BotSystem system)
 		{
-			var group = command.Module.Group;
+			string group = command.Module.Group;
 
 			string key;
 
-			if(!(group == null ? commandToSystem : commandGroupToSystem).TryGetValue(key = group ?? command.Name, out system)) {
+			if (!(group == null ? commandToSystem : commandGroupToSystem).TryGetValue(key = group ?? command.Name, out system)) {
 				throw new Exception($"Can't get system from module '{key}'!");
 			}
 
-			if(system == null) {
+			if (system == null) {
 				throw new Exception($"System '{key}' is null!");
 			}
 

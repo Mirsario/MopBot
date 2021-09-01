@@ -14,7 +14,7 @@ namespace MopBot.Core.TypeReaders
 
 		public override async Task<TypeReaderResult> ReadAsync(ICommandContext context, string input, IServiceProvider services)
 		{
-			if(EmoteUtils.TryParse(input, out var result)) {
+			if (EmoteUtils.TryParse(input, out var result)) {
 				return TypeReaderResult.FromSuccess(result);
 			}
 

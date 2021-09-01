@@ -14,7 +14,7 @@ namespace MopBot.Collections
 			{
 				var tokenType = reader.TokenType;
 
-				if(tokenType != type) {
+				if (tokenType != type) {
 					throw new JsonSerializationException($"Unexpected token: '{tokenType}'. Expected '{type}'.");
 				}
 
@@ -25,13 +25,13 @@ namespace MopBot.Collections
 				return result;
 			}
 
-			switch(reader.TokenType) {
+			switch (reader.TokenType) {
 				case JsonToken.Null:
 					return null;
 				case JsonToken.StartArray: {
 						reader.Read();
 
-						if(reader.TokenType == JsonToken.EndArray) {
+						if (reader.TokenType == JsonToken.EndArray) {
 							return new OrderedULongDictionary();
 						}
 
@@ -42,7 +42,7 @@ namespace MopBot.Collections
 
 						reader.Read();
 
-						while(reader.TokenType != JsonToken.EndObject) {
+						while (reader.TokenType != JsonToken.EndObject) {
 							list.Add(new KeyValuePair<ulong, ulong>(
 								ulong.Parse((string)GetToken(JsonToken.PropertyName)),
 								(ulong)(long)GetToken(JsonToken.Integer)
@@ -66,7 +66,7 @@ namespace MopBot.Collections
 
 			writer.WriteStartObject();
 
-			foreach(var pair in dict) {
+			foreach (var pair in dict) {
 				writer.WritePropertyName(pair.Key.ToString());
 				writer.WriteValue(pair.Value);
 			}

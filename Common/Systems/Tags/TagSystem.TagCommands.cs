@@ -33,7 +33,7 @@ namespace MopBot.Common.Systems.Tags
 			globalData.tags[tagId] = new Tag(user.Id, tagName, text);
 
 			//Subscribe the user to it
-			if(!userData.subscribedTags.Contains(tagId)) {
+			if (!userData.subscribedTags.Contains(tagId)) {
 				userData.subscribedTags.Add(tagId);
 			}
 		}
@@ -81,7 +81,7 @@ namespace MopBot.Common.Systems.Tags
 			int numRemoved = 0;
 
 			ForeachTag(globalData, userData.subscribedTags, out _, (id, tag) => {
-				if(tag.owner == userId && tag.name == tagName) {
+				if (tag.owner == userId && tag.name == tagName) {
 					globalData.tags.Remove(id);
 					numRemoved++;
 
@@ -91,38 +91,44 @@ namespace MopBot.Common.Systems.Tags
 				return (false, true);
 			});
 
-			if(numRemoved == 0) {
+			if (numRemoved == 0) {
 				throw new BotError("Couldn't find a tag with such name.");
 			}
 		}
 
 		[Command]
 		[Priority(-1)]
-		public Task TagCommand(string tagName) => TagShowCommand(tagName);
+		public Task TagCommand(string tagName)
+			=> TagShowCommand(tagName);
 
 		[Command]
 		[Priority(-1)]
-		public Task TagCommand(SocketUser user, string tagName) => TagShowCommand(user, tagName);
+		public Task TagCommand(SocketUser user, string tagName)
+			=> TagShowCommand(user, tagName);
 
 		[Command("use")]
 		[Alias("show")]
 		[Summary("Shows a tag.")]
-		public Task TagShowCommand(string tagName) => ShowTagInternal(Context.socketServerUser, tagName);
+		public Task TagShowCommand(string tagName)
+			=> ShowTagInternal(Context.socketServerUser, tagName);
 
 		[Command("use")]
 		[Alias("show")]
 		[Summary("Shows another user's tag.")]
-		public Task TagShowCommand(SocketUser user, string tagName) => ShowTagInternal(user, tagName);
+		public Task TagShowCommand(SocketUser user, string tagName)
+			=> ShowTagInternal(user, tagName);
 
 		[Command("useraw")]
 		[Alias("showraw", "getraw", "raw")]
 		[Summary("Shows source text of a tag.")]
-		public Task TagShowRawCommand(string tagName) => ShowTagInternal(Context.socketServerUser, tagName, true);
+		public Task TagShowRawCommand(string tagName)
+			=> ShowTagInternal(Context.socketServerUser, tagName, true);
 
 		[Command("useraw")]
 		[Alias("showraw", "getraw", "raw")]
 		[Summary("Shows source text of another user's tag.")]
-		public Task TagShowRawCommand(SocketUser user, string tagName) => ShowTagInternal(user, tagName, true);
+		public Task TagShowRawCommand(SocketUser user, string tagName)
+			=> ShowTagInternal(user, tagName, true);
 
 		private void EnsureTagIsNotDefined(string tagName)
 		{
@@ -130,7 +136,7 @@ namespace MopBot.Common.Systems.Tags
 			var tags = GetTagsWithName(user, null, tagName);
 			ulong userId = user.Id;
 
-			if(tags.Count > 0 && tags.Any(t => t.tagInfo.owner == userId)) {
+			if (tags.Count > 0 && tags.Any(t => t.tagInfo.owner == userId)) {
 				char cmdSymbol = Context.server.GetMemory().GetData<CommandSystem, CommandServerData>().commandPrefix;
 
 				throw new BotError($"You already own a tag named '{tagName}'.\r\nUse `{cmdSymbol}tag edit {tagName} <text>` to edit it,\r\nOR use `{cmdSymbol}tag remove {tagName}` to remove it.");

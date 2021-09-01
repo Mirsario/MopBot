@@ -42,7 +42,7 @@ namespace MopBot.Core
 
 		public MessageContext(IMessage msg)
 		{
-			switch(msg) {
+			switch (msg) {
 				case RestUserMessage rMsg:
 					Setup(rMsg);
 					break;
@@ -56,8 +56,11 @@ namespace MopBot.Core
 					throw new ArgumentException($"Not support message type: {msg.GetType().Name}");
 			}
 		}
+
 		public MessageContext(SocketMessage message) => Setup(message);
+
 		public MessageContext(RestUserMessage message) => Setup(message);
+
 		public MessageContext(IMessage message, SocketGuild server, SocketGuildUser user, string content = null, bool? isCommand = null, SocketTextChannel channel = null)
 		{
 			this.message = message;
@@ -78,6 +81,7 @@ namespace MopBot.Core
 			socketServerUser = user as SocketGuildUser;
 			socketUser = user as SocketUser;
 		}
+
 		private void Setup(SocketMessage message)
 		{
 			//Message
@@ -95,6 +99,7 @@ namespace MopBot.Core
 			content = message.Content ?? "";
 			isCommand = content.StartsWith(server?.GetMemory()?.GetData<CommandSystem, CommandServerData>()?.commandPrefix ?? MopBot.DefaultCommandPrefix);
 		}
+
 		private void Setup(RestUserMessage message)
 		{
 			//Message
@@ -119,10 +124,10 @@ namespace MopBot.Core
 		{
 			ulong id = message.Id;
 
-			if(!MessageSystem.MessageIgnored(id)) {
+			if (!MessageSystem.MessageIgnored(id)) {
 				MessageSystem.IgnoreMessage(id);
 
-				if(socketTextChannel == null || server.CurrentUser.HasChannelPermission(socketTextChannel, DiscordPermission.ManageMessages)) {
+				if (socketTextChannel == null || server.CurrentUser.HasChannelPermission(socketTextChannel, DiscordPermission.ManageMessages)) {
 					await message.DeleteAsync();
 				}
 			}

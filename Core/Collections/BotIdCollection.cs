@@ -34,11 +34,12 @@ namespace MopBot.Collections
 			NameToId[item.name] = item.id;
 			IdToValue[item.id] = item.value;
 		}
+		
 		public void Add(string name, T value)
 		{
 			StringUtils.CheckAndLowerStringId(ref name);
 
-			if(NameToId.ContainsKey(name)) {
+			if (NameToId.ContainsKey(name)) {
 				throw new ArgumentException($"'{name}' item already exists in this collection."); //Should this throw BotErrors too?
 			}
 
@@ -47,23 +48,26 @@ namespace MopBot.Collections
 			NameToId[name] = id;
 			IdToValue[id] = value;
 		}
+		
 		public void Rename(string name, string newName)
 		{
 			StringUtils.CheckAndLowerStringId(ref newName);
 
 			ulong id = GetIdFromName(name);
 
-			if(NameToId.ContainsKey(newName)) {
+			if (NameToId.ContainsKey(newName)) {
 				throw new BotError($"{typeof(T).Name} '{newName}' already exists.");
 			}
 
 			NameToId.Remove(name);
 			NameToId[newName] = id;
 		}
+		
 		public bool Remove(NameIdValue<T> item) => Remove(item.name);
+		
 		public bool Remove(string name)
 		{
-			if(NameToId.TryGetValue(name, out ulong id)) {
+			if (NameToId.TryGetValue(name, out ulong id)) {
 				NameToId.Remove(name);
 				IdToValue.Remove(id);
 
@@ -72,19 +76,26 @@ namespace MopBot.Collections
 
 			return false;
 		}
+
 		public void Clear()
 		{
 			NameToId.Clear();
 			IdToValue.Clear();
 		}
+		
 		//Ids
+		
 		public bool TryGetIdFromName(string name, out ulong id) => NameToId.TryGetValue(name, out id);
+		
 		public ulong GetIdFromName(string name) => NameToId.TryGetValue(name, out ulong id) ? id : throw new BotError($"Unknown `{typeof(T).Name}`: {name}");
+		
 		//Values
+		
 		public bool TryGetValue(ulong id, out T result) => IdToValue.TryGetValue(id, out result);
+
 		public bool TryGetValue(string nameId, out T result, out ulong id)
 		{
-			if(NameToId.TryGetValue(nameId, out id)) {
+			if (NameToId.TryGetValue(nameId, out id)) {
 				return IdToValue.TryGetValue(id, out result);
 			}
 
@@ -92,16 +103,24 @@ namespace MopBot.Collections
 
 			return false;
 		}
+		
 		//Checks
+		
 		public bool ContainsKey(ulong key) => IdToValue.ContainsKey(key);
+		
 		public bool Contains(NameIdValue<T> item) => IdToValue.ContainsKey(item.id);
+		
 		//Etc
+		
 		public void CopyTo(Array array, int index) => throw new NotImplementedException();
+		
 		public void CopyTo(NameIdValue<T>[] array, int arrayIndex) => throw new NotImplementedException();
+		
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
 		public IEnumerator<NameIdValue<T>> GetEnumerator()
 		{
-			foreach(var pair in NameToId) {
+			foreach (var pair in NameToId) {
 				string name = pair.Key;
 				ulong id = pair.Value;
 				var value = IdToValue[id];

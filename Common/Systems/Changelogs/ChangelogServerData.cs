@@ -21,7 +21,7 @@ namespace MopBot.Common.Systems.Changelogs
 		[JsonIgnore]
 		public uint NextEntryId {
 			get {
-				if(entries != null && entries.Any(i => i.entryId == nextEntryId)) {
+				if (entries != null && entries.Any(i => i.entryId == nextEntryId)) {
 					nextEntryId = entries.Max(i => i.entryId) + 1;
 				}
 
@@ -51,9 +51,10 @@ namespace MopBot.Common.Systems.Changelogs
 
 			return newEntry;
 		}
+
 		public bool GetChangelogChannel(out SocketTextChannel channel)
 		{
-			if(changelogChannel == 0) {
+			if (changelogChannel == 0) {
 				channel = null;
 
 				return false;
@@ -66,25 +67,26 @@ namespace MopBot.Common.Systems.Changelogs
 
 		public async Task UnpublishEntry(ChangelogEntry entry, SocketGuild server)
 		{
-			if(entry.messageId == 0 || entry.channelId == 0) {
+			if (entry.messageId == 0 || entry.channelId == 0) {
 				return;
 			}
 
 			var oldChannel = server.GetChannel(entry.channelId);
 
-			if(oldChannel != null && oldChannel is SocketTextChannel oldTextChannel) {
+			if (oldChannel != null && oldChannel is SocketTextChannel oldTextChannel) {
 				var oldMessage = await oldTextChannel.GetMessageAsync(entry.messageId);
 
-				if(oldMessage != null) {
+				if (oldMessage != null) {
 					await oldMessage.DeleteAsync();
 				}
 			}
 		}
+
 		public async Task PublishEntry(ChangelogEntry entry, SocketTextChannel channel)
 		{
 			await UnpublishEntry(entry, channel.Guild);
 
-			if(!entryTypes.TryGetValue(entry.type, out var entryType)) {
+			if (!entryTypes.TryGetValue(entry.type, out var entryType)) {
 				throw new BotError($"Unknown entry type: `{entry.type}`.");
 			}
 
@@ -93,11 +95,12 @@ namespace MopBot.Common.Systems.Changelogs
 			entry.messageId = message.Id;
 			entry.channelId = channel.Id;
 		}
+
 		public async Task<SocketTextChannel> TryGetChangelogChannel(MessageContext context, bool showError = true)
 		{
 			var result = changelogChannel != 0 ? (SocketTextChannel)MopBot.client.GetChannel(changelogChannel) : null;
 
-			if(result == null && showError) {
+			if (result == null && showError) {
 				throw new BotError("Changelog channel has not been set. Set it with `!cl setchannel <channel>` first.");
 			}
 

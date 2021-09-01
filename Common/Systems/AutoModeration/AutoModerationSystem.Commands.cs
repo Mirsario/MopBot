@@ -31,11 +31,11 @@ namespace MopBot.Common.Systems.AutoModeration
 		[Summary("Setups mention-spam moderation with the punishment (none/announce/kick/ban) and X minimal amount of pings in Y seconds needed to use it upon an user.")]
 		public async Task MentionSpamSetupCommand(ModerationPunishment moderationPunishment, uint minPingsForBan, byte pingCooldownInSeconds)
 		{
-			if(minPingsForBan < 3) {
+			if (minPingsForBan < 3) {
 				throw new BotError("For safety reasons, minimal amount of pings for a punishment must be at least `3`.");
 			}
 
-			if(pingCooldownInSeconds <= 0) {
+			if (pingCooldownInSeconds <= 0) {
 				throw new BotError("Ping cooldown can't be `0` seconds.");
 			}
 

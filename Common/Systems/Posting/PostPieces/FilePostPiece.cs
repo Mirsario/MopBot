@@ -9,6 +9,7 @@ namespace MopBot.Common.Systems.Posting
 		public bool deleteAfterPosting;
 
 		public FilePostPiece(string filePath, bool deleteAfterPosting = false) : this(filePath, null, deleteAfterPosting) { }
+
 		public FilePostPiece(string filePath, string text, bool deleteAfterPosting = false) : base(text)
 		{
 			this.filePath = filePath;

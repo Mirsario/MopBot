@@ -26,17 +26,19 @@ namespace MopBot.Common.Systems.Currency
 
 		public static bool TryGiveToUser(ref CurrencyAmount[] currencyAmounts, SocketGuildUser user, out string givenString)
 			=> TryModifyForUser(ref currencyAmounts, user, out givenString, (currency, c, value) => Utils.SafeAdd(value, c.amount));
+
 		public static bool TryTakeFromUser(ref CurrencyAmount[] currencyAmounts, SocketGuildUser user, out string takenString)
 			=> TryModifyForUser(ref currencyAmounts, user, out takenString, (currency, c, value) => c.amount >= value ? 0 : value - c.amount);
 
 		public static void GiveToUser(CurrencyAmount[] currencyAmounts, SocketGuildUser user)
 			=> ModifyForUser(currencyAmounts, user, (currency, c, value) => Utils.SafeAdd(value, c.amount));
+
 		public static void TakeFromUser(CurrencyAmount[] currencyAmounts, SocketGuildUser user)
 			=> ModifyForUser(currencyAmounts, user, (currency, c, value) => c.amount >= value ? 0 : value - c.amount);
 
 		private static bool TryModifyForUser(ref CurrencyAmount[] currencyAmounts, SocketGuildUser user, out string givenString, Func<Currency, CurrencyAmount, ulong, ulong> func)
 		{
-			if(currencyAmounts == null) {
+			if (currencyAmounts == null) {
 				givenString = null;
 
 				return false;
@@ -48,7 +50,7 @@ namespace MopBot.Common.Systems.Currency
 			ModifyForUser(currencyAmounts, user, (currency, c, value) => {
 				list.Add(c);
 
-				if(sb == null) {
+				if (sb == null) {
 					sb = new StringBuilder();
 				} else {
 					sb.Append(", ");
@@ -59,7 +61,7 @@ namespace MopBot.Common.Systems.Currency
 				return func(currency, c, value);
 			});
 
-			if(list.Count != currencyAmounts.Length) {
+			if (list.Count != currencyAmounts.Length) {
 				currencyAmounts = list.ToArray();
 			}
 
@@ -67,23 +69,24 @@ namespace MopBot.Common.Systems.Currency
 
 			return currencyAmounts.Length > 0;
 		}
+
 		private static void ModifyForUser(CurrencyAmount[] currencyAmounts, SocketGuildUser user, Func<Currency, CurrencyAmount, ulong, ulong> func)
 		{
-			if(currencyAmounts == null) {
+			if (currencyAmounts == null) {
 				throw new BotError(new ArgumentNullException(nameof(currencyAmounts)));
 			}
 
-			var userId = user.Id;
+			ulong userId = user.Id;
 			var currencies = user.Guild.GetMemory().GetData<CurrencySystem, CurrencyServerData>().Currencies;
 
-			for(int i = 0; i < currencyAmounts.Length; i++) {
+			for (int i = 0; i < currencyAmounts.Length; i++) {
 				var c = currencyAmounts[i];
 				var currency = currencies[c.currency];
 				var wealth = currency.UsersWealth;
 
 				ulong newAmount = func(currency, c, wealth.TryGetValue(userId, out ulong value) ? value : 0);
 
-				if(newAmount == 0) {
+				if (newAmount == 0) {
 					wealth.Remove(newAmount);
 				} else {
 					wealth[userId] = newAmount;
@@ -91,12 +94,14 @@ namespace MopBot.Common.Systems.Currency
 			}
 		}
 
-		public static CurrencyAmount[] ParseMultiple(string str, ServerMemory serverMemory) => ParseMultiple(str, serverMemory.GetData<CurrencySystem, CurrencyServerData>().Currencies);
+		public static CurrencyAmount[] ParseMultiple(string str, ServerMemory serverMemory)
+			=> ParseMultiple(str, serverMemory.GetData<CurrencySystem, CurrencyServerData>().Currencies);
+		
 		public static CurrencyAmount[] ParseMultiple(string str, BotIdCollection<Currency> currencies)
 		{
 			MatchCollection matches;
 
-			if(!string.IsNullOrWhiteSpace(str) || str.Length <= 2) {
+			if (!string.IsNullOrWhiteSpace(str) || str.Length <= 2) {
 				StringUtils.RemoveQuotemarks(ref str);
 
 				matches = ParseRegex.Matches(str);
@@ -105,7 +110,7 @@ namespace MopBot.Common.Systems.Currency
 			}
 
 			//Entire input must be captured by regex
-			if(matches == null || matches.Count == 0 || matches.Sum(m => m.Length) != str.Length) {
+			if (matches == null || matches.Count == 0 || matches.Sum(m => m.Length) != str.Length) {
 				throw new BotError($"Unable to parse `{str ?? "Null"}`:\r\nExpected it to be in `amount currency, ...` format.\r\n**Example:** `102 diamonds, 1 triviapoints`.");
 			};
 
@@ -113,9 +118,9 @@ namespace MopBot.Common.Systems.Currency
 				string name = m.Groups[2].Value;
 				int length = name.Length;
 
-				if(!currencies.TryGetIdFromName(name, out ulong id)) {
+				if (!currencies.TryGetIdFromName(name, out ulong id)) {
 					//Accepts both plural and singular names
-					if(length == 1 || !currencies.TryGetIdFromName(name.EndsWith('s') ? name.Remove(length - 1, 1) : name + "s", out id)) {
+					if (length == 1 || !currencies.TryGetIdFromName(name.EndsWith('s') ? name.Remove(length - 1, 1) : name + "s", out id)) {
 						throw new BotError($"Unknown currency: {name}");
 					}
 				}

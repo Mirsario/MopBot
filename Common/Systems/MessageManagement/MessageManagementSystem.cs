@@ -21,8 +21,8 @@ namespace MopBot.Common.Systems.MessageManagement
 			IMessage prevMessage = null;
 			var messageGroups = new List<List<IMessage>>();
 
-			foreach(var message in messages) {
-				if(!allowGrouping || messageGroups.Count == 0 || prevMessage.Author.Id != message.Author.Id || message.Attachments.Count > 0) {
+			foreach (var message in messages) {
+				if (!allowGrouping || messageGroups.Count == 0 || prevMessage.Author.Id != message.Author.Id || message.Attachments.Count > 0) {
 					messageGroups.Add(new List<IMessage> { message });
 				} else {
 					messageGroups[messageGroups.Count - 1].Add(message);
@@ -33,13 +33,13 @@ namespace MopBot.Common.Systems.MessageManagement
 
 			var text = new StringBuilder();
 
-			for(int i = messageGroups.Count - 1; i >= 0; i--) {
+			for (int i = messageGroups.Count - 1; i >= 0; i--) {
 				var group = messageGroups[i];
 				//bool firstMessage = true;
 				bool hasImage = false;
 				bool forceSend = false;
 
-				for(int j = group.Count - 1; j >= 0; j--) {
+				for (int j = group.Count - 1; j >= 0; j--) {
 					var message = group[j];
 					var author = message.Author;
 					var builder = new EmbedBuilder()
@@ -50,21 +50,21 @@ namespace MopBot.Common.Systems.MessageManagement
 
 					string content = message.Content;
 
-					if(!hasImage) {
-						foreach(var attachment in message.Attachments) {
+					if (!hasImage) {
+						foreach (var attachment in message.Attachments) {
 							string url = attachment.Url;
 
-							if(url.EndsWithAny(".png", ".jpg", ".jpeg", ".bmp", ".gif")) {
+							if (url.EndsWithAny(".png", ".jpg", ".jpeg", ".bmp", ".gif")) {
 								builder.ImageUrl = url;
 								hasImage = true;
 							}
 						}
 					}
 
-					if(!hasImage) {
+					if (!hasImage) {
 						var match = Regex.Match(content, @"(?:http|https|ftp)\:\/\/[^\s]+\.(?:png|jpg|jpeg|bmp|gif|gifv)");
 
-						if(match != null && match.Success) {
+						if (match != null && match.Success) {
 							string url = match.Value;
 
 							builder.ImageUrl = url;
@@ -75,8 +75,8 @@ namespace MopBot.Common.Systems.MessageManagement
 						}
 					}
 
-					foreach(var embed in message.Embeds) {
-						switch(embed.Type) {
+					foreach (var embed in message.Embeds) {
+						switch (embed.Type) {
 							case EmbedType.Video:
 							case EmbedType.Tweet:
 							case EmbedType.Article:
@@ -95,7 +95,7 @@ namespace MopBot.Common.Systems.MessageManagement
 
 					text.AppendLine(content);
 
-					if(j == 0 || forceSend) {
+					if (j == 0 || forceSend) {
 						builder.Description = text.ToString();
 
 						text.Clear();
@@ -112,19 +112,19 @@ namespace MopBot.Common.Systems.MessageManagement
 		{
 			const int MaxMessages = 1000;
 
-			if(numMessages > MaxMessages) {
+			if (numMessages > MaxMessages) {
 				throw new BotError($"Won't copy more than {MaxMessages} messages.");
 			}
 
 			var messageList = new List<IMessage>();
 
-			if(bottomMessageId != 0) {
+			if (bottomMessageId != 0) {
 				numMessages--;
 
 				messageList.Add(await sourceChannel.GetMessageAsync(bottomMessageId));
 			}
 
-			if(numMessages > 0) {
+			if (numMessages > 0) {
 				await sourceChannel.GetMessagesAsync(bottomMessageId == 0 ? Context.message.Id : bottomMessageId, Direction.Before, numMessages).ForEachAsync(collection => messageList.AddRange(collection));
 			}
 

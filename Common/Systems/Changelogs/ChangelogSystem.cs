@@ -22,17 +22,17 @@ namespace MopBot.Common.Systems.Changelogs
 
 		private async Task<ChangelogEntry> NewEntryInternal(string type, string entryText, bool publish, ChangelogServerData data = null)
 		{
-			if(data == null) {
+			if (data == null) {
 				data = Context.server.GetMemory().GetData<ChangelogSystem, ChangelogServerData>();
 			}
 
-			if(!data.GetChangelogChannel(out var channel)) {
+			if (!data.GetChangelogChannel(out var channel)) {
 				throw new BotError("Changelog channel has not been set!");
 			}
 
 			var newEntry = data.NewEntry(type, entryText);
 
-			if(publish) {
+			if (publish) {
 				await data.PublishEntry(newEntry, channel);
 			}
 

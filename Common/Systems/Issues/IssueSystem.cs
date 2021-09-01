@@ -38,12 +38,13 @@ namespace MopBot.Common.Systems.Issues
 
 			var newIssue = data.NewIssue(issueText);
 
-			if(publish) {
+			if (publish) {
 				await data.PublishIssue(newIssue, channel);
 			}
 
 			return newIssue;
 		}
+
 		private async Task FixIssueInternal(uint issueId, bool publish)
 		{
 			var context = Context;
@@ -52,31 +53,32 @@ namespace MopBot.Common.Systems.Issues
 			var data = memory.GetData<IssueSystem, IssueServerData>();
 			var channel = await data.GetIssueChannel(context);
 
-			if(!data.issues.TryGetFirst(i => i.issueId == issueId, out var issue)) {
+			if (!data.issues.TryGetFirst(i => i.issueId == issueId, out var issue)) {
 				throw new BotError($"An issue with Id #{issueId} could not be found.");
 			}
 
 			issue.status = IssueStatus.Closed;
 
-			if(publish) {
+			if (publish) {
 				await data.PublishIssue(issue, channel); //Will delete the old message
 			}
 
-			if(IsEnabledForServer<ChangelogSystem>(server)) {
+			if (IsEnabledForServer<ChangelogSystem>(server)) {
 				var changelogData = memory.GetData<ChangelogSystem, ChangelogServerData>();
 
-				if(changelogData.GetChangelogChannel(out var clChannel)) {
+				if (changelogData.GetChangelogChannel(out var clChannel)) {
 					await changelogData.PublishEntry(changelogData.NewEntry("fixed", $"Issue #{issue.issueId} - {issue.text}"), clChannel);
 				}
 			}
 		}
+
 		private async Task RepublishAll()
 		{
 			var data = Context.server.GetMemory().GetData<IssueSystem, IssueServerData>();
 
 			var channel = await data.GetIssueChannel(Context);
 
-			foreach(var issue in data.OrderedIssues) {
+			foreach (var issue in data.OrderedIssues) {
 				await data.PublishIssue(issue, channel);
 			}
 		}

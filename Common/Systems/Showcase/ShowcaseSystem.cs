@@ -31,49 +31,50 @@ namespace MopBot.Common.Systems.Showcase
 			var server = context.server;
 			var channel = context.socketTextChannel;
 
-			if(server == null || channel == null || context.user.IsBot) {
+			if (server == null || channel == null || context.user.IsBot) {
 				return;
 			}
 
 			var showcaseData = server.GetMemory().GetData<ShowcaseSystem, ShowcaseServerData>();
 
-			if(!showcaseData.ChannelIs<ShowcaseChannel>(context.socketTextChannel)) {
+			if (!showcaseData.ChannelIs<ShowcaseChannel>(context.socketTextChannel)) {
 				return;
 			}
 
 			//TODO: Check permissions?
 			try {
-				if(showcaseData.TryGetEmote(EmoteType.Upvote, out var upvoteEmote)) {
+				if (showcaseData.TryGetEmote(EmoteType.Upvote, out var upvoteEmote)) {
 					await context.Message.AddReactionAsync(upvoteEmote);
 				}
 
-				if(showcaseData.TryGetEmote(EmoteType.Downvote, out var downvoteEmote)) {
+				if (showcaseData.TryGetEmote(EmoteType.Downvote, out var downvoteEmote)) {
 					await context.Message.AddReactionAsync(downvoteEmote);
 				}
 			}
 			catch { }
 		}
+
 		public override async Task OnReactionAdded(MessageContext message, SocketReaction reaction)
 		{
 			var server = message.server;
 
-			if(server == null || message.user.IsBot) {
+			if (server == null || message.user.IsBot) {
 				return;
 			}
 
 			var showcaseData = server.GetMemory().GetData<ShowcaseSystem, ShowcaseServerData>();
 
-			if(message.Channel == null || !showcaseData.TryGetChannelInfo<ShowcaseChannel>(message.Channel, out var showcaseChannelInfo)) {
+			if (message.Channel == null || !showcaseData.TryGetChannelInfo<ShowcaseChannel>(message.Channel, out var showcaseChannelInfo)) {
 				return;
 			}
 
 			var spotlightChannel = showcaseChannelInfo.GetSpotlightChannel(server);
 
-			if(showcaseChannelInfo.GetSpotlightChannel(server) == null) {
+			if (showcaseChannelInfo.GetSpotlightChannel(server) == null) {
 				return;
 			}
 
-			if(!showcaseData.TryGetEmote(EmoteType.Upvote, out var upvoteEmote)) {
+			if (!showcaseData.TryGetEmote(EmoteType.Upvote, out var upvoteEmote)) {
 				return;
 			}
 
@@ -81,15 +82,15 @@ namespace MopBot.Common.Systems.Showcase
 			int numDownvotes = showcaseData.TryGetEmote(EmoteType.Downvote, out var downvoteEmote) ? Math.Max(1, await GetNumReactions(message.message, downvoteEmote)) : 1;
 			int totalScore = numUpvotes - numDownvotes;
 
-			if(showcaseChannelInfo.minSpotlightScore == 0 || totalScore != showcaseChannelInfo.minSpotlightScore) {
+			if (showcaseChannelInfo.minSpotlightScore == 0 || totalScore != showcaseChannelInfo.minSpotlightScore) {
 				return;
 			}
 
-			if(!showcaseData.TryGetChannelInfo<SpotlightChannel>(spotlightChannel, out var spotlightChannelInfo)) {
+			if (!showcaseData.TryGetChannelInfo<SpotlightChannel>(spotlightChannel, out var spotlightChannelInfo)) {
 				return;
 			}
 
-			if(spotlightChannelInfo.spotlightedMessages != null && spotlightChannelInfo.spotlightedMessages.Contains(message.message.Id)) {
+			if (spotlightChannelInfo.spotlightedMessages != null && spotlightChannelInfo.spotlightedMessages.Contains(message.message.Id)) {
 				return;
 			}
 
@@ -98,13 +99,13 @@ namespace MopBot.Common.Systems.Showcase
 
 		public static async Task<int> GetNumReactions(IMessage message, IEmote emote)
 		{
-			if(emote == null) {
+			if (emote == null) {
 				return 0;
 			}
 
 			int count = 0;
 
-			if(message is IUserMessage userMessage) {
+			if (message is IUserMessage userMessage) {
 				await userMessage.GetReactionUsersAsync(emote, 100).ForEachAsync(list => { count += list.Count; });
 			} else {
 				Console.WriteLine($"Unable to get the amount of reactions. Message type is '{message?.GetType()?.Name ?? "null"}'.");
@@ -125,7 +126,7 @@ namespace MopBot.Common.Systems.Showcase
 
 			string url = msg.Attachments.FirstOrDefault()?.Url ?? msg.Embeds.FirstOrDefault(e => e.Type == EmbedType.Image || e.Type == EmbedType.Gifv)?.Url;
 
-			if(url == null) {
+			if (url == null) {
 				throw new BotError("Couldn't get image url from that message.");
 			}
 
@@ -135,27 +136,27 @@ namespace MopBot.Common.Systems.Showcase
 
 			async Task TryGiveRewards(List<ulong> roles)
 			{
-				if(roles == null) {
+				if (roles == null) {
 					return;
 				}
 
-				for(int i = 0; i < roles.Count; i++) {
+				for (int i = 0; i < roles.Count; i++) {
 					ulong roleId = roles[i];
 
 					SocketRole role = server.GetRole(roleId);
 
-					if(role == null) {
+					if (role == null) {
 						roles.RemoveAt(i--);
 
 						continue;
 					}
 
-					if(server.CurrentUser.HasDiscordPermission(gp => gp.ManageRoles)) {
-						if(!socketServerUser.Roles.Any(r => r.Id == role.Id)) {
+					if (server.CurrentUser.HasDiscordPermission(gp => gp.ManageRoles)) {
+						if (!socketServerUser.Roles.Any(r => r.Id == role.Id)) {
 							try {
 								await socketServerUser.AddRoleAsync(role);
 
-								if(!silent) {
+								if (!silent) {
 									congratsText += $"\r\nYou were also given the `{role.Name}` role!";
 								}
 							}
@@ -164,7 +165,7 @@ namespace MopBot.Common.Systems.Showcase
 					} else {
 						var channelMemory = serverMemory.GetData<ChannelSystem, ChannelServerData>();
 
-						if(channelMemory.TryGetChannelByRoles(out var logChannel, ChannelRole.Logs, ChannelRole.BotArea, ChannelRole.Default)) {
+						if (channelMemory.TryGetChannelByRoles(out var logChannel, ChannelRole.Logs, ChannelRole.BotArea, ChannelRole.Default)) {
 							throw new BotError($"Unable to grant `{role.Name}` role to user {socketServerUser.Username}#{socketServerUser.Discriminator}: Missing `Manage Roles` permission.");
 						}
 					}
@@ -178,7 +179,7 @@ namespace MopBot.Common.Systems.Showcase
 
 			string content = context.content?.Replace(url, "")?.Trim();
 
-			if(!string.IsNullOrWhiteSpace(content)) {
+			if (!string.IsNullOrWhiteSpace(content)) {
 				content += "\r\n";
 			}
 
@@ -207,14 +208,14 @@ namespace MopBot.Common.Systems.Showcase
 
 			var spotlightedMessages = Utils.GetSafe(ref spotlightChannelInfo.spotlightedMessages);
 
-			if(!spotlightedMessages.Contains(msg.Id)) {
+			if (!spotlightedMessages.Contains(msg.Id)) {
 				spotlightedMessages.Add(msg.Id);
 			}
 
-			if(!silent) {
+			if (!silent) {
 				var general = server.GetMemory()?.GetData<ChannelSystem, ChannelServerData>()?.GetChannelByRole(ChannelRole.Default);
 
-				if(general != null) {
+				if (general != null) {
 					await ((IMessageChannel)general).SendMessageAsync(congratsText);
 				}
 			}

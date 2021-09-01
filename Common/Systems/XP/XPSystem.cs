@@ -27,11 +27,12 @@ namespace MopBot.Common.Systems.XP
 		}
 
 		public override async Task Initialize() { }
+
 		public override async Task OnMessageReceived(MessageContext message)
 		{
 			var server = message.server;
 
-			if(server == null || message.isCommand || message.socketServerUser.IsBot) {
+			if (server == null || message.isCommand || message.socketServerUser.IsBot) {
 				return;
 			}
 
@@ -46,9 +47,10 @@ namespace MopBot.Common.Systems.XP
 
 			await GiveXP(user, xp);
 		}
+		
 		public override async Task OnMessageDeleted(MessageContext message)
 		{
-			if(message == null || message.isCommand || message.server == null || message.socketServerUser == null || message.socketServerUser.IsBot) {
+			if (message == null || message.isCommand || message.server == null || message.socketServerUser == null || message.socketServerUser.IsBot) {
 				return;
 			}
 
@@ -62,22 +64,24 @@ namespace MopBot.Common.Systems.XP
 			ulong xp = (ulong)Math.Min(1, Math.Max(10, Regex.Matches(message.content, @"\w+").Count / 5));
 			string text = message.content.ToLower() ?? "";
 
-			if(text.Contains("welcome") || text.Contains("hello") || text.Contains("hi") || text.Contains("hey")) {
+			if (text.Contains("welcome") || text.Contains("hello") || text.Contains("hi") || text.Contains("hey")) {
 				xp += 5;
-			} else if(message.message.Attachments.Any(a => a.Width >= 256 && a.Height >= 256) || message.message.Embeds.Any(e => e.Type == EmbedType.Image || e.Type == EmbedType.Video)) {
+			} else if (message.message.Attachments.Any(a => a.Width >= 256 && a.Height >= 256) || message.message.Embeds.Any(e => e.Type == EmbedType.Image || e.Type == EmbedType.Video)) {
 				xp += 5;
 			}
 
 			return xp;
 		}
+
 		public static uint XPToLevel(ulong xp)
 		{
-			if(xp == 0) {
+			if (xp == 0) {
 				return 1;
 			}
 
 			return (uint)Math.Floor(Math.Sqrt(xp / 3)) + 1;
 		}
+
 		public static ulong LevelToXP(uint level)
 		{
 			ulong lvl = level - 1;
@@ -98,12 +102,12 @@ namespace MopBot.Common.Systems.XP
 
 			uint newLvl = XPToLevel(xpUserData.xp);
 
-			if(message != null) {
-				if(newLvl > prevLvl) {
+			if (message != null) {
+				if (newLvl > prevLvl) {
 					try {
 						await message.AddReactionAsync(EmoteUtils.Parse("🌟"));
 					}
-					catch(Exception e) {
+					catch (Exception e) {
 						await MopBot.HandleException(e);
 					}
 				}

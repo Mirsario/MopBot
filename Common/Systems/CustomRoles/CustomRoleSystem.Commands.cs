@@ -24,8 +24,8 @@ namespace MopBot.Common.Systems.CustomRoles
 
 			int topPos = -1;
 
-			foreach(var tempRole in user.Roles) {
-				if(!tempRole.IsEveryone) {
+			foreach (var tempRole in user.Roles) {
+				if (!tempRole.IsEveryone) {
 					topPos = topPos == -1 ? tempRole.Position : Math.Max(topPos, tempRole.Position);
 				}
 			}
@@ -34,7 +34,7 @@ namespace MopBot.Common.Systems.CustomRoles
 			var customRoleUserData = MemorySystem.memory[server][user].GetData<CustomRoleSystem, CustomRoleServerUserData>();
 			var color = new Color(red, green, blue);
 
-			if(customRoleUserData.colorRole != null && (role = server.GetRole(customRoleUserData.colorRole.Value)) != null) {
+			if (customRoleUserData.colorRole != null && (role = server.GetRole(customRoleUserData.colorRole.Value)) != null) {
 				await role.ModifyAsync(properties => {
 					properties.Color = color;
 					properties.Name = roleName;
@@ -62,7 +62,7 @@ namespace MopBot.Common.Systems.CustomRoles
 			var user = Context.socketServerUser;
 			var userMemory = MemorySystem.memory[server][user].GetData<CustomRoleSystem, CustomRoleServerUserData>();
 
-			if(userMemory.colorRole == null || !user.Roles.TryGetFirst(r => r.Id == userMemory.colorRole.Value, out var role)) {
+			if (userMemory.colorRole == null || !user.Roles.TryGetFirst(r => r.Id == userMemory.colorRole.Value, out var role)) {
 				throw new BotError("You don't have a custom role set.");
 			}
 
@@ -77,7 +77,7 @@ namespace MopBot.Common.Systems.CustomRoles
 		{
 			var server = Context.server;
 
-			if(server == null) {
+			if (server == null) {
 				return;
 			}
 
@@ -85,33 +85,33 @@ namespace MopBot.Common.Systems.CustomRoles
 			string unused = "";
 			var serverMemory = MemorySystem.memory[server];
 
-			foreach(var role in server.Roles) {
-				if(role.IsEveryone) {
+			foreach (var role in server.Roles) {
+				if (role.IsEveryone) {
 					continue;
 				}
 
 				var members = role.Members.ToArray();
 
-				if(members.Length == 0) {
+				if (members.Length == 0) {
 					unused += $"{role.Name} is unused.\r\n";
 
 					continue;
 				}
 
-				if(members.Length == 1) {
+				if (members.Length == 1) {
 					var user = members[0];
 					var customRoleUserData = serverMemory[user].GetData<CustomRoleSystem, CustomRoleServerUserData>();
 
-					if(customRoleUserData.colorRole != null) {
+					if (customRoleUserData.colorRole != null) {
 						continue;
 					}
 
-					if(user.Roles.OrderByDescending(r => r.Position).First().Id == role.Id) {
+					if (user.Roles.OrderByDescending(r => r.Position).First().Id == role.Id) {
 						customRoleUserData.colorRole = role.Id;
 
 						string newText = $"Detected {user.GetDisplayName()}'s custom role to be ''{role.Name}''.\r\n";
 
-						if(text.Length + newText.Length >= 2000) {
+						if (text.Length + newText.Length >= 2000) {
 							await Context.ReplyAsync(text, false);
 
 							text = "";

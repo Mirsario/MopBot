@@ -25,11 +25,11 @@ namespace MopBot
 
 		public static void Initialize()
 		{
-			if(File.Exists(ConfigurationFile)) {
+			if (File.Exists(ConfigurationFile)) {
 				config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(ConfigurationFile));
 			}
 
-			if(config == null) {
+			if (config == null) {
 				config = new Config();
 				Save();
 			}

@@ -27,7 +27,7 @@ namespace MopBot.Common.Systems.Moderation
 
 			context.server.CurrentUser.RequirePermission(context.socketServerChannel, DiscordPermission.BanMembers);
 
-			if(targetUser is SocketGuildUser serverUser && user.Roles.Max(r => r.Position) > serverUser.Roles.Max(r => r.Position)) {
+			if (targetUser is SocketGuildUser serverUser && user.Roles.Max(r => r.Position) > serverUser.Roles.Max(r => r.Position)) {
 				throw new BotError("You cannot ban a user who's above you in rights.");
 			}
 
@@ -44,7 +44,7 @@ namespace MopBot.Common.Systems.Moderation
 
 			context.server.CurrentUser.RequirePermission(context.socketServerChannel, DiscordPermission.KickMembers);
 
-			if(user.Roles.Max(r => r.Position) > targetUser.Roles.Max(r => r.Position)) {
+			if (user.Roles.Max(r => r.Position) > targetUser.Roles.Max(r => r.Position)) {
 				throw new BotError("You cannot kick a user who's above you in rights.");
 			}
 
@@ -70,7 +70,7 @@ namespace MopBot.Common.Systems.Moderation
 			var utcNow = DateTime.UtcNow.AddMinutes(1); //+1 min
 			var messageList = new List<IMessage>();
 
-			if(bottomMessageId != 0) {
+			if (bottomMessageId != 0) {
 				amount--;
 
 				messageList.Add(await channel.GetMessageAsync(bottomMessageId));
@@ -78,12 +78,12 @@ namespace MopBot.Common.Systems.Moderation
 
 			messageList.AddRange(
 				(await channel.GetMessagesAsync((int)amount + 1).FlattenAsync()).Where(m => {
-					if(m == null) {
+					if (m == null) {
 						return false;
 					}
 
-					if(m.Author?.Id != MopBot.client.CurrentUser.Id) {
-						if((utcNow - m.Timestamp.UtcDateTime).TotalDays >= 14 || ((m.Author as SocketGuildUser)?.Roles?.All(r => r.Position < highestRole)) != true) {
+					if (m.Author?.Id != MopBot.client.CurrentUser.Id) {
+						if ((utcNow - m.Timestamp.UtcDateTime).TotalDays >= 14 || ((m.Author as SocketGuildUser)?.Roles?.All(r => r.Position < highestRole)) != true) {
 							return false;
 						}
 					}

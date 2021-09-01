@@ -39,7 +39,7 @@ namespace MopBot.Common.Systems.Changelogs
 		[Alias("setversion")]
 		public async Task SetDefaultVersion(string version)
 		{
-			if(!Version.TryParse(version, out Version realVersion)) {
+			if (!Version.TryParse(version, out Version realVersion)) {
 				throw new BotError($"'{version}' is not a valid version number.");
 			}
 
@@ -61,11 +61,11 @@ namespace MopBot.Common.Systems.Changelogs
 		{
 			var data = Context.server.GetMemory().GetData<ChangelogSystem, ChangelogServerData>();
 
-			if(!data.GetChangelogChannel(out var channel)) {
+			if (!data.GetChangelogChannel(out var channel)) {
 				throw new BotError("Changelog channel has not been set!");
 			}
 
-			foreach(var entry in data.entries) {
+			foreach (var entry in data.entries) {
 				await data.PublishEntry(entry, channel);
 			}
 		}
@@ -76,18 +76,18 @@ namespace MopBot.Common.Systems.Changelogs
 			var context = Context;
 			var data = context.server.GetMemory().GetData<ChangelogSystem, ChangelogServerData>();
 
-			if(!data.entryTypes.ContainsKey(asEntryType)) {
+			if (!data.entryTypes.ContainsKey(asEntryType)) {
 				throw new BotError($"Couldn't find an entry type with name `{asEntryType}`");
 			}
 
 			var issueData = context.server.GetMemory().GetData<IssueSystem, IssueServerData>();
 
-			if(!data.GetChangelogChannel(out var channel)) {
+			if (!data.GetChangelogChannel(out var channel)) {
 				throw new BotError("Changelog channel has not been set!");
 			}
 
-			foreach(var issue in issueData.issues) {
-				if(issue.status == IssueStatus.Closed) {
+			foreach (var issue in issueData.issues) {
+				if (issue.status == IssueStatus.Closed) {
 					var entry = data.NewEntry(asEntryType, $"Issue #{issue.issueId} - {issue.text}");
 
 					await data.PublishEntry(entry, channel);
@@ -101,7 +101,7 @@ namespace MopBot.Common.Systems.Changelogs
 		{
 			var data = Context.server.GetMemory().GetData<ChangelogSystem, ChangelogServerData>();
 
-			if(!data.entryTypes.ContainsKey(type)) {
+			if (!data.entryTypes.ContainsKey(type)) {
 				throw new BotError($"Couldn't find an entry type with name `{type}`");
 			}
 
@@ -114,13 +114,13 @@ namespace MopBot.Common.Systems.Changelogs
 		{
 			var data = Context.server.GetMemory().GetData<ChangelogSystem, ChangelogServerData>();
 
-			if(!data.GetChangelogChannel(out var channel)) {
+			if (!data.GetChangelogChannel(out var channel)) {
 				throw new BotError("Changelog channel has not been set!");
 			}
 
 			var entry = data.entries.FirstOrDefault(i => i.entryId == entryId);
 
-			if(entry == null) {
+			if (entry == null) {
 				throw new BotError($"An entry with Id #{entryId} could not be found.");
 			}
 
@@ -139,10 +139,10 @@ namespace MopBot.Common.Systems.Changelogs
 
 			List<uint> failedIDs = null;
 
-			foreach(uint id in ids) {
+			foreach (uint id in ids) {
 				var entry = data.entries.FirstOrDefault(i => i.entryId == id);
 
-				if(entry != null) {
+				if (entry != null) {
 					await data.UnpublishEntry(entry, server);
 
 					data.entries.Remove(entry);
@@ -159,7 +159,7 @@ namespace MopBot.Common.Systems.Changelogs
 		{
 			var context = Context;
 
-			if(confirmation.ToLower() != "yes, do it.") {
+			if (confirmation.ToLower() != "yes, do it.") {
 				await context.ReplyAsync("All changelog entries will be removed and you won't be able to use `!cl get` to compile them into text files.\r\nConfirm this action by typing `!cl clear Yes, do it.`");
 				return;
 			}
@@ -167,10 +167,10 @@ namespace MopBot.Common.Systems.Changelogs
 			var server = context.server;
 			var data = server.GetMemory().GetData<ChangelogSystem, ChangelogServerData>();
 
-			while(data.entries.Count > 0) {
+			while (data.entries.Count > 0) {
 				var entry = data.entries[0];
 
-				if(entry != null) {
+				if (entry != null) {
 					await data.UnpublishEntry(entry, server);
 				}
 
@@ -187,7 +187,7 @@ namespace MopBot.Common.Systems.Changelogs
 			var data = context.server.GetMemory().GetData<ChangelogSystem, ChangelogServerData>();
 			var entry = data.entries.FirstOrDefault(i => i.entryId == entryId);
 
-			if(entry == null) {
+			if (entry == null) {
 				throw new BotError($"An entry with Id #{entryId} could not be found.");
 			}
 
@@ -213,7 +213,7 @@ namespace MopBot.Common.Systems.Changelogs
 			string text = null;
 			bool addLineBreak = false;
 
-			foreach(var pair in data.entryTypes) {
+			foreach (var pair in data.entryTypes) {
 				var val = pair.Value;
 
 				text += $"{(addLineBreak ? "\r\n" : null)}`{pair.Key}` - {val.discordPrefix} - {val.name}";
@@ -239,7 +239,7 @@ namespace MopBot.Common.Systems.Changelogs
 				string categoryStr;
 				string entryStr;
 
-				switch(formatType) {
+				switch (formatType) {
 					default:
 						categoryStr = "{0}:\r\n{1}\r\n";
 						entryStr = "- {0}\r\n";
@@ -260,25 +260,25 @@ namespace MopBot.Common.Systems.Changelogs
 
 				string text = "";
 
-				foreach(var pair in data.entryTypes) {
+				foreach (var pair in data.entryTypes) {
 					string id = pair.Key;
 					var info = pair.Value;
 					var entries = data.entries.Where(e => e.type == id);
 
-					if(entries.Count() == 0) {
+					if (entries.Count() == 0) {
 						continue;
 					}
 
 					string listStr = "";
 
-					foreach(var entry in entries) {
+					foreach (var entry in entries) {
 						listStr += string.Format(entryStr, entry.text);
 					}
 
 					text += string.Format(categoryStr, info.name, listStr);
 				}
 
-				if(string.IsNullOrWhiteSpace(text)) {
+				if (string.IsNullOrWhiteSpace(text)) {
 					await context.ReplyAsync("There's nothing in the changelog.");
 					return;
 				}
@@ -288,7 +288,7 @@ namespace MopBot.Common.Systems.Changelogs
 				await File.WriteAllTextAsync(filename, text);
 				await context.Channel.SendFileAsync(filename);
 			}
-			catch(Exception e) {
+			catch (Exception e) {
 				await MopBot.HandleException(e);
 			}
 		}
@@ -301,7 +301,7 @@ namespace MopBot.Common.Systems.Changelogs
 			var data = context.server.GetMemory().GetData<ChangelogSystem, ChangelogServerData>();
 			var clChannel = await data.TryGetChangelogChannel(context);
 
-			if(clChannel == null) {
+			if (clChannel == null) {
 				return;
 			}
 
@@ -317,15 +317,15 @@ namespace MopBot.Common.Systems.Changelogs
 
 			var regex = new Regex(@"([\S]+) - #([\d*`~]+) - ([^:]+):[*`~\s]+(.+)");
 
-			string RemoveFormatting(string original) => original.Replace("~", "").Replace("*", "").Replace("`", "");
+			static string RemoveFormatting(string original) => original.Replace("~", "").Replace("*", "").Replace("`", "");
 
 			var messages = afterMessage.HasValue ? channel.GetMessagesAsync(afterMessage.Value, Direction.After, Limit) : channel.GetMessagesAsync(Limit);
 
 			await messages.ForEachAsync(async collection => {
-				foreach(var msg in collection) {
+				foreach (var msg in collection) {
 					ulong authorId = msg.Author.Id;
 
-					if(userId != 0 && authorId != userId) {
+					if (userId != 0 && authorId != userId) {
 						continue;
 					}
 
@@ -334,10 +334,10 @@ namespace MopBot.Common.Systems.Changelogs
 					var content = msg.Content;
 					var match = regex.Match(content);
 
-					if(!match.Success) {
+					if (!match.Success) {
 						numGeneralFails++;
 
-						if(numGeneralFails == 1) {
+						if (numGeneralFails == 1) {
 							await context.ReplyAsync($"`{content}`");
 						}
 
@@ -346,7 +346,7 @@ namespace MopBot.Common.Systems.Changelogs
 
 					var groups = match.Groups;
 
-					if(!uint.TryParse(RemoveFormatting(groups[2].Value), out uint entryId)) {
+					if (!uint.TryParse(RemoveFormatting(groups[2].Value), out uint entryId)) {
 						numOtherFails++;
 
 						continue;
@@ -355,20 +355,20 @@ namespace MopBot.Common.Systems.Changelogs
 					string entryTypeName = RemoveFormatting(groups[3].Value);
 					string entryText = groups[4].Value;
 
-					if(!data.entryTypes.TryGetFirst(pair => MopBot.StrComparerIgnoreCase.Equals(pair.Value.name, entryTypeName), out var resultPair)) {
+					if (!data.entryTypes.TryGetFirst(pair => MopBot.StrComparerIgnoreCase.Equals(pair.Value.name, entryTypeName), out var resultPair)) {
 						throw new BotError($"Unknown entry type: `{entryTypeName}`.");
 					}
 
 					var entryTypeId = resultPair.Key;
 
-					if(!data.entries.TryGetFirst(info => info.entryId == entryId, out var entry)) {
+					if (!data.entries.TryGetFirst(info => info.entryId == entryId, out var entry)) {
 						data.entries.Add(entry = new ChangelogEntry(entryId, entryTypeId, entryText));
 					} else {
 						entry.type = entryTypeId;
 						entry.text = entryText;
 					}
 
-					if(authorId == thisUserId) {
+					if (authorId == thisUserId) {
 						entry.messageId = msg.Id;
 						entry.channelId = channelId;
 					} else {

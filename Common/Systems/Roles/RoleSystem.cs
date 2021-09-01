@@ -29,7 +29,7 @@ namespace MopBot.Common.Systems.Roles
 			user.RequirePermission(permission);
 			context.server.CurrentUser.RequirePermission(context.socketServerChannel, DiscordPermission.ManageRoles);
 
-			if(user.HasRole(role)) {
+			if (user.HasRole(role)) {
 				throw new BotError("You already have that role.");
 			}
 
@@ -47,7 +47,7 @@ namespace MopBot.Common.Systems.Roles
 			user.RequirePermission(permission);
 			context.server.CurrentUser.RequirePermission(context.socketServerChannel, DiscordPermission.ManageRoles);
 
-			if(!user.HasRole(role)) {
+			if (!user.HasRole(role)) {
 				throw new BotError("You don't have that role.");
 			}
 
@@ -63,7 +63,7 @@ namespace MopBot.Common.Systems.Roles
 			var context = Context;
 			context.server.CurrentUser.RequirePermission(context.socketServerChannel, DiscordPermission.ManageRoles);
 
-			if(user.HasRole(role)) {
+			if (user.HasRole(role)) {
 				throw new BotError("User already has that role.");
 			}
 
@@ -77,7 +77,7 @@ namespace MopBot.Common.Systems.Roles
 			var context = Context;
 			context.server.CurrentUser.RequirePermission(context.socketServerChannel, DiscordPermission.ManageRoles);
 
-			if(!user.HasRole(role)) {
+			if (!user.HasRole(role)) {
 				throw new BotError("User doesn't have that role.");
 			}
 
@@ -91,13 +91,13 @@ namespace MopBot.Common.Systems.Roles
 		{
 			bool wasMentionable = role.IsMentionable;
 
-			if(!wasMentionable) {
+			if (!wasMentionable) {
 				await role.ModifyAsync(rp => rp.Mentionable = true);
 			}
 
 			await Context.Channel.SendMessageAsync(role.Mention);
 
-			if(!wasMentionable) {
+			if (!wasMentionable) {
 				await role.ModifyAsync(rp => rp.Mentionable = false);
 			}
 

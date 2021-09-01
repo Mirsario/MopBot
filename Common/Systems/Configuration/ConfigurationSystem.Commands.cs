@@ -12,10 +12,16 @@ namespace MopBot.Common.Systems.Configuration
 	{
 		[Command("nickname")]
 		[Alias("nick")]
-		public async Task NicknameCommand([Remainder] string text) => Context.server.GetMemory().GetData<ConfigurationSystem, ConfigurationServerData>().forcedNickname = text;
+		public async Task NicknameCommand([Remainder] string text)
+		{
+			Context.server.GetMemory().GetData<ConfigurationSystem, ConfigurationServerData>().forcedNickname = text;
+		}
 
 		[Command("commandsymbol")]
 		[Alias("cmdsymbol")]
-		public async Task CommandPrefixCommand(char symbol) => Context.server.GetMemory().GetData<CommandSystem, CommandServerData>().commandPrefix = symbol;
+		public async Task CommandPrefixCommand(char symbol)
+		{
+			Context.server.GetMemory().GetData<CommandSystem, CommandServerData>().commandPrefix = symbol;
+		}
 	}
 }

@@ -36,19 +36,19 @@ namespace MopBot.Common.Systems.Tags
 
 			void AddTagAction(ulong tagId, Tag tag)
 			{
-				if(tag.name == name && !tagsFound.Any(tuple => tuple.tagId == tagId)) {
+				if (tag.name == name && !tagsFound.Any(tuple => tuple.tagId == tagId)) {
 					tagsFound.Add((tagId, tag));
 				}
 			}
 
-			if(user != null) {
+			if (user != null) {
 				var userData = memory[user].GetData<TagSystem, TagUserData>();
 
 				ForeachTag(globalData, userData.subscribedTags, AddTagAction);
 				ForeachTagInGroups(globalData, userData.subscribedTagGroups, AddTagAction);
 			}
 
-			if(server != null) {
+			if (server != null) {
 				var serverData = memory[server].GetData<TagSystem, TagServerData>();
 
 				ForeachTagInGroups(globalData, serverData.globalTagGroups, AddTagAction);
@@ -56,17 +56,18 @@ namespace MopBot.Common.Systems.Tags
 
 			return tagsFound;
 		}
+
 		public static (ulong tagId, Tag tag) GetSingleTagInternal(SocketGuild server, SocketUser tagOwner, string tagName)
 		{
 			tagName = tagName.ToLowerInvariant();
 
 			var tagsFound = GetTagsWithName(tagOwner, server, tagName);
 
-			if(tagsFound.Count == 0) {
+			if (tagsFound.Count == 0) {
 				throw new BotError("Found no tags with such name that you're subscribed to.");
 			}
 
-			if(tagsFound.Count != 1) {
+			if (tagsFound.Count != 1) {
 				const int MaxTextLength = 30;
 
 				throw new BotError($"{tagsFound.Count} tags have been found: \r\n```{string.Join("\r\n", tagsFound.Select(t => $"{t.tagId} - {t.tagInfo.text.TruncateWithDots(MaxTextLength)}"))}```");
@@ -77,30 +78,31 @@ namespace MopBot.Common.Systems.Tags
 
 		public static void ForeachTag(TagGlobalData globalData, List<ulong> tagIds, Action<ulong, Tag> action)
 		{
-			if(globalData == null) {
+			if (globalData == null) {
 				globalData = MemorySystem.memory.GetData<TagSystem, TagGlobalData>();
 			}
 
-			for(int i = 0; i < tagIds.Count; i++) {
+			for (int i = 0; i < tagIds.Count; i++) {
 				ulong tagId = tagIds[i];
 
-				if(globalData.tags.TryGetValue(tagId, out Tag tag)) {
+				if (globalData.tags.TryGetValue(tagId, out Tag tag)) {
 					action(tagId, tag);
 				} else {
 					tagIds.RemoveAt(i--);
 				}
 			}
 		}
+
 		public static void ForeachTagInGroups(TagGlobalData globalData, List<ulong> groupIds, Action<ulong, Tag> action)
 		{
-			if(globalData == null) {
+			if (globalData == null) {
 				globalData = MemorySystem.memory.GetData<TagSystem, TagGlobalData>();
 			}
 
-			for(int i = 0; i < groupIds.Count; i++) {
+			for (int i = 0; i < groupIds.Count; i++) {
 				ulong groupId = groupIds[i];
 
-				if(globalData.tagGroups.TryGetValue(groupId, out TagGroup tagGroup)) {
+				if (globalData.tagGroups.TryGetValue(groupId, out TagGroup tagGroup)) {
 					ForeachTag(globalData, tagGroup.tagIDs, action);
 				} else {
 					groupIds.RemoveAt(i--);
@@ -110,14 +112,14 @@ namespace MopBot.Common.Systems.Tags
 
 		public static bool ForeachTag(TagGlobalData globalData, List<ulong> tagIds, out (ulong id, Tag tag) tuple, TagEnumerationFunc func)
 		{
-			if(globalData == null) {
+			if (globalData == null) {
 				globalData = MemorySystem.memory.GetData<TagSystem, TagGlobalData>();
 			}
 
-			for(int i = 0; i < tagIds.Count; i++) {
+			for (int i = 0; i < tagIds.Count; i++) {
 				ulong id = tagIds[i];
 
-				if(!globalData.tags.TryGetValue(id, out Tag tag)) {
+				if (!globalData.tags.TryGetValue(id, out Tag tag)) {
 					tagIds.RemoveAt(i--);
 
 					continue;
@@ -125,11 +127,11 @@ namespace MopBot.Common.Systems.Tags
 
 				(bool doReturn, bool removeTag) = func(id, tag);
 
-				if(removeTag) {
+				if (removeTag) {
 					tagIds.RemoveAt(i--);
 				}
 
-				if(doReturn) {
+				if (doReturn) {
 					tuple = (id, tag);
 
 					return true;
@@ -140,22 +142,23 @@ namespace MopBot.Common.Systems.Tags
 
 			return false;
 		}
+
 		public static bool ForeachTagInGroups(TagGlobalData globalData, List<ulong> groupIds, out (ulong id, Tag tag) tuple, TagEnumerationFunc func)
 		{
-			if(globalData == null) {
+			if (globalData == null) {
 				globalData = MemorySystem.memory.GetData<TagSystem, TagGlobalData>();
 			}
 
-			for(int i = 0; i < groupIds.Count; i++) {
+			for (int i = 0; i < groupIds.Count; i++) {
 				ulong groupId = groupIds[i];
 
-				if(!globalData.tagGroups.TryGetValue(groupId, out TagGroup tagGroup)) {
+				if (!globalData.tagGroups.TryGetValue(groupId, out TagGroup tagGroup)) {
 					groupIds.RemoveAt(i--);
 
 					continue;
 				}
 
-				if(ForeachTag(globalData, tagGroup.tagIDs, out tuple, func)) {
+				if (ForeachTag(globalData, tagGroup.tagIDs, out tuple, func)) {
 					return true;
 				}
 			}

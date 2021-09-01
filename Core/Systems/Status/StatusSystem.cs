@@ -26,10 +26,10 @@ namespace MopBot.Core.Systems.Status
 			var client = MopBot.client;
 			var now = DateTime.Now;
 
-			if(!noActivityChanging && (currentActivity.name == null || (now - lastActivityChange).TotalMinutes >= 5)) {
+			if (!noActivityChanging && (currentActivity.name == null || (now - lastActivityChange).TotalMinutes >= 5)) {
 				int index, indexOf = localActivities.IndexOf(currentActivity);
 
-				while((index = MopBot.Random.Next(localActivities.Count)) == indexOf) { }
+				while ((index = MopBot.Random.Next(localActivities.Count)) == indexOf) { }
 
 				currentActivity = localActivities[index];
 				lastActivityChange = now;
@@ -37,17 +37,17 @@ namespace MopBot.Core.Systems.Status
 
 			var user = client.CurrentUser;
 
-			if(user == null) {
+			if (user == null) {
 				return true;
 			}
 
 			var activities = user.Activities;
 
-			if(activities?.Any() != true || !activities.Any(a => a.Name == currentActivity.name && a.Type == currentActivity.type)) {
+			if (activities?.Any() != true || !activities.Any(a => a.Name == currentActivity.name && a.Type == currentActivity.type)) {
 				await client.SetGameAsync(currentActivity.name, type: currentActivity.type);
 			}
 
-			if(user.Status != currentStatus) {
+			if (user.Status != currentStatus) {
 				await client.SetStatusAsync(currentStatus);
 			}
 
@@ -56,19 +56,19 @@ namespace MopBot.Core.Systems.Status
 
 		public static void ForceStatus(ActivityType? activityType, string activityName, UserStatus? status, bool? noActivityChanging)
 		{
-			if(activityType != null) {
+			if (activityType != null) {
 				currentActivity.type = activityType.Value;
 			}
 
-			if(activityName != null) {
+			if (activityName != null) {
 				currentActivity.name = activityName;
 			}
 
-			if(status != null) {
+			if (status != null) {
 				currentStatus = status.Value;
 			}
 
-			if(noActivityChanging != null) {
+			if (noActivityChanging != null) {
 				StatusSystem.noActivityChanging = noActivityChanging.Value;
 			}
 

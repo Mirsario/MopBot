@@ -9,8 +9,8 @@ namespace MopBot.Extensions
 		{
 			int i = 0;
 
-			foreach(var value in source) {
-				if(i++ != index) {
+			foreach (var value in source) {
+				if (i++ != index) {
 					yield return value;
 				}
 			}
@@ -20,8 +20,8 @@ namespace MopBot.Extensions
 		{
 			int index = 0;
 
-			foreach(var item in source) {
-				if(predicate(item)) {
+			foreach (var item in source) {
+				if (predicate(item)) {
 					return index;
 				}
 
@@ -33,7 +33,7 @@ namespace MopBot.Extensions
 
 		public static bool TryGetFirst<T>(this IEnumerable<T> source, out T result)
 		{
-			foreach(var value in source) {
+			foreach (var value in source) {
 				result = value;
 
 				return true;
@@ -43,10 +43,11 @@ namespace MopBot.Extensions
 
 			return false;
 		}
+
 		public static bool TryGetFirst<T>(this IEnumerable<T> source, Func<T, bool> predicate, out T result)
 		{
-			foreach(var value in source) {
-				if(predicate(value)) {
+			foreach (var value in source) {
+				if (predicate(value)) {
 					result = value;
 
 					return true;
@@ -60,22 +61,23 @@ namespace MopBot.Extensions
 
 		public static IEnumerable<TResult> SelectIgnoreNull<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
 		{
-			if(source == null) {
+			if (source == null) {
 				throw new ArgumentNullException(nameof(source));
 			}
 
-			if(selector == null) {
+			if (selector == null) {
 				throw new ArgumentNullException(nameof(selector));
 			}
 
 			return SelectIgnoreNullIterator(source, selector);
 		}
+
 		private static IEnumerable<TResult> SelectIgnoreNullIterator<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, TResult> selector)
 		{
-			foreach(var element in source) {
+			foreach (var element in source) {
 				var result = selector(element);
 
-				if(result != null) {
+				if (result != null) {
 					yield return result;
 				}
 			}

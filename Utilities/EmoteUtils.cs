@@ -6,14 +6,14 @@ namespace MopBot.Utilities
 	{
 		public static bool TryParse(string input, out IEmote result)
 		{
-			if(input != null) {
-				if(Emote.TryParse(input, out Emote emote)) {
+			if (input != null) {
+				if (Emote.TryParse(input, out Emote emote)) {
 					result = emote;
 
 					return true;
 				}
 
-				if(input.Length == 2) {
+				if (input.Length == 2) {
 					result = new Emoji(input);
 
 					return true;
@@ -24,13 +24,14 @@ namespace MopBot.Utilities
 
 			return false;
 		}
+
 		public static IEmote Parse(string input, bool throwOnFail = true)
 		{
-			if(TryParse(input, out var result)) {
+			if (TryParse(input, out var result)) {
 				return result;
 			}
 
-			if(!throwOnFail) {
+			if (!throwOnFail) {
 				return null;
 			}
 

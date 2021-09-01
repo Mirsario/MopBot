@@ -11,6 +11,7 @@ namespace MopBot.Core.DataStructures
 		public ulong channelId;
 
 		public ServerChannelIds(MessageContext context) : this(context.server.Id, context.Channel.Id) { }
+
 		public ServerChannelIds(ulong serverId, ulong channelId)
 		{
 			this.serverId = serverId;
@@ -18,9 +19,10 @@ namespace MopBot.Core.DataStructures
 		}
 
 		public bool TryGetServer(out SocketGuild server) => MopBot.client.TryGetServer(serverId, out server);
+
 		public bool TryGetChannel(out SocketGuildChannel channel)
 		{
-			if(!MopBot.client.TryGetServer(serverId, out var server)) {
+			if (!MopBot.client.TryGetServer(serverId, out var server)) {
 				channel = null;
 
 				return false;
@@ -28,9 +30,10 @@ namespace MopBot.Core.DataStructures
 
 			return server.TryGetChannel(channelId, out channel);
 		}
+
 		public bool TryGetTextChannel(out SocketTextChannel textChannel)
 		{
-			if(!MopBot.client.TryGetServer(serverId, out var server)) {
+			if (!MopBot.client.TryGetServer(serverId, out var server)) {
 				textChannel = null;
 
 				return false;

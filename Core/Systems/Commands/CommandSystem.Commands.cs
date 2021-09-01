@@ -22,12 +22,13 @@ namespace MopBot.Core.Systems.Commands
 				.WithAuthor($"Commands available to @{context.socketServerUser.GetDisplayName()}:", context.user.GetAvatarUrl())
 				.WithFooter($"You can type {context.server.GetMemory().GetData<CommandSystem, CommandServerData>().commandPrefix}help <command> to see groups' commands and commands' syntaxes.");
 
-			foreach((var aliases, string description, _) in GetAvailableCommands(context.server, context.socketServerUser, true)) {
+			foreach ((string[] aliases, string description, _) in GetAvailableCommands(context.server, context.socketServerUser, true)) {
 				builder.AddField(string.Join("/", aliases), description);
 			}
 
 			await context.socketTextChannel.SendMessageAsync(embed: builder.Build());
 		}
+
 		[Command("help")]
 		[Alias("commands")]
 		[Summary("Lists commands of a group, or shows you syntax of a command.")]
@@ -39,7 +40,7 @@ namespace MopBot.Core.Systems.Commands
 
 			var match = GroupCommandRegex.Match(cmdOrGroup);
 
-			if(!match.Success) {
+			if (!match.Success) {
 				throw new BotError($"Invalid input: `{cmdOrGroup}`.");
 			}
 
@@ -47,7 +48,7 @@ namespace MopBot.Core.Systems.Commands
 			string groupB = match.Groups[2].Value;
 
 			var strComparer = MopBot.StrComparerIgnoreCase;
-			var cmdPrefix = context.server.GetMemory().GetData<CommandSystem, CommandServerData>().commandPrefix;
+			char cmdPrefix = context.server.GetMemory().GetData<CommandSystem, CommandServerData>().commandPrefix;
 
 			EmbedBuilder builder = null;
 
@@ -57,7 +58,7 @@ namespace MopBot.Core.Systems.Commands
 			{
 				var hashSet = new HashSet<string>();
 
-				foreach(var alias in aliases) {
+				foreach (var alias in aliases) {
 					var match = GroupCommandRegex.Match(alias);
 					var groups = match.Groups;
 
@@ -79,17 +80,17 @@ namespace MopBot.Core.Systems.Commands
 
 			bool postReady = false;
 
-			foreach(var m in commandService.Modules) {
-				var group = m.Group;
+			foreach (var m in commandService.Modules) {
+				string group = m.Group;
 				var aliases = m.Aliases;
 
-				if(aliases.Any(a => strComparer.Equals(a, cmdOrGroup))) {
+				if (aliases.Any(a => strComparer.Equals(a, cmdOrGroup))) {
 					//List all of group's commands
 					PrepareBuilder()
 						.WithDescription($"**Group aliases:** {string.Join(", ", aliases.Select(a => '`' + a + '`'))}.")
 						.WithAuthor($@"Commands in group ""{group}"":", context.user.GetAvatarUrl());
 
-					foreach(var c in m.Commands) {
+					foreach (var c in m.Commands) {
 						var (name, description) = GetCommandNameAndDescription(c, group);
 
 						builder.AddField($"• {name}", description);
@@ -101,15 +102,15 @@ namespace MopBot.Core.Systems.Commands
 
 				string checkedString;
 
-				if(group == null) {
+				if (group == null) {
 					checkedString = groupA;
-				} else if(strComparer.Equals(group, groupA)) {
+				} else if (strComparer.Equals(group, groupA)) {
 					checkedString = groupB;
 				} else {
 					continue;
 				}
 
-				if(m.Commands.TryGetFirst(c => strComparer.Equals(c.Name, checkedString), out var cmd)) {
+				if (m.Commands.TryGetFirst(c => strComparer.Equals(c.Name, checkedString), out var cmd)) {
 					//List single command
 					var (name, description) = GetCommandNameAndDescription(cmd, group, true);
 
@@ -122,7 +123,7 @@ namespace MopBot.Core.Systems.Commands
 				}
 			}
 
-			if(!postReady) {
+			if (!postReady) {
 				throw new BotError("Unable to find any commands or groups with such name.");
 			}
 

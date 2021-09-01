@@ -20,13 +20,13 @@ namespace MopBot.Core.TypeReaders
 			IAsyncEnumerable<IUser> channelUsers = context.Channel.GetUsersAsync().Flatten();
 			IReadOnlyCollection<IGuildUser> guildUsers = ImmutableArray.Create<IGuildUser>();
 
-			if(context.Guild != null) {
+			if (context.Guild != null) {
 				guildUsers = await context.Guild.GetUsersAsync().ConfigureAwait(false);
 			}
 
 			//By Mention (1.0)
-			if(MentionUtils.TryParseUser(input, out var id)) {
-				if(context.Guild != null) {
+			if (MentionUtils.TryParseUser(input, out var id)) {
+				if (context.Guild != null) {
 					AddResult(results, await context.Guild.GetUserAsync(id).ConfigureAwait(false) as T, 1.00f);
 				} else {
 					AddResult(results, await context.Channel.GetUserAsync(id).ConfigureAwait(false) as T, 1.00f);
@@ -34,8 +34,8 @@ namespace MopBot.Core.TypeReaders
 			}
 
 			//By Id (0.9)
-			if(ulong.TryParse(input, NumberStyles.None, CultureInfo.InvariantCulture, out id)) {
-				if(context.Guild != null) {
+			if (ulong.TryParse(input, NumberStyles.None, CultureInfo.InvariantCulture, out id)) {
+				if (context.Guild != null) {
 					AddResult(results, await context.Guild.GetUserAsync(id).ConfigureAwait(false) as T, 0.90f);
 				} else {
 					AddResult(results, await context.Channel.GetUserAsync(id).ConfigureAwait(false) as T, 0.90f);
@@ -45,14 +45,14 @@ namespace MopBot.Core.TypeReaders
 			//By Username + Discriminator (0.7-0.85)
 			int index = input.LastIndexOf('#');
 
-			if(index >= 0) {
+			if (index >= 0) {
 				string username = input.Substring(0, index);
 
-				if(ushort.TryParse(input.Substring(index + 1), out ushort discriminator)) {
+				if (ushort.TryParse(input.Substring(index + 1), out ushort discriminator)) {
 					var channelUser = await channelUsers
-						.FirstOrDefaultAsync(x => x.DiscriminatorValue == discriminator&& string.Equals(username, x.Username, StringComparison.OrdinalIgnoreCase))
+						.FirstOrDefaultAsync(x => x.DiscriminatorValue == discriminator && string.Equals(username, x.Username, StringComparison.OrdinalIgnoreCase))
 						.ConfigureAwait(false);
-					
+
 					AddResult(results, channelUser as T, channelUser?.Username == username ? 0.85f : 0.75f);
 
 					var guildUser = guildUsers
@@ -68,7 +68,7 @@ namespace MopBot.Core.TypeReaders
 				.ForEachAsync(channelUser => AddResult(results, channelUser as T, channelUser.Username == input ? 0.65f : 0.55f))
 				.ConfigureAwait(false);
 
-			foreach(var guildUser in guildUsers.Where(x => string.Equals(input, x.Username, StringComparison.OrdinalIgnoreCase))) {
+			foreach (var guildUser in guildUsers.Where(x => string.Equals(input, x.Username, StringComparison.OrdinalIgnoreCase))) {
 				AddResult(results, guildUser as T, guildUser.Username == input ? 0.60f : 0.50f);
 			}
 
@@ -78,11 +78,11 @@ namespace MopBot.Core.TypeReaders
 				.ForEachAsync(channelUser => AddResult(results, channelUser as T, (channelUser as IGuildUser).Nickname == input ? 0.65f : 0.55f))
 				.ConfigureAwait(false);
 
-			foreach(var guildUser in guildUsers.Where(x => string.Equals(input, x.Nickname, StringComparison.OrdinalIgnoreCase))) {
+			foreach (var guildUser in guildUsers.Where(x => string.Equals(input, x.Nickname, StringComparison.OrdinalIgnoreCase))) {
 				AddResult(results, guildUser as T, guildUser.Nickname == input ? 0.60f : 0.50f);
 			}
 
-			if(results.Count > 0) {
+			if (results.Count > 0) {
 				return TypeReaderResult.FromSuccess(results.Values.ToImmutableArray());
 			}
 
@@ -91,7 +91,7 @@ namespace MopBot.Core.TypeReaders
 
 		private void AddResult(Dictionary<ulong, TypeReaderValue> results, T user, float score)
 		{
-			if(user != null && !results.ContainsKey(user.Id)) {
+			if (user != null && !results.ContainsKey(user.Id)) {
 				results.Add(user.Id, new TypeReaderValue(user, score));
 			}
 		}

@@ -8,7 +8,7 @@ namespace MopBot
 	{
 		public static void Add<T>(ref T[] array, T value)
 		{
-			if(array == null) {
+			if (array == null) {
 				array = new[] { value };
 
 				return;
@@ -20,16 +20,17 @@ namespace MopBot
 
 			array[length] = value;
 		}
+
 		public static void RemoveWhere<T>(ref T[] array, Func<T, bool> predicate)
 		{
 			List<T> list = null;
 			int offset = 0;
 
-			for(int i = 0; i < array.Length; i++) {
+			for (int i = 0; i < array.Length; i++) {
 				var element = array[i];
 
-				if(predicate(element)) {
-					if(list == null) {
+				if (predicate(element)) {
+					if (list == null) {
 						list = array.ToList();
 					}
 
@@ -37,17 +38,18 @@ namespace MopBot
 				}
 			}
 
-			if(list != null) {
+			if (list != null) {
 				array = list.ToArray();
 			}
 		}
+
 		public static void RemoveAt<T>(ref T[] array, int index)
 		{
 			int length = array.Length - 1;
 			T[] newArray = new T[length];
 
-			for(int i = 0, j = 0; i < length; i++, j++) {
-				if(i == index) {
+			for (int i = 0, j = 0; i < length; i++, j++) {
+				if (i == index) {
 					j++;
 				}
 

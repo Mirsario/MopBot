@@ -18,13 +18,13 @@ namespace MopBot.Core.DataStructures
 
 		public async Task Execute(MessageContext context, Func<StringComparison, string, string> commandFilter = null)
 		{
-			if(user == 0 && !string.IsNullOrWhiteSpace(command)) {
+			if (user == 0 && !string.IsNullOrWhiteSpace(command)) {
 				return;
 			}
 
 			var executeAs = context.server.GetUser(user);
 
-			if(executeAs == null) {
+			if (executeAs == null) {
 				throw new BotError($"Sudo user has left the server; Command cannot be executed.");
 			}
 
@@ -35,14 +35,14 @@ namespace MopBot.Core.DataStructures
 				.Replace("{userMention}", context.user.Mention, sc)
 				.Replace("{channel}", $"<#{context.Channel.Id}>", sc);
 
-			if(commandFilter != null) {
+			if (commandFilter != null) {
 				filteredCommand = commandFilter(sc, filteredCommand);
 			}
 
 			try {
 				await CommandSystem.ExecuteCommand(new MessageContext(context.message, context.server, executeAs, filteredCommand, true, context.socketTextChannel), true);
 			}
-			catch(Exception e) {
+			catch (Exception e) {
 				throw new BotError(e);
 			}
 		}

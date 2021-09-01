@@ -28,28 +28,30 @@ namespace MopBot.Common.Systems.ChannelLinking
 			RegisterDataType<Memory, ChannelLinkingGlobalData>();
 			RegisterDataType<ServerMemory, ChannelLinkingServerData>();
 		}
+
 		public override async Task Initialize()
 		{
 			PermissionSystem.defaultGroups["superadmin"]["managechannellinking"] = true;
 		}
+
 		public override async Task OnMessageReceived(MessageContext message)
 		{
 			var localServerData = message.server.GetMemory().GetData<ChannelLinkingSystem, ChannelLinkingServerData>();
 			var channelLinks = localServerData.channelLinks;
 
-			if(channelLinks == null) {
+			if (channelLinks == null) {
 				return;
 			}
 
 			ulong channelId = message.messageChannel.Id;
 
-			if(!channelLinks.TryGetValue(channelId, out ulong linkId)) {
+			if (!channelLinks.TryGetValue(channelId, out ulong linkId)) {
 				return;
 			}
 
 			var channelLinkingData = MemorySystem.memory.GetData<ChannelLinkingSystem, ChannelLinkingGlobalData>();
 
-			if(!channelLinkingData.links.TryGetValue(linkId, out var channelLink)) {
+			if (!channelLinkingData.links.TryGetValue(linkId, out var channelLink)) {
 				channelLinks.Remove(channelId);
 
 				return;
@@ -71,8 +73,8 @@ namespace MopBot.Common.Systems.ChannelLinking
 				return checkUrl.EndsWith(".png") || checkUrl.EndsWith(".jpg") || checkUrl.EndsWith(".jpeg") || checkUrl.EndsWith(".bmp") || checkUrl.EndsWith(".gif");
 			}
 
-			foreach(var test in message.message.Embeds) {
-				switch(test.Type) {
+			foreach (var test in message.message.Embeds) {
+				switch (test.Type) {
 					case EmbedType.Gifv:
 					case EmbedType.Image:
 						builder.Description = builder.Description.Replace(test.Url, "");
@@ -84,8 +86,8 @@ namespace MopBot.Common.Systems.ChannelLinking
 				}
 			}
 
-			foreach(var attachment in message.message.Attachments) {
-				if(IsImageUrl(attachment.Filename.ToLower())) {
+			foreach (var attachment in message.message.Attachments) {
+				if (IsImageUrl(attachment.Filename.ToLower())) {
 					builder.Description = builder.Description.Replace(attachment.Url, "");
 					builder.WithImageUrl(attachment.Url);
 				}
@@ -95,14 +97,14 @@ namespace MopBot.Common.Systems.ChannelLinking
 
 			string embedDescription = builder.Description;
 
-			for(int i = 0; i < channelLink.connectedChannels.Count; i++) {
+			for (int i = 0; i < channelLink.connectedChannels.Count; i++) {
 				var channelInfo = channelLink.connectedChannels[i];
 
-				if(channelInfo.channelId == channelId) {
+				if (channelInfo.channelId == channelId) {
 					continue;
 				}
 
-				if(!MopBot.client.TryGetServer(channelInfo.serverId, out var server) || !server.TryGetTextChannel(channelInfo.channelId, out var channel)) {
+				if (!MopBot.client.TryGetServer(channelInfo.serverId, out var server) || !server.TryGetTextChannel(channelInfo.channelId, out var channel)) {
 					channelLink.connectedChannels.RemoveAt(i--);
 
 					continue;
@@ -112,14 +114,14 @@ namespace MopBot.Common.Systems.ChannelLinking
 				var enumerable = await asyncCollection.FlattenAsync();
 
 				//Try to append to the previous message instead of posting a new one, if possible.
-				if(enumerable?.FirstOrDefault() is SocketUserMessage lastMsg && lastMsg.Author.Id == botId) {
+				if (enumerable?.FirstOrDefault() is SocketUserMessage lastMsg && lastMsg.Author.Id == botId) {
 					var lastEmbed = lastMsg.Embeds.FirstOrDefault();
 
-					if(lastEmbed != null && lastEmbed.Author.HasValue) {
+					if (lastEmbed != null && lastEmbed.Author.HasValue) {
 						var author = lastEmbed.Author.Value;
 
-						if(author.Name == authorStr && author.IconUrl == authorAvatarUrl) {
-							if(!lastEmbed.Image.HasValue) {
+						if (author.Name == authorStr && author.IconUrl == authorAvatarUrl) {
+							if (!lastEmbed.Image.HasValue) {
 								bool modified = false;
 
 								string newDescription = lastEmbed.Description + "\r\n" + embedDescription;
@@ -133,7 +135,7 @@ namespace MopBot.Common.Systems.ChannelLinking
 									modified = true;
 								});
 
-								if(modified) {
+								if (modified) {
 									continue;
 								}
 							} else {
@@ -151,19 +153,19 @@ namespace MopBot.Common.Systems.ChannelLinking
 		{
 			var server = await Context.Client.GetGuildAsync(serverId);
 
-			if(server == null) {
+			if (server == null) {
 				await Context.ReplyAsync("Unknown server.");
 
 				return null;
 			}
 
-			if(await server.GetCurrentUserAsync() == null) {
+			if (await server.GetCurrentUserAsync() == null) {
 				await Context.ReplyAsync("I am not present in that server.");
 
 				return null;
 			}
 
-			if(server is SocketGuild socketServer) {
+			if (server is SocketGuild socketServer) {
 				return socketServer;
 			}
 
@@ -171,6 +173,7 @@ namespace MopBot.Common.Systems.ChannelLinking
 
 			return null;
 		}
+
 		private async Task LinkChannel(SocketGuildUser linkOwner, SocketTextChannel localChannel, SocketTextChannel remoteChannel)
 		{
 			var globalData = MemorySystem.memory.GetData<ChannelLinkingSystem, ChannelLinkingGlobalData>();
@@ -183,11 +186,11 @@ namespace MopBot.Common.Systems.ChannelLinking
 			var remoteServerMemory = remoteServer.GetMemory();
 			var remoteServerData = remoteServerMemory.GetData<ChannelLinkingSystem, ChannelLinkingServerData>();
 
-			if(remoteServerData.channelLinks.TryGetValue(remoteChannel.Id, out ulong remoteLinkId) && globalData.links.ContainsKey(remoteLinkId)) {
+			if (remoteServerData.channelLinks.TryGetValue(remoteChannel.Id, out ulong remoteLinkId) && globalData.links.ContainsKey(remoteLinkId)) {
 				throw new BotError("Remote channel already has a link.");
 			}
 
-			if(!localServerData.channelLinks.TryGetValue(localChannel.Id, out ulong linkId) || !globalData.links.TryGetValue(linkId, out ChannelLink link)) {
+			if (!localServerData.channelLinks.TryGetValue(localChannel.Id, out ulong linkId) || !globalData.links.TryGetValue(linkId, out ChannelLink link)) {
 				linkId = BotUtils.GenerateUniqueId(globalData.links.ContainsKey);
 
 				globalData.links[linkId] = link = new ChannelLink(linkOwner.Id);
@@ -197,19 +200,19 @@ namespace MopBot.Common.Systems.ChannelLinking
 
 			var ids = new ServerChannelIds(localServer.Id, localChannel.Id);
 
-			if(!link.connectedChannels.Contains(ids)) {
+			if (!link.connectedChannels.Contains(ids)) {
 				link.connectedChannels.Add(ids);
 			}
 
 			var remoteIds = new ServerChannelIds(remoteServer.Id, remoteChannel.Id);
 
-			if(link.invitedChannels.Contains(remoteIds)) {
+			if (link.invitedChannels.Contains(remoteIds)) {
 				throw new BotError("Remote channel's owner has already been invited to link it.");
 			}
 
 			string notification = $"<@{remoteServer.OwnerId}>\r\nAn administrator of server `{localServer.Name}` is requesting to message-link this channel ({remoteChannel.Name}) with their channel `{localChannel.Name}`.\r\nType `!channellink accept {linkId}` to accept.";
 
-			if(!IsEnabledForServer<ChannelLinkingSystem>(remoteServer)) {
+			if (!IsEnabledForServer<ChannelLinkingSystem>(remoteServer)) {
 				notification += $"\r\n\r\nNote: You need to enable the {nameof(ChannelLinkingSystem)} first. You can do that via this command:\r\n`!systems enable {nameof(ChannelLinkingSystem)}`";
 			}
 

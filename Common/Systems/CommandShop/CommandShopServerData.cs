@@ -8,8 +8,11 @@ namespace MopBot.Common.Systems.CommandShop
 {
 	public class CommandShopServerData : ServerData
 	{
-		[JsonProperty] private Dictionary<string, Shop> shops;
-		[JsonIgnore] public Dictionary<string, Shop> Shops => shops ??= new Dictionary<string, Shop>(StringComparer.InvariantCultureIgnoreCase);
+		[JsonProperty]
+		private Dictionary<string, Shop> shops;
+
+		[JsonIgnore]
+		public Dictionary<string, Shop> Shops => shops ??= new Dictionary<string, Shop>(StringComparer.InvariantCultureIgnoreCase);
 
 		public override void Initialize(SocketGuild server) { }
 	}

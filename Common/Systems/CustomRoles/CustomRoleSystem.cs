@@ -19,6 +19,7 @@ namespace MopBot.Common.Systems.CustomRoles
 		{
 			RegisterDataType<ServerUserMemory, CustomRoleServerUserData>();
 		}
+
 		public override async Task Initialize()
 		{
 			PermissionSystem.defaultGroups["vip"].permissions["managecustomrole"] = true;

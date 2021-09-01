@@ -19,7 +19,7 @@ namespace MopBot
 
 		public static string GetValidFileName(string name)
 		{
-			foreach(char c in Path.GetInvalidFileNameChars()) {
+			foreach (char c in Path.GetInvalidFileNameChars()) {
 				name = name.Replace(c, '_');
 			}
 
@@ -28,8 +28,8 @@ namespace MopBot
 
 		public static bool TryGetEmote(string name, out string emoteText)
 		{
-			foreach(var server in MopBot.client.Guilds) {
-				if(server.Emotes.TryGetFirst(e => MopBot.StrComparerIgnoreCase.Equals(name, e.Name), out var emote)) {
+			foreach (var server in MopBot.client.Guilds) {
+				if (server.Emotes.TryGetFirst(e => MopBot.StrComparerIgnoreCase.Equals(name, e.Name), out var emote)) {
 					emoteText = $"<{(emote.Animated ? "a" : null)}:{emote.Name}:{emote.Id}>";
 
 					Console.WriteLine($"Emote found '{name}', emoteText is '{emoteText}'.");
@@ -69,7 +69,7 @@ namespace MopBot
 			do {
 				result = MopBot.Random.NextULong();
 			}
-			while(idExistsCheck(result));
+			while (idExistsCheck(result));
 
 			return result;
 		}

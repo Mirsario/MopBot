@@ -31,6 +31,7 @@ namespace MopBot.Common.Systems.CommandShop
 			shop.description = description;
 			shop.thumbnailUrl = thumbnailUrl;
 		}
+
 		[Command("rename")]
 		[RequirePermission(SpecialPermission.Admin, "commandshop.manage")]
 		public async Task RenameShopCommand(string shopId, string newShopId)
@@ -70,6 +71,7 @@ namespace MopBot.Common.Systems.CommandShop
 				shop.Items = shop.Items?.Append(item)?.ToArray() ?? new[] { item };
 			}
 		}
+
 		[Command("removeitem")]
 		[Alias("deleteitem", "delitem", "rmitem")]
 		[RequirePermission(SpecialPermission.Admin, "commandshop.manage")]
@@ -113,7 +115,7 @@ namespace MopBot.Common.Systems.CommandShop
 				throw new BotError($"Invalid item id.");
 			}
 
-			var userId = context.socketServerUser.Id;
+			ulong userId = context.socketServerUser.Id;
 
 			string error = null;
 
@@ -136,6 +138,7 @@ namespace MopBot.Common.Systems.CommandShop
 				throw new BotError(error);
 			}
 		}
+
 		[Command("show")]
 		[Alias("list")]
 		public async Task ShowShopCommand(string shopId)

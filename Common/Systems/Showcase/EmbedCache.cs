@@ -25,11 +25,11 @@ namespace MopBot.Common.Systems.Showcase
 		{
 			var builder = MopBot.GetEmbedBuilder(server);
 
-			if(authorName != null) {
+			if (authorName != null) {
 				builder.WithAuthor(authorName, imageUrl);
 			}
 
-			if(description != null) {
+			if (description != null) {
 				builder.WithDescription(description);
 			}
 

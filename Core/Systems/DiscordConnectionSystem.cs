@@ -17,7 +17,7 @@ namespace MopBot.Core.Systems
 
 		public override async Task Initialize()
 		{
-			if(string.IsNullOrWhiteSpace(GlobalConfiguration.config.token)) {
+			if (string.IsNullOrWhiteSpace(GlobalConfiguration.config.token)) {
 				throw new ArgumentException($"Add bot's token to '{GlobalConfiguration.ConfigurationFile}' file.");
 			}
 
@@ -32,24 +32,25 @@ namespace MopBot.Core.Systems
 			await MopBot.TryCatchLogged("Attempting Login...", () => client.LoginAsync(TokenType.Bot, GlobalConfiguration.config.token.Trim()));
 			await MopBot.TryCatchLogged("Attempting Connection...", () => client.StartAsync());
 		}
+
 		public override async Task<bool> Update()
 		{
 			void Write(string text)
 			{
-				if(lastConsoleWrite != text) {
+				if (lastConsoleWrite != text) {
 					Console.WriteLine(text);
 
 					lastConsoleWrite = text;
 				}
 			}
 
-			if(client.LoginState == LoginState.LoggedIn && !isFullyReady) {
+			if (client.LoginState == LoginState.LoggedIn && !isFullyReady) {
 				Write("Ready!");
 
 				isFullyReady = true;
 			}
 
-			if(isFullyReady) {
+			if (isFullyReady) {
 				lastConsoleWrite = null;
 
 				return true;

@@ -21,14 +21,14 @@ namespace MopBot.Core.Systems.Permissions
 		{
 			var data = MemorySystem.memory[Context.server].GetData<PermissionSystem, PermissionServerData>();
 
-			if(data.permissionGroups.Count == 0) {
+			if (data.permissionGroups.Count == 0) {
 				throw new BotError($"This server currently has no permission groups. Has something went wrong? This shouldn't ever be the case.");
 			}
 
 			var roles = Context.server.Roles;
 			string listStr = "";
 
-			foreach(var pair in data.permissionGroups) {
+			foreach (var pair in data.permissionGroups) {
 				string roleList = string.Join("\r\n", roles.SelectIgnoreNull(r => data.roleGroups.TryGetValue(r.Id, out string groupName) && groupName == pair.Key ? "\t\t" + r.Name.Replace("@", "") : null));
 				string roleStr = $"\tAssociated roles:\r\n{(roleList.Length == 0 ? "\t\tNo role associations." : roleList)}";
 
@@ -49,7 +49,7 @@ namespace MopBot.Core.Systems.Permissions
 		{
 			var data = MemorySystem.memory[Context.server].GetData<PermissionSystem, PermissionServerData>();
 
-			if(data.permissionGroups.Count == 0) {
+			if (data.permissionGroups.Count == 0) {
 				throw new BotError($"This server currently has no permission groups. Has something went wrong? This shouldn't ever be the case.");
 			}
 
@@ -62,7 +62,7 @@ namespace MopBot.Core.Systems.Permissions
 		{
 			var data = MemorySystem.memory[Context.server].GetData<PermissionSystem, PermissionServerData>();
 
-			if(data.permissionGroups.ContainsKey(permGroup)) {
+			if (data.permissionGroups.ContainsKey(permGroup)) {
 				throw new BotError($"Permission group `{permGroup}` already exists.");
 			}
 
@@ -77,11 +77,11 @@ namespace MopBot.Core.Systems.Permissions
 		{
 			var data = MemorySystem.memory[Context.server].GetData<PermissionSystem, PermissionServerData>();
 
-			if(!data.permissionGroups.ContainsKey(permGroup)) {
+			if (!data.permissionGroups.ContainsKey(permGroup)) {
 				throw new BotError($"Permission group `{permGroup}` doesn't exist.");
 			}
 
-			if(permGroup == "everyone") {
+			if (permGroup == "everyone") {
 				throw new BotError($"`everyone` permission group cannot be removed.");
 			}
 
@@ -96,21 +96,21 @@ namespace MopBot.Core.Systems.Permissions
 		{
 			string properName = role.Name.Replace("@", "");
 
-			if(properName == "everyone" && !role.IsEveryone) {
+			if (properName == "everyone" && !role.IsEveryone) {
 				role = Context.server.EveryoneRole;
 			}
 
 			var data = MemorySystem.memory[Context.server].GetData<PermissionSystem, PermissionServerData>();
 
-			if(!data.permissionGroups.ContainsKey(permGroup)) {
+			if (!data.permissionGroups.ContainsKey(permGroup)) {
 				throw new BotError($"Permission group `{permGroup}` doesn't exists.");
 			}
 
-			if(role.Id == Context.server.EveryoneRole.Id) {
+			if (role.Id == Context.server.EveryoneRole.Id) {
 				throw new BotError($"Cannot reassign `everyone` role's group.");
 			}
 
-			if(permGroup == "everyone") {
+			if (permGroup == "everyone") {
 				throw new BotError($"Cannot assign `everyone` permission group to any roles.");
 			}
 
@@ -124,13 +124,13 @@ namespace MopBot.Core.Systems.Permissions
 		{
 			string properName = role.Name.Replace("@", "");
 
-			if(properName == "everyone" && !role.IsEveryone) {
+			if (properName == "everyone" && !role.IsEveryone) {
 				role = Context.server.EveryoneRole;
 			}
 
 			var data = MemorySystem.memory[Context.server].GetData<PermissionSystem, PermissionServerData>();
 
-			if(role.Id == Context.server.EveryoneRole.Id) {
+			if (role.Id == Context.server.EveryoneRole.Id) {
 				throw new BotError($"Cannot reassign `everyone` role's group.");
 			}
 
@@ -142,13 +142,13 @@ namespace MopBot.Core.Systems.Permissions
 		{
 			string properName = role.Name.Replace("@", "");
 
-			if(properName == "everyone" && !role.IsEveryone) {
+			if (properName == "everyone" && !role.IsEveryone) {
 				role = Context.server.EveryoneRole;
 			}
 
 			var data = MemorySystem.memory[Context.server].GetData<PermissionSystem, PermissionServerData>();
 
-			if(!data.roleGroups.TryGetValue(role.Id, out string permGroup) || !data.permissionGroups.ContainsKey(permGroup)) {
+			if (!data.roleGroups.TryGetValue(role.Id, out string permGroup) || !data.permissionGroups.ContainsKey(permGroup)) {
 				throw new BotError($"`{properName}` role currently isn't linked with any permission groups.");
 			}
 
@@ -162,11 +162,11 @@ namespace MopBot.Core.Systems.Permissions
 		{
 			var data = MemorySystem.memory[Context.server].GetData<PermissionSystem, PermissionServerData>();
 
-			if(!data.permissionGroups.TryGetValue(permGroup, out var group)) {
+			if (!data.permissionGroups.TryGetValue(permGroup, out var group)) {
 				throw new BotError($"Permission group `{permGroup}` does not exist.");
 			}
 
-			if(group.permissions.Count == 0) {
+			if (group.permissions.Count == 0) {
 				throw new BotError($"Permission group `{permGroup}` doesn't have any permission overrides defined.");
 			}
 
@@ -178,7 +178,7 @@ namespace MopBot.Core.Systems.Permissions
 		{
 			var data = MemorySystem.memory[Context.server].GetData<PermissionSystem, PermissionServerData>();
 
-			if(!data.permissionGroups.TryGetValue(permGroup, out var perms)) {
+			if (!data.permissionGroups.TryGetValue(permGroup, out var perms)) {
 				throw new BotError($"Permission group `{permGroup}` does not exist.");
 			}
 
@@ -191,11 +191,11 @@ namespace MopBot.Core.Systems.Permissions
 		{
 			var data = MemorySystem.memory[Context.server].GetData<PermissionSystem, PermissionServerData>();
 
-			if(!data.permissionGroups.TryGetValue(permGroup, out var perms)) {
+			if (!data.permissionGroups.TryGetValue(permGroup, out var perms)) {
 				throw new BotError($"Permission group `{permGroup}` does not exist.");
 			}
 
-			for(int i = 0; i < permissions.Length; i++) {
+			for (int i = 0; i < permissions.Length; i++) {
 				perms[permissions[i]] = value;
 			}
 		}
@@ -206,17 +206,17 @@ namespace MopBot.Core.Systems.Permissions
 		{
 			var data = MemorySystem.memory[Context.server].GetData<PermissionSystem, PermissionServerData>();
 
-			if(!data.permissionGroups.TryGetValue(permGroup, out var perms)) {
+			if (!data.permissionGroups.TryGetValue(permGroup, out var perms)) {
 				throw new BotError($"Permission group `{permGroup}` does not exist.");
 			}
 
 			var removed = new List<string>();
 			var skipped = new List<string>();
 
-			for(int i = 0; i < permissions.Length; i++) {
+			for (int i = 0; i < permissions.Length; i++) {
 				var perm = permissions[i];
 
-				if(perms.permissions.ContainsKey(perm)) {
+				if (perms.permissions.ContainsKey(perm)) {
 					perms[perm] = null;
 
 					removed.Add(perm);
@@ -227,11 +227,11 @@ namespace MopBot.Core.Systems.Permissions
 
 			string text = "";
 
-			if(removed.Count > 0) {
+			if (removed.Count > 0) {
 				text += $"Removed the following permissions: ```\r\n{string.Join("\r\n", removed)}```\r\n";
 			}
 
-			if(skipped.Count > 0) {
+			if (skipped.Count > 0) {
 				text += $"The following permissions already weren't present: ```\r\n{string.Join("\r\n", skipped)}```\r\n";
 			}
 

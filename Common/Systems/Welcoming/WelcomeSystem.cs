@@ -21,13 +21,13 @@ namespace MopBot.Common.Systems.Welcoming
 			var memory = server.GetMemory();
 			var welcomeData = memory.GetData<WelcomeSystem, WelcomeServerData>();
 
-			if(!server.TryGetTextChannel(welcomeData.channel, out var welcomeChannel)) {
+			if (!server.TryGetTextChannel(welcomeData.channel, out var welcomeChannel)) {
 				return;
 			}
 
 			string msg;
 
-			if(!memory.GetSubMemories<ServerUserMemory>().Any(p => p.Key == user.Id)) {
+			if (!memory.GetSubMemories<ServerUserMemory>().Any(p => p.Key == user.Id)) {
 				msg = welcomeData.messageJoin;
 			} else {
 				msg = welcomeData.messageRejoin;

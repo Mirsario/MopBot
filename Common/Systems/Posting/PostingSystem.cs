@@ -28,8 +28,7 @@ namespace MopBot.Common.Systems.Posting
 
 		public static async Task<PostPiece[]> ParseToPost(SourceType sourceType, string source)
 		{
-			var text = sourceType switch
-			{
+			string text = sourceType switch {
 				SourceType.Link => await WebUtils.DownloadString(source),
 				_ => source,
 			};
@@ -43,20 +42,20 @@ namespace MopBot.Common.Systems.Posting
 
 			int tagsParsed = 0;
 
-			for(int i = 0; i < postPieces.Count; i++) {
+			for (int i = 0; i < postPieces.Count; i++) {
 				var piece = postPieces[i];
 
-				if(piece.GetType() != typeof(TextPostPiece) || !(piece is TextPostPiece textPiece)) {
+				if (piece.GetType() != typeof(TextPostPiece) || piece is not TextPostPiece textPiece) {
 					continue;
 				}
 
 				var match = regexTags.Match(textPiece.text);
 
-				if(!match.Success) {
+				if (!match.Success) {
 					continue;
 				}
 
-				if(textPiece.text == null) {
+				if (textPiece.text == null) {
 					throw new BotError($"textPiece.text is null, i is {i}");
 				}
 
@@ -69,7 +68,7 @@ namespace MopBot.Common.Systems.Posting
 				{
 					var group = match.Groups[index];
 
-					if(!group.Success) {
+					if (!group.Success) {
 						throw new BotError($"Failed to parse tag #{1 + tagsParsed} ({type}): Missing group #{index}.");
 					}
 
@@ -79,7 +78,7 @@ namespace MopBot.Common.Systems.Posting
 				bool split = false;
 				PostPiece newPiece = null;
 
-				switch(type) {
+				switch (type) {
 					case "split":
 						split = true;
 						break;
@@ -99,20 +98,20 @@ namespace MopBot.Common.Systems.Posting
 
 				tagsParsed++;
 
-				if(split) {
+				if (split) {
 					string leftText = matchIndex >= textPiece.text.Length ? null : textPiece.text.Remove(matchIndex);
 					string rightText = matchIndex >= textPiece.text.Length ? null : textPiece.text.Substring(matchIndex);
 
-					if(rightText == null) {
-						if(newPiece != null) {
+					if (rightText == null) {
+						if (newPiece != null) {
 							postPieces[i] = newPiece;
 						}
 
 						continue;
 					}
 
-					if(string.IsNullOrWhiteSpace(leftText)) {
-						if(newPiece != null) {
+					if (string.IsNullOrWhiteSpace(leftText)) {
+						if (newPiece != null) {
 							postPieces.Insert(i, newPiece);
 						}
 
@@ -120,7 +119,7 @@ namespace MopBot.Common.Systems.Posting
 					} else {
 						textPiece.text = leftText;
 
-						if(newPiece != null) {
+						if (newPiece != null) {
 							postPieces.Add(newPiece);
 						}
 
@@ -139,7 +138,7 @@ namespace MopBot.Common.Systems.Posting
 		{
 			var pieces = await ParseToPost(sourceType, source);
 
-			foreach(var piece in pieces) {
+			foreach (var piece in pieces) {
 				await piece.Execute(inChannel);
 			}
 		}

@@ -38,7 +38,7 @@ namespace MopBot.Common.Systems.XP
 				.SelectIgnoreNull(key => {
 					var botUser = MopBot.client.GetUser(key);
 
-					if(botUser == null) {
+					if (botUser == null) {
 						return null;
 					}
 

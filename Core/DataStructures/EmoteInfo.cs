@@ -14,6 +14,7 @@ namespace MopBot.Core.DataStructures
 			Emote = emote;
 			Emoji = null;
 		}
+
 		public EmoteInfo(Emoji emoji)
 		{
 			Emoji = emoji;

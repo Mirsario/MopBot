@@ -34,7 +34,7 @@ namespace MopBot.Common.Systems.Trivia
 			ClearCache(Context.server.GetMemory().GetData<TriviaSystem, TriviaServerData>());
 		}
 
-		#region QuestionCommands
+		// QuestionCommands
 
 		//TODO: There's some very similar uploading & downloading code in MemorySystem.cs, should really make such code shared.
 		[Command("getquestions")]
@@ -48,13 +48,13 @@ namespace MopBot.Common.Systems.Trivia
 			var triviaServerMemory = memory.GetData<TriviaSystem, TriviaServerData>();
 			var questions = triviaServerMemory.questions;
 
-			if(questions == null || questions.Count == 0) {
+			if (questions == null || questions.Count == 0) {
 				throw new BotError("There are currently no questions in the database.");
 			}
 
 			IMessageChannel textChannel;
 
-			if(args?.ToLower() != "here") {
+			if (args?.ToLower() != "here") {
 				textChannel = await user.CreateDMChannelAsync() ?? throw new BotError("I'm unable to send you a private message. Use `!trivia getquestions here` to post the data right in this channel (everyone will be able to see answers to them!)");
 			} else {
 				textChannel = Context.Channel;
@@ -62,8 +62,8 @@ namespace MopBot.Common.Systems.Trivia
 
 			var dictionary = new Dictionary<string, string[]>();
 
-			lock(questions) {
-				for(int i = 0; i < questions.Count; i++) {
+			lock (questions) {
+				for (int i = 0; i < questions.Count; i++) {
 					var q = questions[i];
 					dictionary.Add(q.question, q.answers);
 				}
@@ -83,7 +83,7 @@ namespace MopBot.Common.Systems.Trivia
 		{
 			var server = Context.server;
 
-			if(!Context.socketMessage.Attachments.TryGetFirst(a => a.Filename.EndsWith(".txt") || a.Filename.EndsWith(".json"), out Attachment file) && url == null) {
+			if (!Context.socketMessage.Attachments.TryGetFirst(a => a.Filename.EndsWith(".txt") || a.Filename.EndsWith(".json"), out Attachment file) && url == null) {
 				await Context.ReplyAsync("Expected a .json file attachment or a link to it.");
 				return;
 			}
@@ -91,17 +91,17 @@ namespace MopBot.Common.Systems.Trivia
 			string filePath = MopBot.GetTempFileName("TriviaQuestions", ".json");
 			string urlString = file?.Url ?? url;
 
-			if(!Uri.TryCreate(urlString, UriKind.Absolute, out Uri uri)) {
+			if (!Uri.TryCreate(urlString, UriKind.Absolute, out Uri uri)) {
 				await Context.ReplyAsync($"Invalid Url: `{urlString}`.");
 				return;
 			}
 
-			using(var client = new WebClient()) {
+			using (var client = new WebClient()) {
 				try {
 					client.DownloadFile(uri, filePath);
 				}
-				catch(Exception e) {
-					if(File.Exists(filePath)) {
+				catch (Exception e) {
+					if (File.Exists(filePath)) {
 						File.Delete(filePath);
 					}
 
@@ -118,27 +118,27 @@ namespace MopBot.Common.Systems.Trivia
 			try {
 				dict = JsonConvert.DeserializeObject<Dictionary<string, string[]>>(json);
 			}
-			catch(Exception e) {
+			catch (Exception e) {
 				throw new BotError($"Failed to parse the JSON file: `{e.Message}`.");
 			}
 
-			if(dict == null) {
+			if (dict == null) {
 				throw new BotError("Failed to parse the JSON file: Unknown error.");
 			}
 
 			var triviaServerData = server.GetMemory().GetData<TriviaSystem, TriviaServerData>();
 			var questions = triviaServerData.questions ??= new List<TriviaQuestion>();
 
-			foreach(var pair in dict) {
+			foreach (var pair in dict) {
 				var key = pair.Key;
 
-				if(string.IsNullOrWhiteSpace(key)) {
+				if (string.IsNullOrWhiteSpace(key)) {
 					throw new BotError("Failed to parse the JSON file: Some question is null.");
 				}
 
 				var value = pair.Value;
 
-				if(value == null || value.Length == 0) {
+				if (value == null || value.Length == 0) {
 					throw new BotError($"Failed to parse the JSON file: Question `{key}`'s answers are missing or are null.");
 				}
 
@@ -155,20 +155,18 @@ namespace MopBot.Common.Systems.Trivia
 			var triviaServerData = server.GetMemory().GetData<TriviaSystem, TriviaServerData>();
 			var questions = triviaServerData.questions ??= new List<TriviaQuestion>();
 
-			lock(questions) {
-				var qaMatches = regexQuestionAndAnswers.Matches(questionAndAnswers);
-				foreach(Match match in qaMatches) {
+			lock (questions) {
+				var qaMatches = RegexQuestionAndAnswers.Matches(questionAndAnswers);
+				foreach (Match match in qaMatches) {
 					string question = match.Groups[1].Value;
-					var answers = regexAnswers.Matches(match.Groups[2].Value).Select(m => m.Groups[1].Value).ToArray();
+					var answers = RegexAnswers.Matches(match.Groups[2].Value).Select(m => m.Groups[1].Value).ToArray();
 
 					questions.Add(new TriviaQuestion(question, answers));
 				}
 			}
 		}
 
-		#endregion
-
-		#region ConfigCommands
+		// ConfigCommands
 		//TODO: (!!!) Need a proper configuration helper thing, to replace "setinterval" and "setchannel" commands with one...
 
 		[Command("setchannels")]
@@ -191,7 +189,7 @@ namespace MopBot.Common.Systems.Trivia
 		[RequirePermission(SpecialPermission.Admin, "triviasystem.manage")]
 		public async Task SetIntervalCommand(ulong intervalInSeconds)
 		{
-			if(intervalInSeconds < MinPostIntervalInSeconds) {
+			if (intervalInSeconds < MinPostIntervalInSeconds) {
 				throw new BotError($"Interval must be at least {MinPostIntervalInSeconds} seconds.");
 			}
 
@@ -206,10 +204,10 @@ namespace MopBot.Common.Systems.Trivia
 		{
 			var newUrls = new List<string>();
 
-			for(int i = 0; i < urls.Length; i++) {
+			for (int i = 0; i < urls.Length; i++) {
 				string url = urls[i];
 
-				if(!Uri.TryCreate(url, UriKind.Absolute, out var realUrl)) {
+				if (!Uri.TryCreate(url, UriKind.Absolute, out var realUrl)) {
 					throw new BotError($"Url #{i + 1} is invalid");
 				}
 
@@ -244,7 +242,5 @@ namespace MopBot.Common.Systems.Trivia
 
 			serverMemory.GetData<TriviaSystem, TriviaServerData>().currencyRewards = string.IsNullOrWhiteSpace(currencyAmountPairs) ? null : CurrencyAmount.ParseMultiple(currencyAmountPairs, serverMemory);
 		}
-
-		#endregion
 	}
 }

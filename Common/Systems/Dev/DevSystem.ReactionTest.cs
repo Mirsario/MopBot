@@ -10,13 +10,16 @@ namespace MopBot.Common.Systems.Dev
 	public partial class DevSystem
 	{
 		[Command("addreaction")]
-		public Task AddReaction(IEmote emote) => AddReaction(Context.server.Id, Context.socketTextChannel.Id, Context.socketTextChannel.GetCachedMessages(1).First().Id, emote);
+		public Task AddReaction(IEmote emote)
+			=> AddReaction(Context.server.Id, Context.socketTextChannel.Id, Context.socketTextChannel.GetCachedMessages(1).First().Id, emote);
 
 		[Command("addreaction")]
-		public Task AddReaction(ulong messageId, IEmote emote) => AddReaction(Context.server.Id, Context.socketTextChannel.Id, messageId, emote);
+		public Task AddReaction(ulong messageId, IEmote emote)
+			=> AddReaction(Context.server.Id, Context.socketTextChannel.Id, messageId, emote);
 
 		[Command("addreaction")]
-		public Task AddReaction(SocketTextChannel channel, ulong messageId, IEmote emote) => AddReaction(Context.server.Id, channel.Id, messageId, emote);
+		public Task AddReaction(SocketTextChannel channel, ulong messageId, IEmote emote)
+			=> AddReaction(Context.server.Id, channel.Id, messageId, emote);
 
 		[Command("addreaction")]
 		public async Task AddReaction(ulong serverId, ulong channelId, ulong messageId, IEmote emote)

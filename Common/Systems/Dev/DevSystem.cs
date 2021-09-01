@@ -31,13 +31,13 @@ namespace MopBot.Common.Systems.Dev
 		{
 			var msg = await channel.GetMessageAsync(messageId);
 
-			if(msg == null) {
+			if (msg == null) {
 				await Context.ReplyAsync($"Unable to find message with such id in channel `{channel.Name}`.");
 
 				return;
 			}
 
-			if(!(msg is SocketMessage socketMessage)) {
+			if (msg is not SocketMessage socketMessage) {
 				socketMessage = ((RestUserMessage)msg).ToSocketUserMessage(channel);
 			}
 
@@ -54,21 +54,25 @@ namespace MopBot.Common.Systems.Dev
 			=> await CommandSystem.ExecuteCommand(new MessageContext(Context.message, Context.server, user, command, true, channel), true);
 
 		[Command("errortest")]
-		public async Task ErrorTest() => throw new Exception("An error has occured, as you requested!");
+		public async Task ErrorTest()
+			=> throw new Exception("An error has occured, as you requested!");
 
 		[Command("listservers")]
-		public async Task ListServers() => await Context.ReplyAsync($"Currently running for the following servers: ```\r\n{string.Join("\r\n", MopBot.client.Guilds.Select(g => $"{g.Name} - {g.Id}"))}```");
+		public async Task ListServers()
+			=> await Context.ReplyAsync($"Currently running for the following servers: ```\r\n{string.Join("\r\n", MopBot.client.Guilds.Select(g => $"{g.Name} - {g.Id}"))}```");
 
 		[Command("listchannels")]
-		public async Task ListChannels() => await Context.ReplyAsync($"The following channels exist on this server: ```\r\n{string.Join("\r\n", Context.server.Channels.Select(c => $"{c.Name} - {c.Id}"))}```");
+		public async Task ListChannels()
+			=> await Context.ReplyAsync($"The following channels exist on this server: ```\r\n{string.Join("\r\n", Context.server.Channels.Select(c => $"{c.Name} - {c.Id}"))}```");
 
 		[Command("listroles")]
-		public async Task ListRoles() => await Context.ReplyAsync($"The following roles exist on this server: ```\r\n{string.Join("\r\n", Context.server.Roles.Select(r => $"{r.Name} - {r.Id}"))}```");
+		public async Task ListRoles()
+			=> await Context.ReplyAsync($"The following roles exist on this server: ```\r\n{string.Join("\r\n", Context.server.Roles.Select(r => $"{r.Name} - {r.Id}"))}```");
 
 		[Command("bash")]
 		public async Task BashCommand([Remainder] string command)
 		{
-			if(!GlobalConfiguration.config.enableBashCommand) {
+			if (!GlobalConfiguration.config.enableBashCommand) {
 				throw new BotError("This command is disabled.");
 			}
 
@@ -92,7 +96,7 @@ namespace MopBot.Common.Systems.Dev
 
 			process.WaitForExit();
 
-			foreach(var text in StringUtils.SplitMessageText(Context.user.Mention + " Done." + (result.Length > 0 ? $" Output:\r\n```{result}```" : ""))) {
+			foreach (var text in StringUtils.SplitMessageText(Context.user.Mention + " Done." + (result.Length > 0 ? $" Output:\r\n```{result}```" : ""))) {
 				await Context.ReplyAsync(text, false);
 			}
 		}

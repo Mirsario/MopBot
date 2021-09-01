@@ -28,11 +28,11 @@ namespace MopBot.Common.Systems.Configuration
 
 			var currentUser = server.GetUser(MopBot.client.CurrentUser.Id);
 
-			if(currentUser != null && !string.Equals(currentUser.Nickname, nickname, StringComparison.InvariantCulture) && !(nickname == "MopBot" && currentUser.Nickname == null) && currentUser.HasDiscordPermission(p => p.ChangeNickname)) {
+			if (currentUser != null && !string.Equals(currentUser.Nickname, nickname, StringComparison.InvariantCulture) && !(nickname == "MopBot" && currentUser.Nickname == null) && currentUser.HasDiscordPermission(p => p.ChangeNickname)) {
 				try {
 					await currentUser.ModifyAsync(u => u.Nickname = nickname);
 				}
-				catch(Exception e) {
+				catch (Exception e) {
 					await MopBot.HandleException(e);
 				}
 			}

@@ -21,16 +21,17 @@ namespace MopBot.Core.Systems
 		[Command("enable")]
 		public async Task EnableSystem(string systemName)
 		{
-			if(!nameToSystem.TryGetValue(systemName, out BotSystem system) || (system.Configuration.Hidden && !Context.user.IsBotMaster())) {
+			if (!nameToSystem.TryGetValue(systemName, out BotSystem system) || (system.Configuration.Hidden && !Context.user.IsBotMaster())) {
 				throw new BotError($"Couldn't find a system named '{systemName}'.");
 			}
 
 			system.GetMemory<ServerData>(Context.server).isEnabled = true;
 		}
+
 		[Command("disable")]
 		public async Task DisableSystem(string systemName)
 		{
-			if(!nameToSystem.TryGetValue(systemName, out BotSystem system)) {
+			if (!nameToSystem.TryGetValue(systemName, out BotSystem system)) {
 				throw new BotError($"Couldn't find a system named '{systemName}'.");
 			}
 
@@ -41,10 +42,10 @@ namespace MopBot.Core.Systems
 		public async Task ListSystems()
 		{
 			var server = Context.server;
-			var isMaster = Context.user.IsBotMaster();
+			bool isMaster = Context.user.IsBotMaster();
 			var builder = MopBot.GetEmbedBuilder(server);
 
-			foreach(var system in allSystems.Where(s => (!s.Configuration.Hidden || isMaster) && !s.Configuration.AlwaysEnabled).OrderBy(s => s.GetType().Name)) {
+			foreach (var system in allSystems.Where(s => (!s.Configuration.Hidden || isMaster) && !s.Configuration.AlwaysEnabled).OrderBy(s => s.GetType().Name)) {
 				builder.AddField($"{(system.IsEnabledForServer(server) ? ":white_check_mark:" : ":x:")} - {system.Name}", system.Configuration.Description ?? "`Configuration missing.`");
 			}
 

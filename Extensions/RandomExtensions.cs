@@ -13,6 +13,7 @@ namespace MopBot.Extensions
 
 			return BitConverter.ToInt16(RandomBuffer16, 0);
 		}
+
 		public static ushort NextUShort(this Random random)
 		{
 			random.NextBytes(RandomBuffer16);
@@ -26,6 +27,7 @@ namespace MopBot.Extensions
 
 			return BitConverter.ToInt64(RandomBuffer64, 0);
 		}
+
 		public static ulong NextULong(this Random random)
 		{
 			random.NextBytes(RandomBuffer64);
