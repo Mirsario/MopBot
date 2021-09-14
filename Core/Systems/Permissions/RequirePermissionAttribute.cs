@@ -39,7 +39,7 @@ namespace MopBot.Core.Systems.Permissions
 				if (server.OwnerId == user.Id) {
 					thisValue |= SpecialPermission.Owner;
 					thisValue |= SpecialPermission.Admin;
-				} else if (server.Roles.Any(r => r.Permissions.Administrator)) {
+				} else if (user.Roles.Any(r => r.Permissions.Administrator)) {
 					thisValue |= SpecialPermission.Admin;
 				}
 
